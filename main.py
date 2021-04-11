@@ -14,6 +14,22 @@ client.remove_command('help')
 slash = SlashCommand(client)
 header = store('config.json', 'token', True)
 
+async def getitem(ctx, item, time, *, username=None):
+	if username is None:
+		username = ''.join(random.choice(string.ascii_letters) for i in range(random.randint(3, 16)))
+	locations = ['Graveyard', 'Castle', 'Wizard Tower', 'Barn', 'Dark Auction', 'Auction House', 'Lumber Merchant', 'Plumber Joe\'s House', 'Community Center', 'Jacob\'s House', 'Catacombs Entrance', 'Coal Mines', 'Bank', 'Builder\'s House', 'Maddox the Slayer', 'Tia the Fairy']
+	location = random.choice(locations)
+	e = discord.Embed(title="A wild item appeared!", color=discord.Color.green(), description=f"Hurry to pick it up at the `{location}` in `Hub {random.randint(1, 40)}` before it dissapears!", timestamp=datetime.utcnow())
+	e.add_field(name=item, value=f"Dropped by `{username}`")
+	e.set_footer(text=f"{time} seconds!")
+	d = await ctx.send(embed=e)
+	await sleep(time)
+	g = discord.Embed(title="The item disappeared!", color=discord.Color.red())
+	e.set_footer(text="Rip item")
+	await d.edit(embed=g)
+	await sleep(time)
+	await d.delete()
+
 @client.event
 async def on_ready():
 	await client.change_presence(status=discord.Status.dnd, activity=discord.Activity(type=discord.ActivityType.listening, name="SavoryApple and Moose"))
@@ -38,15 +54,7 @@ async def _about(ctx, sub=None):
 
 @slash.slash(name='getnecronstick')
 async def _getnecronstick(ctx):
-	username = ''.join(random.choice(string.ascii_letters) for i in range(random.randint(3, 16)))
-	# add random locations later
-	e = discord.Embed(title="A wild item appeared!", color=discord.Color.green(), description="Hurry to pick it up at the `Dark Auction` in `Hub 1` before it dissapears!", timestamp=datetime.utcnow())
-	e.add_field(name="Necron stick!", value=f"Dropped by `{username}`")
-	e.set_footer(text="10 seconds!")
-	d = await ctx.send(embed=e)
-	await sleep(10)
-	g = discord.Embed(title="The item disappeared!", color=discord.Color.red())
-	await d.edit(embed=g)
+	await getitem(ctx, 'Necron stick!', 30)
 
 @client.command()
 @commands.is_owner()
