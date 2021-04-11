@@ -3,6 +3,7 @@ import slashrequest as srq
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand, utils
+from slashrequest import store
 from datetime import datetime
 from asyncio import sleep
 
