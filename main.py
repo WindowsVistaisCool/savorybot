@@ -32,7 +32,7 @@ async def on_command_error(ctx, error):
 
 #slashcommands
 @slash.slash(name="about")
-async def _about(ctx, sub=None)
+async def _about(ctx, sub=None):
 	await ctx.send(content="This command is still work in progress, sorry!", hidden=True)
 
 @slash.slash(name='getnecronstick')
