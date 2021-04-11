@@ -39,7 +39,7 @@ async def _about(ctx, sub=None):
 async def _getnecronstick(ctx):
 	username = ''.join(random.choice(string.ascii_letters) for i in range(random.randint(3, 16)))
 	# add random locations later
-	e = discord.Embed(title="A wild item appeared!", color=discord.Color.green(), description="Hurry to pick it up at the `Dark Auction` in `Hub 1`before it dissapears!" timestamp=datetime.utcnow())
+	e = discord.Embed(title="A wild item appeared!", color=discord.Color.green(), description="Hurry to pick it up at the `Dark Auction` in `Hub 1` before it dissapears!", timestamp=datetime.utcnow())
 	e.add_field(name="Necron stick!", value=f"Dropped by `{username}`")
 	e.set_footer(text="10 seconds!")
 	d = await ctx.send(embed=e)
