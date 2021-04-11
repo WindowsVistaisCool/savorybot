@@ -11,6 +11,7 @@ from asyncio import sleep
 
 client = commands.Bot(command_prefix='goonbot ')
 client.remove_command('help')
+slash = SlashCommand(client)
 header = store('config.json', 'token', True)
 
 @client.event
