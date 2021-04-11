@@ -14,7 +14,7 @@ client = commands.Bot(command_prefix='red ')
 async def on_ready():
 	print("ready")
 
-@client.command():
+@client.command()
 async def monke(ctx):
 	await ctx.send("you are gaee")
 
