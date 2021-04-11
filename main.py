@@ -15,19 +15,24 @@ slash = SlashCommand(client)
 header = store('config.json', 'token', True)
 
 async def getitem(ctx, item, time, *, username=None, rocks=False):
+	# add item list or something
 	def genuser():
 		username = ''.join(random.choice(string.ascii_letters) for i in range(random.randint(3, 16)))
 		return username
-	if username is None:
-		genuser()
+	def getname():
+		if username is None:
+			e = genuser()
+			return e
+		else:
+			return username
 	locations = ['Graveyard', 'Castle', 'Wizard Tower', 'Barn', 'Dark Auction', 'Auction House', 'Lumber Merchant', 'Plumber Joe\'s House', 'Community Center', 'Jacob\'s House', 'Catacombs Entrance', 'Coal Mines', 'Bank', 'Builder\'s House', 'Maddox the Slayer', 'Tia the Fairy']
 	location = random.choice(locations)
 	e = discord.Embed(title="Dropped item(s) were found!", color=discord.Color.green(), description=f"Hurry to pick it up at the `{location}` in `Hub {random.randint(1, 40)}` before it dissapears!", timestamp=datetime.utcnow())
 	if rocks is True:
 		for x in range(8):
-			e.add_field(name=f"`{item}` ({x})", value=f"Dropped by `{genuser}`")
+			e.add_field(name=f"`{item}` ({x + 1})", value=f"Dropped by `{getname()}`", inline=False)
 	else:
-		e.add_field(name=f"`{item}`", value=f"Dropped by `{genuser}`")
+		e.add_field(name=f"`{item}`", value=f"Dropped by `{getname()}`")
 	e.set_footer(text=f"{time} seconds!")
 	d = await ctx.send(embed=e)
 	await sleep(time)
