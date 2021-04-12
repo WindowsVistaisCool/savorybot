@@ -17,7 +17,9 @@ header = store('config.json', 'token', True)
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something
 	def genuser():
-		username = ''.join(random.choice(string.ascii_letters) for i in range(random.randint(3, 16)))
+		rank = [False, False, False, False, 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
+		randnames = ['ender', 'Pro', 'itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'fortnite', 'prokid', 'monkey', 'Gamer', 'GirlGamer', 's1mp', 'lowping', 'ihave', 'getgud', 'istupid', '123', 'minecraft', 'LMAO', 'non']
+		username = f'{random.choice(rank)} '.join(random.choice(randnames) for i in range(random.randint(1, 10)))
 		return username
 	def getname():
 		if username is None:
