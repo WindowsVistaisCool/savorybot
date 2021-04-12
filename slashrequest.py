@@ -25,7 +25,7 @@ def checkURL():
     returns.append(x['appID'])
   
   if x['guildID'] is not None:
-    returns.append(x['appID'])
+    returns.append(x['guildID'])
    
   return returns
 
