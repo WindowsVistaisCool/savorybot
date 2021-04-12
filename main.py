@@ -102,13 +102,24 @@ async def _getwitheress(ctx):
 
 @slash.slash(name='bind')
 async def _bind(ctx):
-	pass
+	if ctx.author.id != 392502213341216769:
+		await ctx.send(content="You do not have permission to use this command", hidden=True)
+	else:
+		await ctx.send(content="you are stupid and you know i havnt coded this yet dumbas")
 
 @client.command()
 @commands.is_owner()
 async def stop(ctx):
-	await ctx.send("stopping bot cuz u gay")
+	e = await ctx.send("stopping bot cuz u gay")
+	await sleep(2)
+	await e.delete()
 	await client.close()
+
+@client.command()
+@commands.is_owner()
+async def purge(ctx, message):
+	await ctx.message.delete()
+	await ctx.channel.purge(limit=int(message))
 
 try:
 	client.run(header)
