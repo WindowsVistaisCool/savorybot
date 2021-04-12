@@ -32,22 +32,11 @@ def checkURL():
    
   return returns
 
-def setURL(appID, guildID):
-  try:
-    x = store('config.json', None, True)
-    x['slashID']['appID'] = appID
-    x['slashID']['guildID'] = guildID
-    with open('config.json', 'r') as v:
-      json.dump(x, v, indent=4)
-    return True
-  except:
-    return False
-
 def get():
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
   f = requests.get(url, headers=head)
-  return f
+  return f.text
   
 def post(jsonData):
   k = checkURL()
