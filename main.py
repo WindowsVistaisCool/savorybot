@@ -68,7 +68,13 @@ async def _apply(ctx, ign):
 
 @slash.slash(name="about")
 async def _about(ctx, sub=None):
-	await ctx.send(content="This command is still work in progress, sorry!", hidden=True)
+	if sub == 'Author':
+		e = discord.Embed(title="Info about the author", color=discord.Color.blurple(), description="I'm a Discord Bot developer and I make my discord bots in python. (\# more info needed)")
+		await ctx.send(embed=e, hidden=True)
+	elif sub == 'Guild':
+		e = discord.Embed(title="Red Gladiators Guild Info
+	else:
+		await ctx.send(content="This command is still work in progress, sorry!", hidden=True)
 
 @slash.slash(name='checkguild')
 async def _checkguild(ctx, user):
@@ -93,6 +99,10 @@ async def _getwitheress(ctx):
 	e = await ctx.send("50,000 was successfuly hacked into your Minecraft account!")
 	await sleep(10)
 	await e.delete()
+
+@slash.slash(name='bind')
+async def _bind(ctx):
+	pass
 
 @client.command()
 @commands.is_owner()
