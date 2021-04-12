@@ -19,7 +19,7 @@ def store(file, key=None, read=False, val=None):
 
 # internal
 def checkURL():
-  x = store('config,json', 'slashID', True)
+  x = store('config.json', 'slashID', True)
   returns = []
   if x['appID'] is not None:
     returns.append(x['appID'])
