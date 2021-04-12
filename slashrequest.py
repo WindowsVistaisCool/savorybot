@@ -17,6 +17,9 @@ def store(file, key=None, read=False, val=None):
 		with open(file, 'w') as v:
 			json.dump(x, v, indent=4)
 
+			
+head = {"Authorization": f"Bot {store('config.json', 'token', True)}"}
+
 # internal
 def checkURL():
   x = store('config.json', 'slashID', True)
@@ -40,20 +43,20 @@ def setURL(appID, guildID):
   except:
     return False
 
-def get(header):
+def get():
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-  f = requests.get(url, headers=header)
+  f = requests.get(url, headers=head)
   return f
   
-def post(header, jsonData):
+def post(jsonData):
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-  e = requests.post(url, headers=header, json=jsonData)
+  e = requests.post(url, headers=head, json=jsonData)
   return e
 
-def delete(header, slashAppID):
+def delete(slashAppID):
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-  r = requests.delete(url + f"/{slashAppID}", headers=header)
+  r = requests.delete(url + f"/{slashAppID}", headers=head)
   return r
