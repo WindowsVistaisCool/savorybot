@@ -43,29 +43,17 @@ def setURL(appID, guildID):
 def get(header):
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-  head = f"Bot {header}"
-  headers = {
-    "Authorization": head
-  }
-  f = requests.get(url, headers=headers)
+  f = requests.get(url, headers=header)
   return f
   
 def post(header, jsonData):
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-  head = f"Bot {header}"
-  headers = {
-    "Authorization": head
-  }
-  e = requests.post(url, headers=headers, json=jsonData)
+  e = requests.post(url, headers=header, json=jsonData)
   return e
 
 def delete(header, slashAppID):
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-  head = f"Bot {header}"
-  headers = {
-    "Authorization": head
-  }
-  r = requests.delete(url + f"/{slashAppID}", headers=headers)
+  r = requests.delete(url + f"/{slashAppID}", headers=header)
   return r
