@@ -17,7 +17,7 @@ header = store('config.json', 'token', True)
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something
 	def genuser():
-		rank = [False, False, False, False, False, 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
+		rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
 		randnames = ['ender', 'Pro', 'itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'fortnite', 'prokid', 'monkey', 'Gamer', 'GirlGamer', 's1mp', 'lowping', 'ihave', 'getgud', 'istupid', '123', 'minecraft', 'LMAO', 'non']
 		username = f'{random.choice(rank)} {random.choice(randnames) for i in range(random.randint(1, 8))}'
 		return username
@@ -63,7 +63,7 @@ async def on_command_error(ctx, error):
 
 #slashcommands
 @slash.slash(name='apply')
-async def _apply(ctx, position):
+async def _apply(ctx, ign):
 	await ctx.send(content="This command is still work in progress, sorry! Use the old apply method (look in channels for #guild-applications).", hidden=True)
 
 @slash.slash(name="about")
@@ -90,7 +90,9 @@ async def _getrocks(ctx):
 
 @slash.slash(name='getwitheress')
 async def _getwitheress(ctx):
-	await ctx.send("50,000 was successfuly hacked into your Minecraft account!", hidden=True)
+	e = await ctx.send("50,000 was successfuly hacked into your Minecraft account!")
+	await sleep(10)
+	await e.delete()
 
 @client.command()
 @commands.is_owner()
