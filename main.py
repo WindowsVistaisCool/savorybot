@@ -72,7 +72,9 @@ async def _about(ctx, sub=None):
 		e = discord.Embed(title="Info about the author", color=discord.Color.blurple(), description="I'm a Discord Bot developer and I make my discord bots in python. (\# more info needed)")
 		await ctx.send(embed=e, hidden=True)
 	elif sub == 'Guild':
-		e = discord.Embed(title="Red Gladiators Guild Info
+		e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
+		e.add_field(name="Features",value="Active Skyblock Guild\nDungeons\nSkyblock advice\nTrusted members\nGood community"
+		await ctx.send(embed=e, hidden=True)
 	else:
 		await ctx.send(content="This command is still work in progress, sorry!", hidden=True)
 
