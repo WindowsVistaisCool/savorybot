@@ -74,7 +74,13 @@ async def _checkguild(ctx, user):
 
 @slash.slash(name='getnecronstick')
 async def _getnecronstick(ctx):
-	await getitem(ctx, 'Necron stick', 30)
+	d = ['t', 't', 't', 't', 't', 'f']
+	b = random.choice(d)
+	if b == 'f':
+		e = discord.Embed(title="No item(s) were found!", color=discord.Color.red())
+		await ctx.send(embed=e)
+		return
+	await getitem(ctx, 'Necron\'s handle', 30)
 
 @slash.slash(name='getrocks')
 async def _getrocks(ctx):
