@@ -13,6 +13,10 @@ def store(file, key=None, read=False, val=None):
 		else:
 			return x[key]
 	else:
+		if val is None:
+			with open(file, 'w') as v:
+				json.dump(key, v, indent=4)
+			return
 		x[key] = val
 		with open(file, 'w') as v:
 			json.dump(x, v, indent=4)
@@ -44,7 +48,7 @@ def post(jsonData):
   e = requests.post(url, headers=head, json=jsonData)
   return e
 
-def delete(slashAppID):
+def rem(slashAppID):
   k = checkURL()
   url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
   r = requests.delete(url + f"/{slashAppID}", headers=head)
