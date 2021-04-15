@@ -97,6 +97,13 @@ async def on_message(message):
 
 @client.command()
 @commands.is_owner()
+async def award(ctx, member: discord.Member):
+	r = ctx.guild.get_role(831611831461740554)
+	await member.add_roles(r)
+	await ctx.send(f"{member} was given the Dev Award role. Good job")
+
+@client.command()
+@commands.is_owner()
 async def c(ctx):
 	await ctx.message.delete()
 	e = discord.Embed(title="Verification", color=discord.Color.blurple())
@@ -133,6 +140,10 @@ async def _apply(ctx, ign, sbstats, position=None):
 		e = store('apps.json', 'guildApps', True)
 		if str(ctx.author.id) in e:
 			await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at {e[str(ctx.author.id)]})", hidden=True)
+			return
+		b = store('apps.json', 'acceptedGuildApps', True)
+		if str(ctx.author.id) in b:
+			await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
 			return
 	d = sbstats.find("https://sky.shiiyu.moe/stats/")
 	if d == -1:
@@ -190,6 +201,12 @@ async def _about(ctx, sub=None):
 @slash.slash(name='checkguild')
 async def _checkguild(ctx, ign):
 	await ctx.send(content="This command is still work in progress, sorry!", hidden=True)
+
+@slash.slash(name='monke')
+async def _monke(ctx):
+	e = await ctx.send(content="monkemxnia wants to smooch expicmnxia on the lips")
+	await sleep(20)
+	await e.delete()
 
 #disabled
 @slash.slash(name='getnecronstick')

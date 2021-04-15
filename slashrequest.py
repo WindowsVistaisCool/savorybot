@@ -21,7 +21,7 @@ def store(file, key=None, read=False, val=None):
 		with open(file, 'w') as v:
 			json.dump(x, v, indent=4)
 
-			
+
 head = {"Authorization": f"Bot {store('config.json', 'token', True)}"}
 
 # internal
