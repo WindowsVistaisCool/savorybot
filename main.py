@@ -223,8 +223,20 @@ async def voice(ctx):
 	bird = await ctx.guild.fetch_member(392502213341216769)
 	chn = bird.voice.channel
 	await chn.connect()
-# 	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('doobag.mp3'))
-# 	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+
+@client.command()
+@command.is_owner()
+async def play(ctx)
+	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('doobag.mp3'))
+	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+
+@client.command()
+@commands.is_owner()
+async def mute(ctx, mute):
+	if mute == 't':
+		await ctx.guild.change_voice_state(self_mute=True)
+	else:
+		await ctx.guild.change_voice_state(self_mute=False)
 
 @client.command()
 @commands.is_owner()
