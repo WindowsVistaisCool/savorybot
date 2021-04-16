@@ -226,13 +226,15 @@ async def voice(ctx):
 
 @client.command()
 @commands.is_owner()
-async def play(ctx):
-	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('doobag.mp3'))
+async def play(ctx, song='doobag.mp3'):
+	await ctx.message.delete()
+	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(song))
 	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
 @client.command()
 @commands.is_owner()
 async def mute(ctx, mute):
+	await ctx.message.delete()
 	bird = await ctx.guild.fetch_member(392502213341216769)
 	chn = bird.voice.channel
 	if mute == 't':
@@ -243,6 +245,7 @@ async def mute(ctx, mute):
 @client.command()
 @commands.is_owner()
 async def dc(ctx):
+	await ctx.message.delete()
 	await ctx.voice_client.disconnect()
 
 #disabled
