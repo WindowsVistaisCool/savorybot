@@ -233,10 +233,12 @@ async def play(ctx):
 @client.command()
 @commands.is_owner()
 async def mute(ctx, mute):
+	bird = await ctx.guild.fetch_member(392502213341216769)
+	chn = bird.voice.channel
 	if mute == 't':
-		await ctx.guild.change_voice_state(self_mute=True)
+		await ctx.guild.change_voice_state(chn, self_mute=True)
 	else:
-		await ctx.guild.change_voice_state(self_mute=False)
+		await ctx.guild.change_voice_state(chn, self_mute=False)
 
 @client.command()
 @commands.is_owner()
