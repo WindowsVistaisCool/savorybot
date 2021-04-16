@@ -167,7 +167,7 @@ async def dc(ctx):
 	await ctx.voice_client.disconnect()
 
 @client.command()
-@commnads.is_owner()
+@commands.is_owner()
 async def stop(ctx):
 	ctx.voice_client.stop()
 
