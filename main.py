@@ -202,11 +202,38 @@ async def _about(ctx, sub=None):
 async def _checkguild(ctx, ign):
 	await ctx.send(content="This command is still work in progress, sorry!", hidden=True)
 
-@slash.slash(name='monke')
-async def _monke(ctx):
-	e = await ctx.send(content="monkemxnia wants to smooch expicmnxia on the lips")
-	await sleep(20)
-	await e.delete()
+async def boogie(msg):
+	await sleep(40)
+	await msg.delete()
+
+@slash.slash(name='extra')
+async def _monke(ctx, subcommand):
+	if subcommand == 'monke':
+		e = await ctx.send(content="monkemxnia wants to smooch expicmnxia on the lips")
+		await boogie(e)
+	elif subcommand == 'moose':
+		e = await ctx.send(content="u will swish with monkemxnia's mouthwater if you dont run this")
+		await boogie(e)
+	else:
+		await ctx.send(content="This command is not finished yet!",hidden=True)
+
+@client.command()
+@commands.is_owner()
+async def voice(ctx):
+	if ctx.author.id != 392502213341216769: return
+	bird = await ctx.guild.fetch_member(392502213341216769)
+	chn = bird.voice.channel
+	try:
+		await chn.connect()
+	except:
+		await ctx.send("error")
+	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('doobag.mp3'))
+	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+
+@client.command()
+@commands.is_owner()
+async def dc(ctx):
+	await ctx.voice_client.disconnect()
 
 #disabled
 @slash.slash(name='getnecronstick')
