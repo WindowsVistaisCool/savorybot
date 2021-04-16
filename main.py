@@ -233,7 +233,7 @@ async def play(ctx, song='doobag.mp3'):
 
 @client.command()
 @commands.is_owner()
-async def mute(ctx, mute):
+async def mute(ctx, mute='t'):
 	await ctx.message.delete()
 	bird = await ctx.guild.fetch_member(392502213341216769)
 	chn = bird.voice.channel
