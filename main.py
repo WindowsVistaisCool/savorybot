@@ -220,15 +220,11 @@ async def _monke(ctx, subcommand):
 @client.command()
 @commands.is_owner()
 async def voice(ctx):
-	if ctx.author.id != 392502213341216769: return
 	bird = await ctx.guild.fetch_member(392502213341216769)
 	chn = bird.voice.channel
-	try:
-		await chn.connect()
-	except:
-		await ctx.send("error")
-	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('doobag.mp3'))
-	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+	await chn.connect()
+# 	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('doobag.mp3'))
+# 	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
 @client.command()
 @commands.is_owner()
