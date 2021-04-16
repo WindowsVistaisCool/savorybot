@@ -7,7 +7,6 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashCommand, utils
 from datetime import datetime
-from commandListener import getitem
 from asyncio import sleep
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False):
@@ -170,12 +169,12 @@ async def _getnecronstick(ctx):
 		e = discord.Embed(title="No item(s) were found!", color=discord.Color.red())
 		await ctx.send(embeds=[e])
 		return
-	await getitem(ctx, 'Necron\'s handle', 30)
+	await commandListener.getitem(ctx, 'Necron\'s handle', 30)
 
 #disabled
 @slash.slash(name='getrocks')
 async def _getrocks(ctx):
-	await getitem(ctx, 'Jolly Pink Rock', 60, rocks=True)
+	await commandListener.getitem(ctx, 'Jolly Pink Rock', 60, rocks=True)
 
 @client.command()
 @commands.is_owner()
