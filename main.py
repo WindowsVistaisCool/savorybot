@@ -68,6 +68,7 @@ async def on_message(message):
 @client.command()
 @commands.is_owner()
 async def award(ctx, member: discord.Member):
+	await ctx.message.delete()
 	r = ctx.guild.get_role(831611831461740554)
 	await member.add_roles(r)
 	await ctx.send(f"{member} was given the Dev Award role. Good job")
@@ -83,7 +84,7 @@ async def c(ctx):
 
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Skyblock noises"))
+	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", name="skyblock", game="Minecraft 1.12.2 Vanilla (Multiplayer)"))
 	print("ready")
 
 @client.event
@@ -131,7 +132,7 @@ async def _monke(ctx, subcommand):
 
 @client.command()
 @commands.is_owner()
-async def voice(ctx):
+async def join(ctx):
 	await ctx.message.delete()
 	bird = await ctx.guild.fetch_member(392502213341216769)
 	chn = bird.voice.channel
@@ -142,6 +143,9 @@ async def voice(ctx):
 async def play(ctx, song='doobag'):
 	await ctx.message.delete()
 	await ctx.send(f"ok i am now playing {song}")
+	if ctx.voice_client.is_connected() is not True: 
+		await ctx.send("o no, u are not connected to voice channel. i cant play this for u")
+		return
 	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(f"{song}.mp3"))
 	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
@@ -161,6 +165,11 @@ async def mute(ctx, mute='t'):
 async def dc(ctx):
 	await ctx.message.delete()
 	await ctx.voice_client.disconnect()
+
+@client.command()
+@commnads.is_owner()
+async def stop(ctx):
+	ctx.voice_client.stop()
 
 #disabled
 @slash.slash(name='getnecronstick')
