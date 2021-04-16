@@ -132,15 +132,17 @@ async def _monke(ctx, subcommand):
 @client.command()
 @commands.is_owner()
 async def voice(ctx):
+	await ctx.message.delete()
 	bird = await ctx.guild.fetch_member(392502213341216769)
 	chn = bird.voice.channel
 	await chn.connect()
 
 @client.command()
 @commands.is_owner()
-async def play(ctx, song='doobag.mp3'):
+async def play(ctx, song='doobag'):
 	await ctx.message.delete()
-	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(song))
+	await ctx.send(f"ok i am now playing {song})
+	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(f"{song}.mp3"))
 	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
 @client.command()
