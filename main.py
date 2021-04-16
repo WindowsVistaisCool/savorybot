@@ -225,7 +225,7 @@ async def voice(ctx):
 	await chn.connect()
 
 @client.command()
-@command.is_owner()
+@commands.is_owner()
 async def play(ctx):
 	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('doobag.mp3'))
 	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
