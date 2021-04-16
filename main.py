@@ -141,7 +141,7 @@ async def voice(ctx):
 @commands.is_owner()
 async def play(ctx, song='doobag'):
 	await ctx.message.delete()
-	await ctx.send(f"ok i am now playing {song})
+	await ctx.send(f"ok i am now playing {song}")
 	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(f"{song}.mp3"))
 	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
