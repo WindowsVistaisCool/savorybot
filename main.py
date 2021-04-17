@@ -189,14 +189,6 @@ async def _getrocks(ctx):
 
 @client.command()
 @commands.is_owner()
-async def stop(ctx):
-	e = await ctx.send("stopping bot cuz u gay")
-	await sleep(2)
-	await e.delete()
-	await client.close()
-
-@client.command()
-@commands.is_owner()
 async def purge(ctx, message):
 	await ctx.message.delete()
 	await ctx.channel.purge(limit=int(message))
