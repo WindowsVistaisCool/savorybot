@@ -2,5 +2,3 @@ discord
 asyncio
 discord-py-slash-command
 requests
-ffmpeg
-PyNaCl
