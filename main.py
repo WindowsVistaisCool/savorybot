@@ -48,7 +48,13 @@ async def on_message(message):
 		if message.content != "verify" and message.author.id != 829885999270068276:
 			if message.author.id == 392502213341216769:
 				if message.content == 'embed':
-					return
+					await message.delete()
+					e = discord.Embed(title="Verification", color=discord.Color.blurple())
+					e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
+					e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
+					e.set_footer(text="Thank you for joining!")
+					await ctx.send(embed=e)
+					# jsbin later
 				else:
 					await message.delete()
 					return
@@ -69,14 +75,6 @@ async def on_message(message):
 			g = await ctx.send("You have been verified")
 			await sleep(5)
 			await g.delete()
-		elif message.content == 'embed':
-			await message.delete()
-			if message.author.id != 392502213341216769: return
-			e = discord.Embed(title="Verification", color=discord.Color.blurple())
-			e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
-			e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
-			e.set_footer(text="Thank you for joining our server!")
-			await ctx.send(embed=e)
 			
 			
 	await client.process_commands(message)
