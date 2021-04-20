@@ -62,6 +62,15 @@ async def on_message(message):
 			g = await ctx.send("You have been verified")
 			await sleep(5)
 			await g.delete()
+		elif message.content == 'embed':
+			await message.delete()
+			if message.author != 392502213341216769: return
+			e = discord.Embed(title="Verification", color=discord.Color.blurple())
+			e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
+			e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
+			e.set_footer(text="Thank you for joining our server!")
+			await ctx.send(embed=e)
+			
 			
 	await client.process_commands(message)
 
@@ -73,18 +82,9 @@ async def award(ctx, member: discord.Member):
 	await member.add_roles(r)
 	await ctx.send(f"{member} was given the Dev Award role. Good job")
 
-@client.command()
-@commands.is_owner()
-async def c(ctx):
-	await ctx.message.delete()
-	e = discord.Embed(title="Verification", color=discord.Color.blurple())
-	e.add_field(name="Verify", value="To verify, type *`verify`* (lowercase) in this channel.", inline=False)
-	e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then head over to the `#guild-applications` channel.", inline=False)
-	await ctx.send(embed=e)
-
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", name="skyblock", game="Minecraft 1.12.2 Vanilla (Multiplayer)"))
+	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", name="Grinding Jerry Simulator", game="Minecraft 1.12.2 Vanilla (Multiplayer)"))
 	print("ready")
 
 @client.event
