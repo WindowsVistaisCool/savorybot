@@ -130,47 +130,6 @@ async def _monke(ctx, subcommand):
 	else:
 		await ctx.send(content="This command is not finished yet!",hidden=True)
 
-@client.command()
-@commands.is_owner()
-async def join(ctx):
-	await ctx.message.delete()
-	bird = await ctx.guild.fetch_member(392502213341216769)
-	chn = bird.voice.channel
-	await chn.connect()
-
-@client.command()
-@commands.is_owner()
-async def play(ctx, song='doobag'):
-	await ctx.message.delete()
-	await ctx.send(f"ok i am now playing {song}")
-	if ctx.voice_client.is_connected() is not True: 
-		await ctx.send("o no, u are not connected to voice channel. i cant play this for u")
-		return
-	source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(f"{song}.mp3"))
-	ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
-
-@client.command()
-@commands.is_owner()
-async def mute(ctx, mute='t'):
-	await ctx.message.delete()
-	bird = await ctx.guild.fetch_member(392502213341216769)
-	chn = bird.voice.channel
-	if mute == 't':
-		await ctx.guild.change_voice_state(channel=chn, self_mute=True)
-	else:
-		await ctx.guild.change_voice_state(channel=chn, self_mute=False)
-
-@client.command()
-@commands.is_owner()
-async def dc(ctx):
-	await ctx.message.delete()
-	await ctx.voice_client.disconnect()
-
-@client.command()
-@commands.is_owner()
-async def stop(ctx):
-	ctx.voice_client.stop()
-
 #disabled
 @slash.slash(name='getnecronstick')
 async def _getnecronstick(ctx):
