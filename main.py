@@ -64,7 +64,7 @@ async def on_message(message):
 			await g.delete()
 		elif message.content == 'embed':
 			await message.delete()
-			if message.author != 392502213341216769: return
+			if message.author.id != 392502213341216769: return
 			e = discord.Embed(title="Verification", color=discord.Color.blurple())
 			e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
 			e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
@@ -84,7 +84,13 @@ async def award(ctx, member: discord.Member):
 
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", name="Grinding Jerry Simulator", game="Minecraft 1.12.2 Vanilla (Multiplayer)"))
+	stuff = {
+		"large_image": "jerry_battle.png",
+		"large_text": "Jerry Simulator",
+		"small_image": "jerrytube_ico.png",
+		"small_text": "JerryTube 3D"
+	}
+	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", assets=stuff, platform="JerryTube 3D", name="Jerry Simulator", game="Minecraft 1.8.9 Vanilla/OptiFine (Multiplayer)"))
 	print("ready")
 
 @client.event
