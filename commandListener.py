@@ -1,7 +1,33 @@
 import json
 import discord
 from discord.ext import commands
-from main import store
+
+def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False):
+	with open(file, 'r') as v:
+		x = json.load(v)
+	if read is not False:
+		if key is None:
+			return x
+		else:
+			return x[key]
+	elif pop is True:
+		if app is True:
+			x[key].pop(appKey)
+			with open(file, 'w') as v:
+				json.dump(x, v, indent=4)
+		else:
+			return
+	else:
+		if val is None:
+			with open(file, 'w') as v:
+				json.dump(key, v, indent=4)
+			return
+		if app is True:
+			x[key][appKey] = val
+		else:
+			x[key] = val
+		with open(file, 'w') as v:
+			json.dump(x, v, indent=4)
 
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something
