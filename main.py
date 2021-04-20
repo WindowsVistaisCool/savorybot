@@ -46,8 +46,15 @@ async def on_message(message):
 	ctx = await client.get_context(message)
 	if message.channel.id == 789303598957199441:
 		if message.content != "verify" and message.author.id != 829885999270068276:
-			await message.delete()
-			return
+			if message.author.id == 392502213341216769:
+				if message.content == 'embed':
+					return
+				else:
+					await message.delete()
+					return
+			else:
+				await message.delete()
+				return
 		elif message.content == 'verify':
 			await message.delete()
 			r = ctx.guild.get_role(788914323485491232)
@@ -84,13 +91,7 @@ async def award(ctx, member: discord.Member):
 
 @client.event
 async def on_ready():
-	stuff = {
-		"large_image": "jerry_battle.png",
-		"large_text": "Jerry Simulator",
-		"small_image": "jerrytube_ico.png",
-		"small_text": "JerryTube 3D"
-	}
-	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", assets=stuff, platform="JerryTube 3D", name="Jerry Simulator", game="Minecraft 1.8.9 Vanilla/OptiFine (Multiplayer)"))
+	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", platform="Youtube", name="Jerry Simulator", game="Minecraft 1.8.9 Vanilla/OptiFine (Multiplayer)"))
 	print("ready")
 
 @client.event
@@ -125,6 +126,7 @@ async def boogie(msg):
 	await sleep(40)
 	await msg.delete()
 
+#doesnt work
 @slash.slash(name='extra')
 async def _monke(ctx, subcommand):
 	if subcommand == 'monke':
