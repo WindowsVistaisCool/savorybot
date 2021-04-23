@@ -81,7 +81,7 @@ async def on_message(message):
 
 @client.command()
 @commands.is_owner()
-async def addrole(ctx, roleID):
+async def addrole(ctx, roleID, member: discord.Member=None):
 	await ctx.message.delete()
 	if member is None: member = ctx.author
 	r = None
