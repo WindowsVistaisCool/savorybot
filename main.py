@@ -81,6 +81,30 @@ async def on_message(message):
 
 @client.command()
 @commands.is_owner()
+async def addrole(ctx, roleID):
+	await ctx.message.delete()
+	if member is None: member = ctx.author
+	r = None
+	try:
+		r = ctx.guild.get_role(829886872200151051)
+	except:
+		await ctx.send("could not find that role you big noob")
+	await member.remove_roles(r)
+
+@client.command()
+@commands.is_owner()
+async def remrole(ctx, roleID, member: discord.Member=None):
+	await ctx.message.delete()
+	if member is None: member = ctx.author
+	r = None
+	try:
+		r = ctx.guild.get_role(829886872200151051)
+	except:
+		await ctx.send("could not find that role you big noob")
+	await member.remove_roles(r)
+
+@client.command()
+@commands.is_owner()
 async def award(ctx, member: discord.Member):
 	await ctx.message.delete()
 	r = ctx.guild.get_role(831611831461740554)
