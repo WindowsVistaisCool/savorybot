@@ -59,7 +59,7 @@ async def getitem(ctx, item, time, *, username=None, rocks=False):
 	await sleep(10)
 	await d.delete()
 
-async def commmandErrorListener(ctx, error):
+async def commandErrorListener(ctx, error):
 	if isinstance(error, commands.CheckFailure):
 		e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
 		await ctx.send(embed=e)
