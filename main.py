@@ -106,7 +106,7 @@ async def award(ctx, member: discord.Member):
 
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", platform="youtube", name="Kiem Simulator", game="Minecraft 1.8.9 Vanilla/OptiFine (Multiplayer)"))
+	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Necron"))
 	print("ready")
 
 @client.event
