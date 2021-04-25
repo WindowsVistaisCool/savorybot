@@ -1,20 +1,41 @@
 import json
+import requests
 import discord
 from discord.ext import commands
+from datetime import datetime
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False):
-	with open(file, 'r') as v:
-		x = json.load(v)
+	rheaders = {
+		'secret-key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu'
+	}
+	uheaders = {
+		'Content-Type': 'application/json',
+		'secret-key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu',
+		'versioning': False
+	}
+	url = "https://api.jsonbin.io/b/6084ce3c5210f622be390873"
+	def get_read():
+			x = requests.get(url, headers=rheaders, json=None).json()
+			return x
+	x = None
+	if app is True:
+		x = get_read()
+		print(x)
+	else:
+		with open(file, 'r') as v:
+			x = json.load(v)
+	if x is None: return
 	if read is not False:
 		if key is None:
-			return x
+			return
 		else:
 			return x[key]
 	elif pop is True:
 		if app is True:
 			x[key].pop(appKey)
-			with open(file, 'w') as v:
-				json.dump(x, v, indent=4)
+			e = requests.put(url, json=x, headers=uheaders)
+			print(e.text)
+			return
 		else:
 			return
 	else:
@@ -24,10 +45,15 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			return
 		if app is True:
 			x[key][appKey] = val
+			print(x)
+			e = requests.put(url, json=x, headers=uheaders)
+			print(e.text)
+			print(get_read())
+			return
 		else:
 			x[key] = val
-		with open(file, 'w') as v:
-			json.dump(x, v, indent=4)
+			with open(file, 'w') as v:
+				json.dump(x, v, indent=4)
 
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something
@@ -74,23 +100,23 @@ async def apply(client, ctx, ign, sbstats, position=None):
 	appType = None
 	if position == 'disman' or position == 'veteran':
 		# enable-disable feature
-		await ctx.send(content="This position isnot open for applications, sorry!", hidden=True)
+		await ctx.send(content="This position is not open for applications, sorry!", hidden=True)
 		return
 	elif position == 'trusted':
 		await ctx.send(content="You can apply for this position, but you have to DM a staff member to do so.", hidden=True)
 		return
 	elif position == None:
-		e = store('apps.json', 'guildApps', True)
+		e = store('apps.json', 'guildApps', True, app=True)
 		if str(ctx.author.id) in e:
 			await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at {e[str(ctx.author.id)]})", hidden=True)
 			return
-		b = store('apps.json', 'acceptedGuildApps', True)
+		b = store('apps.json', 'acceptedGuildApps', True, app=True)
 		if str(ctx.author.id) in b:
 			await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
 			return
 	d = sbstats.find("https://sky.shiiyu.moe/stats/")
 	if d == -1:
-		await ctx.send(content="Your SkyCrypt URL is invalid! Please use this format: `https://sky.shiiyu.moe/stats/Goon/Apple`", hidden=True)
+		await ctx.send(content="Your SkyCrypt URL is invalid! Please use this format: `https://sky.shiiyu.moe/stats/daKiem/Apple`", hidden=True)
 		return
 	if position == None: appType = "guildApps"
 	r = ctx.guild.get_role(831614870256353330)
@@ -107,7 +133,7 @@ async def apply(client, ctx, ign, sbstats, position=None):
 	store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
 
 async def acceptGuild(ctx, appID):
-	e = store('apps.json', 'guildApps', True)
+	e = store('apps.json', 'guildApps', True, app=True)
 	if appID not in e:
 		await ctx.send("Could not find that application!")
 		return

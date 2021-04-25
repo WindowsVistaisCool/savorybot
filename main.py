@@ -10,8 +10,22 @@ from datetime import datetime
 from asyncio import sleep
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False):
-	with open(file, 'r') as v:
-		x = json.load(v)
+	rheaders = {
+		'X-Master-Key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu'
+	}
+	uheaders = {
+		'Content-type': 'application/json',
+		'X-Master-Key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu'
+	}
+	url = "https://api.jsonbin.io/v3/b/6084c8e55210f622be390570/latest"
+	x = None
+	if app is True:
+		e = requests.get(url, headers=rheaders, json=None).text
+		x = e['record']
+	else:
+		with open(file, 'r') as v:
+			x = json.load(v)
+	if x is None: return
 	if read is not False:
 		if key is None:
 			return x
@@ -20,8 +34,8 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 	elif pop is True:
 		if app is True:
 			x[key].pop(appKey)
-			with open(file, 'w') as v:
-				json.dump(x, v, indent=4)
+			e = requests.put(url, json=x, headers=uheaders)
+			return e
 		else:
 			return
 	else:
@@ -31,12 +45,14 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			return
 		if app is True:
 			x[key][appKey] = val
+			e = requests.put(url, json=x, headers=uheaders)
+			return e
 		else:
 			x[key] = val
-		with open(file, 'w') as v:
-			json.dump(x, v, indent=4)
+			with open(file, 'w') as v:
+				json.dump(x, v, indent=4)
 
-client = commands.Bot(command_prefix='goonbot ')
+client = commands.Bot(command_prefix='kiembot ')
 client.remove_command('help')
 slash = SlashCommand(client)
 header = store('config.json', 'token', True)
@@ -75,8 +91,8 @@ async def on_message(message):
 			g = await ctx.send("You have been verified")
 			await sleep(5)
 			await g.delete()
-			
-			
+
+
 	await client.process_commands(message)
 
 @client.command()
@@ -113,7 +129,7 @@ async def award(ctx, member: discord.Member):
 
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", platform="Youtube", name="Jerry Simulator", game="Minecraft 1.8.9 Vanilla/OptiFine (Multiplayer)"))
+	await client.change_presence(activity=discord.Streaming(url="https://www.youtube.com/watch?v=doEqUhFiQS4", platform="youtube", name="Kiem Simulator", game="Minecraft 1.8.9 Vanilla/OptiFine (Multiplayer)"))
 	print("ready")
 
 @client.event
@@ -129,8 +145,8 @@ async def _apply(ctx, ign, sbstats, position=None):
 @commands.has_role('Staff')
 async def accept(ctx):
 	await ctx.message.delete()
-	if ctx.invoked_subcommand is None: await ctx.send("example: `goonbot a g 1234567890` accepts a guild application with the id of 1234567890\n`goonbot a t 1234567890` accepts an application for trusted role of app id 1234567890 (doesnt work yet)")
-	
+	if ctx.invoked_subcommand is None: await ctx.send("example: `kiembot a g 1234567890` accepts a guild application with the id of 1234567890\n`kiembot a t 1234567890` accepts an application for trusted role of app id 1234567890 (doesnt work yet)")
+
 @accept.command(name='g')
 async def acceptGuild(ctx, appID):
 	await commandListener.acceptGuild(ctx, appID)
@@ -139,6 +155,15 @@ async def acceptGuild(ctx, appID):
 @slash.slash(name="about")
 async def _about(ctx):
 	await commandListener.about(ctx)
+
+@slash.slash(name="suggest")
+async def _suggest(ctx, idea=None):
+	if idea is None:
+		await ctx.send("hey stupid, you gotta put an idea\nyes i know it is an optional argument, my bad, but u still gotta put something", hidden=True)
+		return
+	e = await ctx.guild.fetch_member(392502213341216769)
+	await e.send(f"hey bitchass, you got a suggestion from {ctx.author}, here it is you fat idiot shitty bot dev: {idea}")
+	await ctx.send("ok i send it", hidden=True)
 
 @slash.slash(name='checkguild')
 async def _checkguild(ctx, ign):
