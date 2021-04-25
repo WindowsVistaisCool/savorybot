@@ -5,22 +5,23 @@ from discord.ext import commands
 from datetime import datetime
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False):
+	# needs to be updated to api v3
 	rheaders = {
 		'secret-key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu'
 	}
 	uheaders = {
 		'Content-Type': 'application/json',
 		'secret-key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu',
-		'versioning': False
 	}
+	rurl = "https://api.jsonbin.io/b/6084ce3c5210f622be390873/latest"
 	url = "https://api.jsonbin.io/b/6084ce3c5210f622be390873"
 	def get_read():
-			x = requests.get(url, headers=rheaders, json=None).json()
+			x = requests.get(rurl, headers=rheaders, json=None).json()
 			return x
 	x = None
 	if app is True:
 		x = get_read()
-		print(x)
+		# print(x)
 	else:
 		with open(file, 'r') as v:
 			x = json.load(v)
@@ -34,7 +35,7 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 		if app is True:
 			x[key].pop(appKey)
 			e = requests.put(url, json=x, headers=uheaders)
-			print(e.text)
+			# print(e.text)
 			return
 		else:
 			return
@@ -45,10 +46,10 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			return
 		if app is True:
 			x[key][appKey] = val
-			print(x)
+			# print(x)
 			e = requests.put(url, json=x, headers=uheaders)
-			print(e.text)
-			print(get_read())
+			# print(e.text)
+			# print(get_read())
 			return
 		else:
 			x[key] = val
@@ -108,7 +109,7 @@ async def apply(client, ctx, ign, sbstats, position=None):
 	elif position == None:
 		e = store('apps.json', 'guildApps', True, app=True)
 		if str(ctx.author.id) in e:
-			await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at {e[str(ctx.author.id)]})", hidden=True)
+			await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]})``", hidden=True)
 			return
 		b = store('apps.json', 'acceptedGuildApps', True, app=True)
 		if str(ctx.author.id) in b:
@@ -123,19 +124,21 @@ async def apply(client, ctx, ign, sbstats, position=None):
 	await ctx.author.add_roles(r)
 	await ctx.send(content="Thank you for submitting your application! Our mod team will review it soon.", hidden=True)
 	c = client.get_channel(831579949415530527)
-	e = discord.Embed(title="New Application", timestamp=datetime.utcnow(), color=discord.Color.blurple())
+	e = discord.Embed(title="New Application", timestamp=datetime.utcnow(), color=discord.Color.green())
 	e.set_footer(text="Application submitted")
 	e.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 	e.add_field(name="Application ID", value=f"{ctx.author.id}", inline=False)
+	e.add_field(name="Position", value=f"{position}")
 	e.add_field(name="IGN", value=ign, inline=False)
 	e.add_field(name="Skyblock Stats", value=f"[Click Here]({sbstats})", inline=False)
 	a = await c.send(embed=e)
 	store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
 
 async def acceptGuild(ctx, appID):
+	f = await ctx.send("Fetching data from api...")
 	e = store('apps.json', 'guildApps', True, app=True)
 	if appID not in e:
-		await ctx.send("Could not find that application!")
+		await f.edit(content="Could not find that application!")
 		return
 	r = ctx.guild.get_role(789590790669205536)
 	b = ctx.guild.get_role(831614870256353330)
@@ -147,9 +150,10 @@ async def acceptGuild(ctx, appID):
 		await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
 		store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
 		return
+	await f.edit(content="Sending data to API...")
 	store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
 	store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
-	await ctx.send("Application accepted")
+	await f.edit(content="Application accepted")
 
 async def about(ctx):
 	await ctx.send(content='If you are a guild member and want to add something, please dm <@!392502213341216769>!', hidden=True)
@@ -158,3 +162,6 @@ async def about(ctx):
 	d = await ctx.send(embeds=[e])
 	await sleep(20)
 	await d.delete()
+
+async def githubVer(ctx):
+	await ctx.send(content="Sorry, but this command is not functional at the moment!",hidden=True)
