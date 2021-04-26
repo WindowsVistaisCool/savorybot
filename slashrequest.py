@@ -73,8 +73,9 @@ class sc:
 		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands/{commandID}/permissions"
 		perms = []
 		if includeSelf is True or (roleIDTuple is None and staff is False) and user is None:
+			selfID = store('config.json', 'slashConfig', True)['selfID']
 			selfData = {
-				"id": "392502213341216769",
+				"id": selfID,
 				"type": 2,
 				"permission": True
 			}
