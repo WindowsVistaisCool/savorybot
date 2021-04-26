@@ -42,18 +42,25 @@ def checkURL():
 
 class sc:
 	# Basic functions
-	def get(all=False):
-	  k = checkURL()
-	  url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-	  f = requests.get(url, headers=head)
-	  if all is False:
-	      g = []
-	      for com in f.json():
-	          name = com['name']
-	          id = com['id']
-	          g.append({"name":name, "id":id})
-	      return g
-	  return f.json()
+	def get(comName=None, all=False):
+		k = checkURL()
+		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
+		f = requests.get(url, headers=head)
+		if all is False:
+			if comName is not None:
+				d = None
+				for com in f.json():
+					if com['name'] == comName:
+						d = com
+						break
+				return d
+			g = []
+			for com in f.json():
+				name = com['name']
+				id = com['id']
+				g.append({"name":name, "id":id})
+			return g
+		return f.json()
 
 	def post(jsonData):
 	  k = checkURL()
