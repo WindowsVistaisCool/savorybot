@@ -1,7 +1,12 @@
 {
 	"token": "ODI5ODg1OTk5MjcwMDY4Mjc2.YG-pkA.wmAzVHuE-ZKk6_8nGcJWb7cfiJ0",
-	"slashID": {
+	"slashConfig": {
+		"auth": {
+			"Authorization": "Bot ODI5ODg1OTk5MjcwMDY4Mjc2.YG-pkA.wmAzVHuE-ZKk6_8nGcJWb7cfiJ0"
+		},
 		"appID": "829885999270068276",
-		"guildID": "788886124159828009"
+		"guildID": "788886124159828009",
+		"staff": "789593786287915010",
+		"tips": false
 	}
 }

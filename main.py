@@ -2,12 +2,12 @@ import json
 import random
 import string
 import commandListener
-import slashrequest as srq
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand, utils
 from datetime import datetime
 from asyncio import sleep
+from slashrequest import sc as srq
 
 def store(file, key=None, read=False, val=None, *, pop=False):
 	with open(file, 'r') as v:
@@ -47,7 +47,7 @@ async def on_message(message):
 					e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
 					e.set_footer(text="Thank you for joining!")
 					await ctx.send(embed=e)
-					# jsbin later
+					# json maybe?
 				else:
 					await message.delete()
 					return
@@ -141,6 +141,13 @@ async def acceptTrusted(ctx, appID):
 async def _about(ctx):
 	await commandListener.about(ctx)
 
+@slash.slash(name='clientsecrets')
+async def _clientsecrets(ctx):
+	e = await ctx.send("fetching keys from `http://api.github.com/repo/windowsvistaiscool/red-gladiator/raw/config.json` (using `'auth': 'token ghp_'` headers)\n\n`http://api.jsonbin.io/b/windowsvistaiscool/latest`, (using `'secret-key': '_'` headers (`masterkey not found`))")
+	await sleep(5)
+	await e.edit(content="error whilst retrieving keys: `could not reach target: https://api.jsonbin.io`, exiting with error code `HTTP/404`")
+
+# TODO: command creation suggestions
 @slash.slash(name="suggest")
 async def _suggest(ctx, idea):
 	e = await ctx.guild.fetch_member(392502213341216769)
