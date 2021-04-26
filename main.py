@@ -168,18 +168,18 @@ async def _version(ctx):
 	await commandListener.githubVer(ctx)
 
 #subcommands
-@slash.subcommand(base='extra', name='monke')
+@slash.subcommand(base='z', name='monke')
 async def _monke(ctx):
-	e = await ctx.send(content="monkemxnia wants to smooch expicmnxia on the lips")
+	e = await ctx.send(content="monkemxnia wants to smooch you on the lips")
+	await ctx.send(content='he also lkes men', hidden=True)
 	await boogie(e)
 
-@slash.subcommand(base='extra', name='moose')
+@slash.subcommand(base='z', name='moose')
 async def _moose(ctx):
-	e = await ctx.send(content="u will swish with monkemxnia's bathwater if you dont run this")
+	e = await ctx.send(content="u will swish with monkemxnia's bathwater if moose see this")
 	await boogie(e)
 
-#disabled
-@slash.slash(name='getnecronstick')
+@slash.subcommand(base='test', name='getnecronstick')
 async def _getnecronstick(ctx):
 	d = ['t', 't', 't', 't', 't', 'f']
 	b = random.choice(d)

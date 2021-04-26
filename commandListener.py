@@ -1,8 +1,11 @@
 import json
 import requests
+import random
+import string
 import discord
 from discord.ext import commands
 from datetime import datetime
+from asyncio import sleep
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False):
 	# needs to be updated to api v3
