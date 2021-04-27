@@ -179,7 +179,10 @@ async def _moose(ctx):
 	e = await ctx.send(content="u will swish with monkemxnia's bathwater if moose see this")
 	await boogie(e)
 
-@slash.subcommand(base='test', name='getnecronstick')
+@slash.subcommand(base='aa', name='important')
+async def _important(ctx):
+	await ctx.send("This bot will be deleted soon due to an oversight relating to a security flaw. There WILL be a new bot, and if everything goes smoothly, you won't notice any difference. Sorry for the inconvenience, but all your commands should still run fine", hidden=True)
+
 async def _getnecronstick(ctx):
 	d = ['t', 't', 't', 't', 't', 'f']
 	b = random.choice(d)
