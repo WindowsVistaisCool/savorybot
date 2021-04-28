@@ -168,22 +168,21 @@ async def _version(ctx):
 	await commandListener.githubVer(ctx)
 
 #subcommands
-@slash.subcommand(base='extra', name='monke')
+@slash.subcommand(base='z', name='monke')
 async def _monke(ctx):
-	e = await ctx.send(content="monkemxnia wants to smooch expicmnxia on the lips")
+	e = await ctx.send(content="monkemxnia wants to smooch you on the lips")
+	await ctx.send(content='he also lkes men', hidden=True)
 	await boogie(e)
 
-@slash.subcommand(base='extra', name='moose')
+@slash.subcommand(base='z', name='moose')
 async def _moose(ctx):
-	e = await ctx.send(content="u will swish with monkemxnia's bathwater if you dont run this")
+	e = await ctx.send(content="u will swish with monkemxnia's bathwater if moose see this")
 	await boogie(e)
 
 @slash.subcommand(base='aa', name='important')
 async def _important(ctx):
 	await ctx.send("This bot will be deleted soon due to an oversight relating to a security flaw. There WILL be a new bot, and if everything goes smoothly, you won't notice any difference. Sorry for the inconvenience, but all your commands should still run fine", hidden=True)
-	
-#disabled
-@slash.slash(name='getnecronstick')
+
 async def _getnecronstick(ctx):
 	d = ['t', 't', 't', 't', 't', 'f']
 	b = random.choice(d)
