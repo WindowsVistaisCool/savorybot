@@ -38,7 +38,7 @@ header = store('config.json', 'token', True)
 async def on_message(message):
 	ctx = await client.get_context(message)
 	if message.channel.id == 789303598957199441:
-		if message.content != "verify" and message.author.id != 829885999270068276:
+		if message.content != "verify" and message.author.id != 713461668667195553:
 			if message.author.id == 392502213341216769:
 				if message.content == 'embed':
 					await message.delete()
@@ -107,7 +107,7 @@ async def award(ctx, member: discord.Member):
 @client.event
 async def on_ready():
 	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Necron"))
-	print("ready")
+	print("Ready")
 
 @client.event
 async def on_command_error(ctx, error):
@@ -115,8 +115,8 @@ async def on_command_error(ctx, error):
 
 #applications
 @slash.slash(name='apply')
-async def _apply(ctx, ign, sbstats, position=None):
-	await commandListener.apply(client, ctx, ign, sbstats, position)
+async def _apply(ctx, ign, skycrypt, position=None):
+	await commandListener.apply(client, ctx, ign, skycrypt, position)
 
 @client.group(name='a')
 async def accept(ctx):
@@ -178,10 +178,6 @@ async def _monke(ctx):
 async def _moose(ctx):
 	e = await ctx.send(content="u will swish with monkemxnia's bathwater if moose see this")
 	await boogie(e)
-
-@slash.subcommand(base='aa', name='important')
-async def _important(ctx):
-	await ctx.send("This bot will be deleted soon due to an oversight relating to a security flaw. There WILL be a new bot, and if everything goes smoothly, you won't notice any difference. Sorry for the inconvenience, but all your commands should still run fine", hidden=True)
 
 async def _getnecronstick(ctx):
 	d = ['t', 't', 't', 't', 't', 'f']
