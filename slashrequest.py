@@ -75,9 +75,15 @@ class sc:
 	  return r
 
  	# Permissions
-	def perm(commandID, roleIDTuple=None, *, includeSelf=True, permTuple=None, user=None, userPerm=True):
+	def perm(commandID, roleIDTuple=None, *, includeSelf=True, permTuple=None, user=None, userPerm=True, noPermAll=False):
 		k = checkURL()
 		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands/{commandID}/permissions"
+		if noPermAll is True:
+			jData = {
+				"permissions": []
+			}
+			r = requests.put(url, headers=head, json=jData)
+			return r
 		perms = []
 		if includeSelf is True or (roleIDTuple is None and staff is False) and user is None:
 			selfID = store('config.json', 'slashConfig', True)['selfID']
