@@ -75,7 +75,7 @@ class sc:
 	  return r
 
  	# Permissions
-	def perm(commandID, roleIDTuple=None, *, includeSelf=True, permAllow=True, staff=False, user=None):
+	def perm(commandID, roleIDTuple=None, *, includeSelf=True, permTuple=None, user=None, userPerm=True):
 		k = checkURL()
 		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands/{commandID}/permissions"
 		perms = []
@@ -89,10 +89,10 @@ class sc:
 			perms.append(selfData)
 		if roleIDTuple is not None:
 			try:
-				if staff is True:
-					d = store('config.json', 'slashConfig', True)['staffID']
-					roleIDTuple.append(d)
+				count = 0
 				for roleID in roleIDTuple:
+					permAllow = permTuple[count]
+					count += 1
 					roleData = {
 						"id": roleID,
 						"type": 1,
@@ -109,7 +109,7 @@ class sc:
 			userData = {
 				"id": uid,
 				"type": 2,
-				"permission": permAllow
+				"permission": userPerm
 			}
 			perms.append(userData)
 		jData = {
