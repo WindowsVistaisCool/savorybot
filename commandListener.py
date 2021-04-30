@@ -100,7 +100,7 @@ async def commandErrorListener(ctx, error):
 		e = discord.Embed(title="An exception occurred", description=f"{error}")
 		await ctx.send(embed=e)
 
-async def apply(client, ctx, ign, sbstats, position=None):
+async def apply(client, ctx, ign, skycrypt, position=None):
 	appType = None
 	if position == 'disman' or position == 'veteran':
 		# enable-disable feature
