@@ -151,7 +151,7 @@ async def _clientsecrets(ctx):
 @slash.slash(name="suggest")
 async def _suggest(ctx, request):
 	e = await ctx.guild.fetch_member(392502213341216769)
-	f = discord.Embed(title="New Suggestion", description=f"{idea}")
+	f = discord.Embed(title="New Suggestion", description=f"{request}")
 	f.set_author(name=ctx.author)
 	await e.send(embed=f)
 	await ctx.send("ok i sent it, thank you, it helps me make the bot better", hidden=True)
