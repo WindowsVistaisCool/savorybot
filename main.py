@@ -149,12 +149,20 @@ async def _clientsecrets(ctx):
 
 # TODO: command creation suggestions
 @slash.slash(name="suggest")
-async def _suggest(ctx, request):
-	e = await ctx.guild.fetch_member(392502213341216769)
-	f = discord.Embed(title="New Suggestion", description=f"{request}")
-	f.set_author(name=ctx.author)
-	await e.send(embed=f)
-	await ctx.send("ok i sent it, thank you, it helps me make the bot better", hidden=True)
+async def _suggest(ctx, type, request):
+	if type == 'b':
+		e = await ctx.guild.fetch_member(392502213341216769)
+		f = discord.Embed(title="New Suggestion", description=f"{request}")
+		f.set_author(name=ctx.author)
+		await e.send(embed=f)
+		await ctx.send("Thank you for your suggestion! It really helps me make the bot better.", hidden=True)
+	elif type == 'g':
+		c = client.get_channel(818132089492733972)
+		e = discord.Embed(title=f"Suggestion from {member.nick}", description=request, timestamp=datetime.utcnow())
+		await c.send(embed=e)
+		await ctx.send("The request has been sent, thank you!", hidden=True)
+	else:
+		await ctx.send("EOL: 404 not found param 'type'")
 
 @slash.slash(name='checkguild')
 async def _checkguild(ctx, ign):
@@ -178,6 +186,11 @@ async def _monke(ctx):
 @slash.subcommand(base='z', name='moose')
 async def _moose(ctx):
 	e = await ctx.send(content="u will swish with monkemxnia's bathwater if moose see this")
+	await boogie(e)
+
+@slash.subcommand(base='z', name='apple')
+async def _apple(ctx):
+	e = await ctx.send("when imposter sus")
 	await boogie(e)
 
 async def _getnecronstick(ctx):
