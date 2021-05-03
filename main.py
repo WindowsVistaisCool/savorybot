@@ -158,11 +158,15 @@ async def _suggest(ctx, type, request):
 		await ctx.send("Thank you for your suggestion! It really helps me make the bot better.", hidden=True)
 	elif type == 'g':
 		c = client.get_channel(818132089492733972)
-		e = discord.Embed(title=f"Suggestion from {member.nick}", description=request, timestamp=datetime.utcnow())
+		e = discord.Embed(title=f"Suggestion from {ctx.member.nick}", description=request, timestamp=datetime.utcnow())
 		await c.send(embed=e)
 		await ctx.send("The request has been sent, thank you!", hidden=True)
 	else:
 		await ctx.send("EOL: 404 not found param 'type'")
+
+@slash.slash(name='docs')
+async def _docs(ctx):
+	await ctx.send("https://reddocs.gitbook.io",hidden=True)
 
 @slash.slash(name='checkguild')
 async def _checkguild(ctx, ign):
