@@ -118,7 +118,7 @@ async def apply(client, ctx, ign, skycrypt, position=None):
 		if str(ctx.author.id) in b:
 			await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
 			return
-	d = sbstats.find("https://sky.shiiyu.moe/stats/")
+	d = skycrypt.find("https://sky.shiiyu.moe/stats/")
 	if d == -1:
 		await ctx.send(content="Your SkyCrypt URL is invalid! Please use this format: `https://sky.shiiyu.moe/stats/daKiem/Apple`", hidden=True)
 		return
@@ -133,7 +133,7 @@ async def apply(client, ctx, ign, skycrypt, position=None):
 	e.add_field(name="Application ID", value=f"{ctx.author.id}", inline=False)
 	e.add_field(name="Position", value=f"{position}")
 	e.add_field(name="IGN", value=ign, inline=False)
-	e.add_field(name="Skyblock Stats", value=f"[Click Here]({sbstats})", inline=False)
+	e.add_field(name="Skyblock Stats", value=f"[Click Here]({skycrypt})", inline=False)
 	a = await c.send(embed=e)
 	store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
 
