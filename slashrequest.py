@@ -70,6 +70,7 @@ class sc:
 
 	def rem(slashName):
 		k = checkURL()
+		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
 		f = requests.get(url, headers=head)
 		d = None
 		if slashName is not None:
@@ -80,7 +81,6 @@ class sc:
 					break
 			if d is None: return
 			id = 'id'
-			url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
 			r = requests.delete(url + f"/{com[id]}", headers=head)
 			return r
 
