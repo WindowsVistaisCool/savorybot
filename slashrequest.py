@@ -127,6 +127,7 @@ class sc:
 				None
 			g['default_permission'] = False
 			d = requests.post(eurl, headers=head, json=g)
+			return d
 
 		if includeSelf is True or (roleIDTuple is None and staff is False) and user is None:
 			selfID = store('config.json', 'slashConfig', True)['selfID']
