@@ -33,8 +33,6 @@ client = commands.Bot(command_prefix='kiembot ')
 client.remove_command('help')
 slash = SlashCommand(client)
 header = store('config.json', 'token', True)
-ez = ['Wait... This isn\'t what I typed!', 'Anyone else really like Rick Astley?', 'Hey helper, how play game?', 'Sometimes I sing soppy, love songs in the car.', 'I like long walks on the beach and playing Hypixel', 'Please go easy on me, this is my first game!', 'You\'re a great person! Do you want to play some Hypixel games with me?', 'In my free time I like to watch cat videos on Youtube', 'When I saw the witch with the potion, I knew there was trouble brewing.', 'If the Minecraft world is infinite, how is the sun spinning around it?', 'Hello everyone! I am an innocent player who loves everything Hypixel.', 'Plz give me doggo memes!', 'I heard you like Minecraft, so I built a computer in Minecraft in your Minecraft so you can Minecraft while you Minecraft', 'Why can\'t the Ender Dragon read a book? Because he always starts at the End.', 'Maybe we can have a rematch?', 'I sometimes try to say bad things then this happens :(', 'Behold, the great and powerful, my magnificent and almighty nemisis!', 'Doin a bamboozle fren.', 'Your clicks per second are godly. :O', 'What happens if I add chocolate milk to macaroni and cheese?', 'Can you paint with all the colors of the wind', 'Blue is greener than purple for sure', 'I had something to say, then I forgot it.', 'When nothing is right, go left.', 'I need help, teach me how to play!', 'Your personality shines brighter than the sun.', 'You are very good at the game friend.', 'I like pineapple on my pizza', 'I like pasta, do you prefer nachos?', 'I like Minecraft pvp but you are truly better than me!', 'I have really enjoyed playing with you! <3', 'ILY <3', 'Pineapple doesn\'t go on pizza!', 'Lets be friends instead of fighting okay?']
-ecounter = 0
 
 @client.event
 async def on_message(message):
@@ -71,22 +69,7 @@ async def on_message(message):
 			await sleep(5)
 			await g.delete()
 			return
-	if ' ez ' in message.content.lower() or message.content.lower() == 'ez':
-		r = message.author.roles()
-		ro = message.guild.get_role(827975408770351174)
-		ra = message.guild.get_role(789592055600250910)
-		if ro in r or ra in r: return
-		ecounter += 1
-		if ecounter >= 20:
-			await sleep(10)
-			ecounter = 0
-			return
-		x = random.choice(ez)
-		await message.delete()
-		await message.channel.send(f"`{message.author.nick}`: {x}")
-		return
-
-
+	
 	await client.process_commands(message)
 
 @client.command()
