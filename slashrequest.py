@@ -121,6 +121,10 @@ class sc:
 			g.pop('version')
 			g.pop('application_id')
 			g.pop('guild_id')
+			try:
+				g.pop('default_permission')
+			except:
+				None
 			g['default_permission'] = False
 			d = requests.post(eurl, headers=head, json=g)
 
