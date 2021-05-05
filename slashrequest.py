@@ -58,7 +58,7 @@ class sc:
 			for com in f.json():
 				name = com['name']
 				id = com['id']
-				g.append({"name":name, "id":id})
+				g.append({"name": name, "id": id})
 			return g
 		return f.json()
 
@@ -68,16 +68,27 @@ class sc:
 	  e = requests.post(url, headers=head, json=jsonData)
 	  return e
 
-	def rem(slashAppID):
+	def rem(slashName):
 	  k = checkURL()
+          f = requests.get(url, headers=head)
+	  d = None
+	  if slashName is not None:
+            d = None
+            for com in f.json():
+              if com['name'] == comName:
+                d = com
+                break
+	  if d is None: return
+	  id = 'id'
 	  url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-	  r = requests.delete(url + f"/{slashAppID}", headers=head)
+	  r = requests.delete(url + f"/{com[id]}", headers=head)
 	  return r
 
  	# Permissions
-	def perm(commandID, roleIDTuple=None, *, includeSelf=True, permTuple=None, user=None, userPerm=True, noPermAll=False):
+	def perm(commandID, roleIDTuple=None, permTuple=None, *, includeSelf=True, user=None, userPerm=True, noPermAll=False, allPerm=False):
 		k = checkURL()
 		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands/{commandID}/permissions"
+		eurl = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
 		if noPermAll is True:
 			jData = {
 				"permissions": []
@@ -85,6 +96,20 @@ class sc:
 			r = requests.put(url, headers=head, json=jData)
 			return r
 		perms = []
+		if allPerm is True:
+			g = None
+			for com in f.json():
+				if com['id'] == f"{commandID}":
+					g = com
+					break
+			g.pop('id')
+			g.pop('version')
+			g.pop('application_id')
+			g.pop('guild_id')
+			g['default_permission'] = True
+			d = requests.post(url, headers=head, json=g)
+			return d
+
 		if includeSelf is True or (roleIDTuple is None and staff is False) and user is None:
 			selfID = store('config.json', 'slashConfig', True)['selfID']
 			selfData = {
