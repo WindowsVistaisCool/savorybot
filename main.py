@@ -70,7 +70,7 @@ async def on_message(message):
 			await sleep(5)
 			await g.delete()
 			return
-	if 'ez' in message.content.lower():
+	if ' ez ' in message.content.lower() or message.content.lower() == 'ez':
 		x = random.choice(ez)
 		await message.delete()
 		await message.channel.send(f"{message.author.nick}: {x}")
