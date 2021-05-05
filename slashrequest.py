@@ -85,7 +85,7 @@ class sc:
 			return r
 
  	# Permissions
-	def perm(commandID, roleIDTuple=None, permTuple=None, *, includeSelf=True, user=None, userPerm=True, noPermAll=False, allPerm=False):
+	def perm(commandID, roleIDTuple=None, permTuple=None, *, includeSelf=True, user=None, userPerm=True, noPermAll=False, default=None):
 		k = checkURL()
 		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands/{commandID}/permissions"
 		eurl = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
@@ -96,7 +96,7 @@ class sc:
 			r = requests.put(url, headers=head, json=jData)
 			return r
 		perms = []
-		if allPerm is True:
+		if default is True:
 			g = None
 			f = requests.get(eurl, headers=head)
 			for com in f.json():
@@ -110,6 +110,19 @@ class sc:
 			g['default_permission'] = True
 			d = requests.post(eurl, headers=head, json=g)
 			return d
+		elif default is False:
+			g = None
+			f = requests.get(eurl, headers=head)
+			for com in f.json():
+				if com['id'] == f"{commandID}":
+					g = com
+					break
+			g.pop('id')
+			g.pop('version')
+			g.pop('application_id')
+			g.pop('guild_id')
+			g['default_permission'] = False
+			d = requests.post(eurl, headers=head, json=g)
 
 		if includeSelf is True or (roleIDTuple is None and staff is False) and user is None:
 			selfID = store('config.json', 'slashConfig', True)['selfID']
