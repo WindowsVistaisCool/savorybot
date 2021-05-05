@@ -76,7 +76,7 @@ class sc:
 		if slashName is not None:
 			d = None
 			for com in f.json():
-				if com['name'] == comName:
+				if com['name'] == slashName:
 					d = com
 					break
 			if d is None: return
