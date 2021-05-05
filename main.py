@@ -47,7 +47,6 @@ async def on_message(message):
 					e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
 					e.set_footer(text="Thank you for joining!")
 					await ctx.send(embed=e)
-					# json maybe?
 				else:
 					await message.delete()
 					return
@@ -89,6 +88,7 @@ async def on_ready():
 async def on_command_error(ctx, error):
 	await commandListener.commandErrorListener(ctx, error)
 
+	
 #applications
 @slash.slash(name='apply')
 async def _apply(ctx, ign, skycrypt, position=None):
@@ -107,21 +107,15 @@ async def accept(ctx):
 async def acceptGuild(ctx, appID):
 	await commandListener.acceptGuild(ctx, appID)
 
-@accept.command(name='t')
-async def acceptTrusted(ctx, appID):
-	# the new appid would have user id and -t after it, to distinguish between the two
-	await ctx.send("You cannot do this!")
-
+	
 #slash commands
 @slash.slash(name="about")
 async def _about(ctx):
 	await commandListener.about(ctx)
 
-@slash.slash(name='clientsecrets')
-async def _clientsecrets(ctx):
-	e = await ctx.send("fetching keys from `http://api.github.com/repo/windowsvistaiscool/red-gladiator/raw/config.json` (using `'auth': 'token ghp_'` headers)\n\n`http://api.jsonbin.io/b/windowsvistaiscool/latest`, (using `'secret-key': '_'` headers (`masterkey not found`))")
-	await sleep(5)
-	await e.edit(content="error whilst retrieving keys: `could not reach target: https://api.jsonbin.io`, exiting with error code `HTTP/404`")
+@slash.slash(name='pinglist')
+async def _pinglist(ctx, action, str):
+	await commandListener.pinglist(ctx, action, str)
 
 # TODO: command creation suggestions
 @slash.slash(name="suggest")
@@ -144,14 +138,12 @@ async def _suggest(ctx, type, request):
 async def _docs(ctx):
 	await ctx.send("https://reddocs.gitbook.io",hidden=True)
 
-@slash.slash(name='checkguild')
-async def _checkguild(ctx, ign):
-	await ctx.send(content="This command is still work in progress, sorry!", hidden=True)
-
+# clean up THIS mess
 async def boogie(msg):
 	await sleep(40)
 	await msg.delete()
 
+# do this later
 @slash.slash(name='version')
 async def _version(ctx):
 	await commandListener.githubVer(ctx)
