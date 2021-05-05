@@ -69,20 +69,20 @@ class sc:
 	  return e
 
 	def rem(slashName):
-	  k = checkURL()
-	  f = requests.get(url, headers=head)
-	  d = None
-	  if slashName is not None:
-	    d = None
-	    for com in f.json():
-	  if com['name'] == comName:
-	        d = com
-	        break
-	  if d is None: return
-	  id = 'id'
-	  url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
-	  r = requests.delete(url + f"/{com[id]}", headers=head)
-	  return r
+		k = checkURL()
+		f = requests.get(url, headers=head)
+		d = None
+		if slashName is not None:
+			d = None
+			for com in f.json():
+				if com['name'] == comName:
+					d = com
+					break
+			if d is None: return
+			id = 'id'
+			url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
+			r = requests.delete(url + f"/{com[id]}", headers=head)
+			return r
 
  	# Permissions
 	def perm(commandID, roleIDTuple=None, permTuple=None, *, includeSelf=True, user=None, userPerm=True, noPermAll=False, allPerm=False):
