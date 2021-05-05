@@ -98,6 +98,7 @@ class sc:
 		perms = []
 		if allPerm is True:
 			g = None
+			f = requests.get(eurl, headers=head)
 			for com in f.json():
 				if com['id'] == f"{commandID}":
 					g = com
@@ -107,7 +108,7 @@ class sc:
 			g.pop('application_id')
 			g.pop('guild_id')
 			g['default_permission'] = True
-			d = requests.post(url, headers=head, json=g)
+			d = requests.post(eurl, headers=head, json=g)
 			return d
 
 		if includeSelf is True or (roleIDTuple is None and staff is False) and user is None:
