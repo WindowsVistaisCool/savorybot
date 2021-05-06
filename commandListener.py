@@ -7,22 +7,28 @@ from discord.ext import commands
 from datetime import datetime
 from asyncio import sleep
 
-def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False):
+def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False, specKey=None, specBin=None, n=False):
 	# needs to be updated to api v3
+	ke = specKey
+	bi = specBin
+	if specKey is None:
+		ke = "$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu"
+	if specBin is None:
+		bi = "6084ce3c5210f622be390873"
 	rheaders = {
-		'secret-key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu'
+		'secret-key': ke
 	}
 	uheaders = {
 		'Content-Type': 'application/json',
-		'secret-key': '$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu',
+		'secret-key': ke
 	}
-	rurl = "https://api.jsonbin.io/b/6084ce3c5210f622be390873/latest"
-	url = "https://api.jsonbin.io/b/6084ce3c5210f622be390873"
+	rurl = f"https://api.jsonbin.io/b/{bi}/latest"
+	url = f"https://api.jsonbin.io/b/{bi}"
 	def get_read():
 			x = requests.get(rurl, headers=rheaders, json=None).json()
 			return x
 	x = None
-	if app is True:
+	if app or n:
 		x = get_read()
 		# print(x)
 	else:
@@ -40,6 +46,10 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			e = requests.put(url, json=x, headers=uheaders)
 			# print(e.text)
 			return
+		elif n is True:
+			x.pop(key)
+			e = requests.put(url, json=x, headers=uheaders)
+			return e
 		else:
 			return
 	else:
@@ -54,6 +64,10 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			# print(e.text)
 			# print(get_read())
 			return
+		elif n is True:
+			x[key] = val
+			e = requests.put(url, json=x, headers=uheaders)
+			return e 
 		else:
 			x[key] = val
 			with open(file, 'w') as v:
@@ -63,8 +77,8 @@ async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something
 	def genuser():
 		rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
-		randnames = ['ender', 'Pro', 'itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'fortnite', 'prokid', 'monkey', 'Gamer', 'GirlGamer', 's1mp', 'lowping', 'ihave', 'getgud', 'istupid', '123', 'minecraft', 'LMAO', 'non']
-		username = f'{random.choice(rank)} {random.choice(randnames) for i in range(random.randint(1, 8))}'
+		randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
+		username = ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
 		return username
 	def getname():
 		if username is None:
@@ -165,6 +179,43 @@ async def about(ctx):
 	d = await ctx.send(embeds=[e])
 	await sleep(20)
 	await d.delete()
+
+async def pinglist(ctx, action, str):
+	if action != 'list' and str is None:
+		await ctx.send("You cannot leave that field blank for that operation!",hidden=True)
+		return
+	x = store('apps.json', None, True, n=True)
+	d = x[str(ctx.author.id)]
+	if action == 'list':
+		if str(ctx.author.id) not in x:
+			await ctx.send("You do not have any words stored! Add them with `/pinglist add {word}`",hidden=True)
+			return
+		s = []
+		s.append(f"`{d['1']}`")
+		if '2' not in d:
+			s.append("Unset")
+		else:
+			s.append(f"`{d['2']}`")
+		
+		await ctx.send(f"Your ping words are:\n{s[0]}\n{s[1]}",hidden=True)
+				 
+	# trusted role could have more?
+	elif action == 'add':
+		if '2' in d:
+			await ctx.send("You may not have more than 2 ping words! Use `/pinglist remove {index}`",hidden=True)
+			return
+		di = {}
+		if '1' not in d:
+			di['1'] = str
+			store('blah.json', str(ctx.author.id), val=di, n=True)
+			await ctx.send(f"Added 1st word to index (`{str}`)",hidden=True)
+			return
+		else:
+			di['1'] = d['1']
+			di['2'] = str
+			store('blah.json', str(ctx.author.id), val=di, n=True)
+			await ctx.send(f"Added 2nd word to index (`{str}`)",hidden=True)
+			return
 
 async def githubVer(ctx):
 	await ctx.send(content="Sorry, but this command is not functional at the moment!",hidden=True)
