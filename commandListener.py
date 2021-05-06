@@ -184,7 +184,7 @@ async def pinglist(ctx, action, str):
 	if action != 'list' and str is None:
 		await ctx.send("You cannot leave that field blank for that operation!",hidden=True)
 		return
-	x = store('apps.json', None, True, n=True)
+	x = store('apps.json', None, True, n=True, specBin="6093310865b36740b92ef100")
 	d = x[str(ctx.author.id)]
 	if action == 'list':
 		if str(ctx.author.id) not in x:
@@ -207,13 +207,13 @@ async def pinglist(ctx, action, str):
 		di = {}
 		if '1' not in d:
 			di['1'] = str
-			store('blah.json', str(ctx.author.id), val=di, n=True)
+			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
 			await ctx.send(f"Added 1st word to index (`{str}`)",hidden=True)
 			return
 		else:
 			di['1'] = d['1']
 			di['2'] = str
-			store('blah.json', str(ctx.author.id), val=di, n=True)
+			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
 			await ctx.send(f"Added 2nd word to index (`{str}`)",hidden=True)
 			return
 
