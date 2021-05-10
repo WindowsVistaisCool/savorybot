@@ -164,6 +164,10 @@ async def _dadrip(ctx):
 	e = await ctx.send('https://windowsvistaiscool.github.io/d.jpeg')
 	await boogie(e)
 
+@slash.command(name='send')
+async def _send(ctx, message):
+	await ctx.send(message)
+
 async def _getnecronstick(ctx):
 	d = ['t', 't', 't', 't', 't', 'f']
 	b = random.choice(d)
