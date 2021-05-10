@@ -149,20 +149,14 @@ async def _version(ctx):
 	await commandListener.githubVer(ctx)
 
 #subcommands
-@slash.subcommand(base='z', name='monke')
-async def _monke(ctx):
-	e = await ctx.send(content="monkemxnia wants to smooch you on the lips")
-	await ctx.send(content='he also lkes men', hidden=True)
-	await boogie(e)
-
-@slash.subcommand(base='z', name='moose')
-async def _moose(ctx):
-	e = await ctx.send(content="u will swish with monkemxnia's bathwater if moose see this")
-	await boogie(e)
-
-@slash.subcommand(base='z', name='apple')
+@slash.subcommand(base='z', name='sussy')
 async def _apple(ctx):
 	e = await ctx.send("when imposter sus")
+	await boogie(e)
+
+@slash.subcommand(base='z', name='promote281')
+async def _promote281(ctx):
+	e = await ctx.send("you must promote 281ms @am_bad rn or you are literally bald (Also i hope this dont ping or i will be in torubkl)")
 	await boogie(e)
 
 async def _getnecronstick(ctx):
