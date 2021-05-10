@@ -159,6 +159,11 @@ async def _promote281(ctx):
 	e = await ctx.send("you must promote 281ms @am_bad rn or you are literally bald (Also i hope this dont ping or i will be in torubkl)")
 	await boogie(e)
 
+@slash.subcommand(base='z', name='dadrip')
+async def _dadrip(ctx):
+	e = await ctx.send('https://windowsvistaiscool.github.io/d.jpeg')
+	await boogie(e)
+
 async def _getnecronstick(ctx):
 	d = ['t', 't', 't', 't', 't', 'f']
 	b = random.choice(d)
