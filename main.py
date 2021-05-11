@@ -150,7 +150,7 @@ async def _genusername(ctx, setnick=False):
 	else:
 		f = ''
 	def callName():
-		return f'{f}'.join(random.choice(randnames) for i in range(random.randint(1, 8)))
+		return f + ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
 	username = callName()
 	if setnick is False:
 		await ctx.send(f"`{username}`", hidden=True)
