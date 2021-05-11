@@ -153,7 +153,7 @@ async def _genusername(ctx, setnick=False):
 		return f + ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
 	username = callName()
 	while True:
-		if len(username) > 31:
+		if len(username)-len(f) > 31:
 			username = callName()
 		else:
 			break
