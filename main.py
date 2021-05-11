@@ -152,16 +152,20 @@ async def _genusername(ctx, setnick=False):
 	def callName():
 		return f + ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
 	username = callName()
-	if setnick is False:
-		await ctx.send(f"`{username}`", hidden=True)
-		return
 	while True:
 		if len(username) > 31:
 			username = callName()
 		else:
 			break
-	await ctx.author.edit(nick=username)
-	await ctx.send("Your username is: `username`", hidden=True)
+	if setnick is False:
+		await ctx.send(f"`{username}`", hidden=True)
+		return
+	try:
+		await ctx.author.edit(nick=username)
+	except:
+		await ctx.send("Could not do this (you may be a higher rank than the bot)", hidden=True)
+		return
+	await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
 
 # clean up THIS mess
 async def boogie(msg):
