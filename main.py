@@ -4,6 +4,7 @@ import string
 import commandListener
 import discord
 from discord.ext import commands
+from commandListener import store as jbin
 from discord_slash import SlashCommand, utils
 from datetime import datetime
 from asyncio import sleep
@@ -41,6 +42,7 @@ async def on_message(message):
 		if message.content != "verify" and message.author.id != 713461668667195553:
 			if message.author.id == 392502213341216769:
 				if message.content == 'embed':
+					# convert to reaction
 					await message.delete()
 					e = discord.Embed(title="Verification", color=discord.Color.blurple())
 					e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
@@ -138,6 +140,22 @@ async def _suggest(ctx, type, request):
 async def _docs(ctx):
 	await ctx.send("https://reddocs.gitbook.io",hidden=True)
 
+@slash.slash(name='genusername')
+async def _genusername(ctx, setnick=False):
+	rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
+	randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
+	f = random.choice(rank)
+	if f != 'Non':
+		f = f"[{f}] "
+	else:
+		f = ''
+	username = f'{f}'.join(random.choice(randnames) for i in range(random.randint(1, 8)))
+	if setnick is False:
+		await ctx.send(f"`{username}`", hidden=True)
+		return
+	await ctx.author.edit(nick=username)
+	await ctx.send("Your username is: `username`", hidden=True)
+
 # clean up THIS mess
 async def boogie(msg):
 	await sleep(40)
@@ -154,18 +172,14 @@ async def _apple(ctx):
 	e = await ctx.send("when imposter sus")
 	await boogie(e)
 
-@slash.subcommand(base='z', name='promote281')
-async def _promote281(ctx):
-	e = await ctx.send("you must promote 281ms @am_bad rn or you are literally bald (Also i hope this dont ping or i will be in torubkl)")
-	await boogie(e)
-
 @slash.subcommand(base='z', name='dadrip')
 async def _dadrip(ctx):
 	e = await ctx.send('https://windowsvistaiscool.github.io/d.jpeg')
 	await boogie(e)
 
-@slash.slash(name='send')
-async def _send(ctx, message):
+@client.command()
+@commands.is_owner()
+async def send(ctx, message='poopie farts'):
 	await ctx.send(message)
 
 async def _getnecronstick(ctx):
