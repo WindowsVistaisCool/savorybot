@@ -33,10 +33,11 @@ def store(file, key=None, read=False, val=None, *, pop=False):
 client = commands.Bot(command_prefix=store('config.json', 'pfx', True))
 client.remove_command('help')
 slash = SlashCommand(client)
-header = store('config.json', 'token', True)
+header = store('config.json', 'token', True)		
 
 @client.event
 async def on_message(message):
+	# move to commandlistener
 	ctx = await client.get_context(message)
 	if message.channel.id == 789303598957199441:
 		if message.content != "verify" and message.author.id != 713461668667195553:
@@ -73,17 +74,9 @@ async def on_message(message):
 	
 	await client.process_commands(message)
 
-@client.command()
-@commands.is_owner()
-async def award(ctx, member: discord.Member):
-	await ctx.message.delete()
-	r = ctx.guild.get_role(831611831461740554)
-	await member.add_roles(r)
-	await ctx.send(f"{member} was given the Dev Award role. Good job")
-
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Necron"))
+	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Bonzo"))
 	print("Ready")
 
 @client.event
