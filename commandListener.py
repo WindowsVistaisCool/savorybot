@@ -180,42 +180,42 @@ async def about(ctx):
 	await sleep(20)
 	await d.delete()
 
-async def pinglist(ctx, action, str):
-	if action != 'list' and str is None:
-		await ctx.send("You cannot leave that field blank for that operation!",hidden=True)
-		return
-	x = store('apps.json', None, True, n=True, specBin="6093310865b36740b92ef100")
-	d = x[str(ctx.author.id)]
-	if action == 'list':
-		if str(ctx.author.id) not in x:
-			await ctx.send("You do not have any words stored! Add them with `/pinglist add {word}`",hidden=True)
-			return
-		s = []
-		s.append(f"`{d['1']}`")
-		if '2' not in d:
-			s.append("Unset")
-		else:
-			s.append(f"`{d['2']}`")
+# async def pinglist(ctx, action, str):
+# 	if action != 'list' and str is None:
+# 		await ctx.send("You cannot leave that field blank for that operation!",hidden=True)
+# 		return
+# 	x = store('apps.json', None, True, n=True, specBin="6093310865b36740b92ef100")
+# 	d = x[str(ctx.author.id)]
+# 	if action == 'list':
+# 		if str(ctx.author.id) not in x:
+# 			await ctx.send("You do not have any words stored! Add them with `/pinglist add {word}`",hidden=True)
+# 			return
+# 		s = []
+# 		s.append(f"`{d['1']}`")
+# 		if '2' not in d:
+# 			s.append("Unset")
+# 		else:
+# 			s.append(f"`{d['2']}`")
 		
-		await ctx.send(f"Your ping words are:\n{s[0]}\n{s[1]}",hidden=True)
+# 		await ctx.send(f"Your ping words are:\n{s[0]}\n{s[1]}",hidden=True)
 				 
-	# trusted role could have more?
-	elif action == 'add':
-		if '2' in d:
-			await ctx.send("You may not have more than 2 ping words! Use `/pinglist remove {index}`",hidden=True)
-			return
-		di = {}
-		if '1' not in d:
-			di['1'] = str
-			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
-			await ctx.send(f"Added 1st word to index (`{str}`)",hidden=True)
-			return
-		else:
-			di['1'] = d['1']
-			di['2'] = str
-			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
-			await ctx.send(f"Added 2nd word to index (`{str}`)",hidden=True)
-			return
+# 	# trusted role could have more?
+# 	elif action == 'add':
+# 		if '2' in d:
+# 			await ctx.send("You may not have more than 2 ping words! Use `/pinglist remove {index}`",hidden=True)
+# 			return
+# 		di = {}
+# 		if '1' not in d:
+# 			di['1'] = str
+# 			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
+# 			await ctx.send(f"Added 1st word to index (`{str}`)",hidden=True)
+# 			return
+# 		else:
+# 			di['1'] = d['1']
+# 			di['2'] = str
+# 			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
+# 			await ctx.send(f"Added 2nd word to index (`{str}`)",hidden=True)
+# 			return
 
 async def githubVer(ctx):
 	await ctx.send(content="Sorry, but this command is not functional at the moment!",hidden=True)
