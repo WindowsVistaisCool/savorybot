@@ -183,7 +183,8 @@ async def _dadrip(ctx):
 
 @client.command()
 @commands.is_owner()
-async def send(ctx, message='poopie farts'):
+async def s(ctx, message='poopie farts'):
+	await ctx.message.delete()
 	await ctx.send(message)
 
 async def _getnecronstick(ctx):
