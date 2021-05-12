@@ -178,7 +178,7 @@ async def _apple(ctx):
 
 @slash.subcommand(base='z', name='dadrip')
 async def _dadrip(ctx):
-	e = await ctx.send('https://windowsvistaiscool.github.io/d.jpeg')
+	e = await ctx.send('https://windowsvistaiscool.github.io/i/d.jpeg')
 	await boogie(e)
 
 @client.command()
