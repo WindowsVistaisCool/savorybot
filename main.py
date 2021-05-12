@@ -123,7 +123,10 @@ async def _suggest(ctx, type, request):
 		await ctx.send("Thank you for your suggestion! It really helps me make the bot better.", hidden=True)
 	elif type == 'g':
 		c = client.get_channel(818132089492733972)
-		e = discord.Embed(title=f"Suggestion from {ctx.author.nick}", description=request, timestamp=datetime.utcnow())
+		d = ctx.author.nick
+		if d is None:
+			d = ctx.author.name
+		e = discord.Embed(title=f"Suggestion from {d}", description=request, timestamp=datetime.utcnow())
 		await c.send(embed=e)
 		await ctx.send("The request has been sent, thank you!", hidden=True)
 	else:
