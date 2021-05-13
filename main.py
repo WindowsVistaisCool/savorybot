@@ -102,6 +102,9 @@ async def accept(ctx):
 async def acceptGuild(ctx, appID):
 	await commandListener.acceptGuild(ctx, appID)
 
+@client.command()
+async def delapp(ctx, appID):
+	await commandListener.delApp(ctx, appID)
 	
 #slash commands
 @slash.slash(name="about")
