@@ -171,10 +171,10 @@ async def boogie(msg):
 	await sleep(40)
 	await msg.delete()
 
-# do this later
+# convert this later
 @slash.slash(name='version')
 async def _version(ctx):
-	await commandListener.githubVer(ctx)
+	await ctx.send("The latest version is listed in the <#839513996940148746> channel", hidden=True)
 
 #subcommands
 @slash.subcommand(base='z', name='sussy')
