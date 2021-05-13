@@ -172,6 +172,16 @@ async def acceptGuild(ctx, appID):
 	store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
 	await f.edit(content="Application accepted")
 
+async def delApp(ctx, appID):
+	f = await ctx.send("Fetching data from api...")
+	e = store('apps.json', 'guildApps', True, app=True)
+	if appID not in e:
+		await f.edit(content="Could not find that application!")
+		return
+	await f.edit(content='Found application, deleting...')
+	store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+	await f.edit(content='Deleted. (You must remove roles)')
+
 async def about(ctx):
 	await ctx.send(content='If you are a guild member and want to add something, please dm <@!392502213341216769>!', hidden=True)
 	e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
