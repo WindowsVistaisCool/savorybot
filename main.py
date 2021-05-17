@@ -38,40 +38,8 @@ header = store('config.json', 'token', True)
 @client.event
 async def on_message(message):
 	# move to commandlistener
-	ctx = await client.get_context(message)
-	if message.channel.id == 789303598957199441:
-		if message.content != "verify" and message.author.id != 713461668667195553:
-			if message.author.id == 392502213341216769:
-				if message.content == 'embed':
-					# convert to reaction
-					await message.delete()
-					e = discord.Embed(title="Verification", color=discord.Color.blurple())
-					e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
-					e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
-					e.set_footer(text="Thank you for joining!")
-					await ctx.send(embed=e)
-				else:
-					await message.delete()
-					return
-			else:
-				await message.delete()
-				return
-		elif message.content == 'verify':
-			await message.delete()
-			r = ctx.guild.get_role(788914323485491232)
-			if r in ctx.author.roles:
-				e = await ctx.send("You have already been verified!")
-				await sleep(3)
-				await e.delete()
-				return
-			d = ctx.guild.get_role(788890991028469792)
-			await message.author.remove_roles(d)
-			await message.author.add_roles(r)
-			g = await ctx.send("You have been verified, you now have access to all channels.")
-			await sleep(5)
-			await g.delete()
-			return
-	
+	e = await commandListerner.msg(message)
+	if e == 1: return
 	await client.process_commands(message)
 
 @client.event
@@ -82,7 +50,6 @@ async def on_ready():
 @client.event
 async def on_command_error(ctx, error):
 	await commandListener.commandErrorListener(ctx, error)
-
 	
 #applications
 @slash.slash(name='apply')
@@ -118,22 +85,7 @@ async def _pinglist(ctx, action, str):
 # TODO: command creation suggestions
 @slash.slash(name="suggest")
 async def _suggest(ctx, type, request):
-	if type == 'b':
-		e = await ctx.guild.fetch_member(392502213341216769)
-		f = discord.Embed(title="New Suggestion", description=f"{request}")
-		f.set_author(name=ctx.author)
-		await e.send(embed=f)
-		await ctx.send("Thank you for your suggestion! It really helps me make the bot better.", hidden=True)
-	elif type == 'g':
-		c = client.get_channel(818132089492733972)
-		d = ctx.author.nick
-		if d is None:
-			d = ctx.author.name
-		e = discord.Embed(title=f"Suggestion from {d}", description=request, timestamp=datetime.utcnow())
-		await c.send(embed=e)
-		await ctx.send("The request has been sent, thank you!", hidden=True)
-	else:
-		await ctx.send("EOL: 404 not found param 'type'")
+	await commandListener.suggest(ctx, type, request)
 
 @slash.slash(name='docs')
 async def _docs(ctx):
@@ -141,30 +93,27 @@ async def _docs(ctx):
 
 @slash.slash(name='genusername')
 async def _genusername(ctx, setnick=False):
-	rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
-	randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
-	f = random.choice(rank)
-	if f != 'Non':
-		f = f"[{f}] "
-	else:
-		f = ''
-	def callName():
-		return f + ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
-	username = callName()
-	while True:
-		if len(username)-len(f) > 31:
-			username = callName()
-		else:
-			break
-	if setnick is False:
-		await ctx.send(f"`{username}`", hidden=True)
-		return
-	try:
-		await ctx.author.edit(nick=username)
-	except:
-		await ctx.send("Could not do this (you may be a higher rank than the bot)", hidden=True)
-		return
-	await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
+	await commandListener.genuser(ctx, setNick)
+
+# reaction role group
+@client.group()
+async def rr(ctx):
+	await commandListener.rr(ctx)
+
+@rr.command()
+@commands.is_owner()
+async def add(ctx, messageid, roleid):
+	await commandListener.rradd(ctx, messageid, roleid)
+
+@rr.command()
+@commands.is_owner()
+async def send(ctx, roleid, *, embmsg):
+	await commandListener.rrsend(ctx, roleid, embmsg)
+
+@rr.command()
+@commands.is_owner()
+async def delete(ctx, messageid):
+	await commandListener.rrdelete(ctx, messageid)
 
 # clean up THIS mess
 async def boogie(msg):
