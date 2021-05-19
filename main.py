@@ -37,7 +37,6 @@ header = store('config.json', 'token', True)
 
 @client.event
 async def on_message(message):
-	# move to commandlistener
 	e = await commandListerner.msg(message)
 	if e == 1: return
 	await client.process_commands(message)
@@ -124,17 +123,6 @@ async def boogie(msg):
 @slash.slash(name='version')
 async def _version(ctx):
 	await ctx.send("The latest version is listed in the <#839513996940148746> channel", hidden=True)
-
-#subcommands
-@slash.subcommand(base='z', name='sussy')
-async def _apple(ctx):
-	e = await ctx.send("when imposter sus")
-	await boogie(e)
-
-@slash.subcommand(base='z', name='dadrip')
-async def _dadrip(ctx):
-	e = await ctx.send('https://windowsvistaiscool.github.io/i/d.jpeg')
-	await boogie(e)
 
 @client.command()
 @commands.is_owner()
