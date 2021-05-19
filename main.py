@@ -83,7 +83,7 @@ async def _about(ctx):
 # TODO: command creation suggestions
 @slash.slash(name="suggest")
 async def _suggest(ctx, type, request):
-	await commandListener.suggest(ctx, type, request)
+	await commandListener.suggest(client, ctx, type, request)
 
 @slash.slash(name='docs')
 async def _docs(ctx):
