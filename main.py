@@ -76,9 +76,9 @@ async def delapp(ctx, appID):
 async def _about(ctx):
 	await commandListener.about(ctx)
 
-@slash.slash(name='pinglist')
-async def _pinglist(ctx, action, str):
-	await commandListener.pinglist(ctx, action, str)
+# @slash.slash(name='pinglist')
+# async def _pinglist(ctx, action, str):
+# 	await commandListener.pinglist(ctx, action, str)
 
 # TODO: command creation suggestions
 @slash.slash(name="suggest")
@@ -92,26 +92,6 @@ async def _docs(ctx):
 @slash.slash(name='genusername')
 async def _genusername(ctx, setnick=False):
 	await commandListener.genuser(ctx, setNick)
-
-# reaction role group
-@client.group()
-async def rr(ctx):
-	await commandListener.rr(ctx)
-
-@rr.command()
-@commands.is_owner()
-async def add(ctx, messageid, roleid):
-	await commandListener.rradd(ctx, messageid, roleid)
-
-@rr.command()
-@commands.is_owner()
-async def send(ctx, roleid, *, embmsg):
-	await commandListener.rrsend(ctx, roleid, embmsg)
-
-@rr.command()
-@commands.is_owner()
-async def delete(ctx, messageid):
-	await commandListener.rrdelete(ctx, messageid)
 
 # clean up THIS mess
 async def boogie(msg):
