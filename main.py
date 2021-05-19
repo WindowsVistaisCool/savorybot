@@ -61,7 +61,7 @@ async def accept(ctx):
 		await ctx.send('`CheckFailure:` You do not have permission to do this!')
 		return
 	await ctx.message.delete()
-	if ctx.invoked_subcommand is None: await ctx.send(f"example: `{ctx.prefix} a g 1234567890` accepts a guild application with the id of 1234567890\n`{ctx.prefix} a t 1234567890-T` accepts an application for trusted role of app id 1234567890-T (doesnt work yet)")
+	if ctx.invoked_subcommand is None: await ctx.send(f"(bad sub err [null]) example: `{ctx.prefix}a g 1234567890` accepts a guild application with the id of 1234567890")
 
 @accept.command(name='g')
 async def acceptGuild(ctx, appID):
