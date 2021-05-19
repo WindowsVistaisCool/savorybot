@@ -73,6 +73,41 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			with open(file, 'w') as v:
 				json.dump(x, v, indent=4)
 
+async def msg(message):
+	ctx = await client.get_context(message)
+	if message.channel.id == 789303598957199441:
+		if message.content != "verify" and message.author.id != 713461668667195553:
+			if message.author.id == 392502213341216769:
+				if message.content == 'embed':
+					# convert to reaction
+					await message.delete()
+					e = discord.Embed(title="Verification", color=discord.Color.blurple())
+					e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
+					e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
+					e.set_footer(text="Thank you for joining!")
+					await ctx.send(embed=e)
+				else:
+					await message.delete()
+					return
+			else:
+				await message.delete()
+				return
+		elif message.content == 'verify':
+			await message.delete()
+			r = ctx.guild.get_role(788914323485491232)
+			if r in ctx.author.roles:
+				e = await ctx.send("You have already been verified!")
+				await sleep(3)
+				await e.delete()
+				return
+			d = ctx.guild.get_role(788890991028469792)
+			await message.author.remove_roles(d)
+			await message.author.add_roles(r)
+			g = await ctx.send("You have been verified, you now have access to all channels.")
+			await sleep(5)
+			await g.delete()
+			return
+
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something
 	def genuser():
