@@ -8,7 +8,6 @@ from commandListener import store as jbin
 from discord_slash import SlashCommand, utils
 from datetime import datetime
 from asyncio import sleep
-from slashrequest import sc as srq
 
 def store(file, key=None, read=False, val=None, *, pop=False):
 	with open(file, 'r') as v:
