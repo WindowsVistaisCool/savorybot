@@ -114,7 +114,7 @@ async def commandErrorListener(ctx, error):
 		e = discord.Embed(title="An exception occurred", description=f"{error}")
 		await ctx.send(embed=e)
 
-async def apply(client, ctx, ign, skycrypt, position=None):
+async def apply(client, ctx, ign, skycrypt):
 	appType = None
 	if position == 'disman' or position == 'veteran':
 		# enable-disable feature
@@ -134,7 +134,7 @@ async def apply(client, ctx, ign, skycrypt, position=None):
 			return
 	d = skycrypt.find("https://sky.shiiyu.moe/stats/")
 	if d == -1:
-		await ctx.send(content="Your SkyCrypt URL is invalid! Please use this format: `https://sky.shiiyu.moe/stats/daKiem/Apple`", hidden=True)
+		await ctx.send(content="Your SkyCrypt URL is invalid! Please use this format: `https://sky.shiiyu.moe/stats/Savory/Apple`", hidden=True)
 		return
 	if position == None: appType = "guildApps"
 	r = ctx.guild.get_role(831614870256353330)
@@ -145,10 +145,10 @@ async def apply(client, ctx, ign, skycrypt, position=None):
 	e.set_footer(text="Application submitted")
 	e.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
 	e.add_field(name="Application ID", value=f"{ctx.author.id}", inline=False)
-	e.add_field(name="Position", value=f"{position}")
+	e.add_field(name="User", value=f"{ctx.author.mention}")
 	e.add_field(name="IGN", value=ign, inline=False)
-	e.add_field(name="Skyblock Stats", value=f"[Click Here]({skycrypt})", inline=False)
-	a = await c.send(embed=e)
+	e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
+	a = await c.send("||<@&789593786287915010>||", embed=e)
 	store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
 
 async def acceptGuild(ctx, appID):
