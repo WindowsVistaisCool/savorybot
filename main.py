@@ -107,6 +107,9 @@ async def _version(ctx):
 @commands.is_owner()
 async def s(ctx, *, message='poopie farts'):
 	await ctx.message.delete()
+	if 'usr' in message:
+		message.replace(' usr', '')
+		message = f"<@!{message}>"
 	await ctx.send(message)
 
 async def _getnecronstick(ctx):
