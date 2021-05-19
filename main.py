@@ -36,7 +36,7 @@ header = store('config.json', 'token', True)
 
 @client.event
 async def on_message(message):
-	e = await commandListener.msg(message)
+	e = await commandListener.msg(message, client)
 	if e == 1: return
 	await client.process_commands(message)
 
@@ -51,8 +51,8 @@ async def on_command_error(ctx, error):
 	
 #applications
 @slash.slash(name='apply')
-async def _apply(ctx, ign, skycrypt, position=None):
-	await commandListener.apply(client, ctx, ign, skycrypt, position)
+async def _apply(ctx, ign, skycrypt):
+	await commandListener.apply(client, ctx, ign, skycrypt)
 
 @client.group(name='a')
 async def accept(ctx):
