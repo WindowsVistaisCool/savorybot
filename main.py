@@ -108,7 +108,7 @@ async def _version(ctx):
 async def s(ctx, *, message='poopie farts'):
 	await ctx.message.delete()
 	if 'usr' in message:
-		message.replace(' usr', '')
+		message = message.replace(' usr', '')
 		message = f"<@!{message}>"
 	await ctx.send(message)
 
