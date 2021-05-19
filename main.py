@@ -112,6 +112,13 @@ async def s(ctx, *, message='poopie farts'):
 		message = f"<@!{message}>"
 	await ctx.send(message)
 
+@client.command()
+@commands.is_owner()
+async def d(ctx, meID):
+	await ctx.message.delete()
+	e = await ctx.channel.fetch_message(int(meID))
+	await e.delete()
+
 async def _getnecronstick(ctx):
 	d = ['t', 't', 't', 't', 't', 'f']
 	b = random.choice(d)
