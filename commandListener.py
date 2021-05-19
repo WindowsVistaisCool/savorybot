@@ -217,6 +217,50 @@ async def about(ctx):
 	await sleep(20)
 	await d.delete()
 
+async def genuser(ctx, setNick):
+	rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
+	randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
+	f = random.choice(rank)
+	if f != 'Non':
+		f = f"[{f}] "
+	else:
+		f = ''
+	def callName():
+		return f + ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
+	username = callName()
+	while True:
+		if len(username)-len(f) > 31:
+			username = callName()
+		else:
+			break
+	if setnick is False:
+		await ctx.send(f"`{username}`", hidden=True)
+		return
+	try:
+		await ctx.author.edit(nick=username)
+	except:
+		await ctx.send("Could not do this (you may be a higher rank than the bot)", hidden=True)
+		return
+	await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
+
+async def suggest(ctx, type, request):
+	if type == 'b':
+		e = await ctx.guild.fetch_member(392502213341216769)
+		f = discord.Embed(title="New Suggestion", description=f"{request}")
+		f.set_author(name=ctx.author)
+		await e.send(embed=f)
+		await ctx.send("Thank you for your suggestion! It really helps me make the bot better.", hidden=True)
+	elif type == 'g':
+		c = client.get_channel(818132089492733972)
+		d = ctx.author.nick
+		if d is None:
+			d = ctx.author.name
+		e = discord.Embed(title=f"Suggestion from {d}", description=request, timestamp=datetime.utcnow())
+		await c.send(embed=e)
+		await ctx.send("The request has been sent, thank you!", hidden=True)
+	else:
+		await ctx.send("EOL: 404 not found param 'type'")
+
 # async def pinglist(ctx, action, str):
 # 	if action != 'list' and str is None:
 # 		await ctx.send("You cannot leave that field blank for that operation!",hidden=True)
