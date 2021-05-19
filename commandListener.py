@@ -243,7 +243,7 @@ async def genuser(ctx, setNick):
 		return
 	await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
 
-async def suggest(ctx, type, request):
+async def suggest(client, ctx, type, request):
 	if type == 'b':
 		e = await ctx.guild.fetch_member(392502213341216769)
 		f = discord.Embed(title="New Suggestion", description=f"{request}")
