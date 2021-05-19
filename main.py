@@ -36,7 +36,7 @@ header = store('config.json', 'token', True)
 
 @client.event
 async def on_message(message):
-	e = await commandListerner.msg(message)
+	e = await commandListener.msg(message)
 	if e == 1: return
 	await client.process_commands(message)
 
