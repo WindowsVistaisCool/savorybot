@@ -73,7 +73,7 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			with open(file, 'w') as v:
 				json.dump(x, v, indent=4)
 
-async def msg(message):
+async def msg(message, client):
 	ctx = await client.get_context(message)
 	if message.channel.id == 789303598957199441:
 		if message.content != "verify" and message.author.id != 713461668667195553:
@@ -151,27 +151,19 @@ async def commandErrorListener(ctx, error):
 
 async def apply(client, ctx, ign, skycrypt):
 	appType = None
-	if position == 'disman' or position == 'veteran':
-		# enable-disable feature
-		await ctx.send(content="This position is not open for applications, sorry!", hidden=True)
+	e = store('apps.json', 'guildApps', True, app=True)
+	if str(ctx.author.id) in e:
+		await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]})``", hidden=True)
 		return
-	elif position == 'trusted':
-		await ctx.send(content="You can apply for this position, but you have to DM a staff member to do so.", hidden=True)
+	b = store('apps.json', 'acceptedGuildApps', True, app=True)
+	if str(ctx.author.id) in b:
+		await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
 		return
-	elif position == None:
-		e = store('apps.json', 'guildApps', True, app=True)
-		if str(ctx.author.id) in e:
-			await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]})``", hidden=True)
-			return
-		b = store('apps.json', 'acceptedGuildApps', True, app=True)
-		if str(ctx.author.id) in b:
-			await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
-			return
 	d = skycrypt.find("https://sky.shiiyu.moe/stats/")
 	if d == -1:
 		await ctx.send(content="Your SkyCrypt URL is invalid! Please use this format: `https://sky.shiiyu.moe/stats/Savory/Apple`", hidden=True)
 		return
-	if position == None: appType = "guildApps"
+	appType = "guildApps"
 	r = ctx.guild.get_role(831614870256353330)
 	await ctx.author.add_roles(r)
 	await ctx.send(content="Thank you for submitting your application! Our mod team will review it soon.", hidden=True)
