@@ -99,9 +99,23 @@ async def boogie(msg):
 	await msg.delete()
 
 # convert this later
-@slash.slash(name='version')
-async def _version(ctx):
-	await ctx.send("The latest version is listed in the <#839513996940148746> channel", hidden=True)
+@slash.slash(name='banstats')
+async def _banstats(ctx):
+	try:
+		f = requests.get('https://api.hypixel.net/punishments&key=1663194c-20d2-4255-b85b-82fa68236d4e')
+	except:
+		await ctx.send("Error", hidden=True)
+		return
+	if f['success'] is False:
+		await ctx.send('There was an error, please report this! (The command may be on cooldown!)', hidden=True)
+		return
+	e = discord.Embed(title="Punishments",color=discord.Color.red(), timestamp=datetime.utcnow())
+	e.add_field(name='Watchdog total', value=f['watchdog_total'])
+	e.add_field(name='Watchdog daily', value=f['watchdog_rollingDaily'])
+	e.add_field(name='Staff total', value=f['staff_total'])
+	e.add_field(name='Staff daily', value=f['staff_rollingDaily'])
+	f = await ctx.send(embeds=[e])
+	await boogie(f)
 
 @client.command()
 @commands.is_owner()
