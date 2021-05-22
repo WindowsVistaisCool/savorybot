@@ -1,6 +1,7 @@
 import json
 import random
 import requests
+import hystats
 import string
 import commandListener
 import discord
@@ -163,15 +164,27 @@ async def _counts(ctx, type='SKYBLOCK'):
 		e.add_field(name='Housing', value=f'`{base["HOUSING"]["players"]}`')
 		ptp = base["PROTOTYPE"]
 		e.add_field(name='Prototype (lobby & games)', value=f'`{ptp["players"]}`')
-		e.add_field(name='TOWERWARS', value=f'Towerwars (solo): `{ptp["modes"]["TOWERWARS_SOLO"]}`\nTowerwars (doubles): `{ptp["modes"]["TOWERWARS_TEAM_OF_TWO"]}`')
+		e.add_field(name='TOWERWARS', value=f'Tower wars (solo): `{ptp["modes"]["TOWERWARS_SOLO"]}`\nTower wars (doubles): `{ptp["modes"]["TOWERWARS_TEAM_OF_TWO"]}`')
 
 	d = await ctx.send(embed=e)
 	await boogie(d)
 
-@slash.slash(name='test')
-async def _test(ctx, thing):
-	r = requests.get(f'https://api.hypixel.net/{thing}?key=1663194c-20d2-4255-b85b-82fa68236d4e').json()
-	store('cmds.json', r)
+@slash.slash(name='giveaway')
+async def _giveaway(ctx, winners, time, prize):
+	d = client.get_channel(834960422004064266)
+	e = discord.Embed(title="New giveaway request",timestamp=datetime.utcnow())
+	e.add_field(name="Host", value=f"{ctx.author.mention}", inline=False)
+	e.add_field(name="Winners", value=f"```{winners}```", inline=False)
+	e.add_field(name="Time", value=f"```{time}```", inline=False)
+	e.add_field(name="Prize", value=prize, inline=False)
+	await d.send("<@&840038424332337202>", embed=e)
+	await ctx.send("Your request has been sent", hidden=True)
+
+#broken
+@slash.slash(name='status')
+async def _status(ctx, user):
+	await hystats.status(client, ctx, user)
+	#https://wiki.vg/Mojang_API
 
 # fix this
 @client.command()
