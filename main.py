@@ -1,5 +1,6 @@
 import json
 import random
+import requests
 import string
 import commandListener
 import discord
@@ -98,25 +99,81 @@ async def boogie(msg):
 	await sleep(40)
 	await msg.delete()
 
-# convert this later
 @slash.slash(name='banstats')
 async def _banstats(ctx):
-	try:
-		f = requests.get('https://api.hypixel.net/punishments&key=1663194c-20d2-4255-b85b-82fa68236d4e')
-	except:
-		await ctx.send("Error", hidden=True)
-		return
+	f = requests.get('https://api.hypixel.net/punishmentstats?key=1663194c-20d2-4255-b85b-82fa68236d4e').json()
 	if f['success'] is False:
 		await ctx.send('There was an error, please report this! (The command may be on cooldown!)', hidden=True)
 		return
-	e = discord.Embed(title="Punishments",color=discord.Color.red(), timestamp=datetime.utcnow())
-	e.add_field(name='Watchdog total', value=f['watchdog_total'])
-	e.add_field(name='Watchdog daily', value=f['watchdog_rollingDaily'])
-	e.add_field(name='Staff total', value=f['staff_total'])
-	e.add_field(name='Staff daily', value=f['staff_rollingDaily'])
+	e = discord.Embed(title="Punishment statistics",color=discord.Color.red(), timestamp=datetime.utcnow())
+	e.add_field(name='Watchdog total', value=f"`{f['watchdog_total']}`", inline=False)
+	e.add_field(name='Watchdog daily', value=f"`{f['watchdog_rollingDaily']}`", inline=False)
+	e.add_field(name='Staff total', value=f"`{f['staff_total']}`", inline=False)
+	e.add_field(name='Staff daily', value=f"`{f['staff_rollingDaily']}`", inline=False)
 	f = await ctx.send(embeds=[e])
 	await boogie(f)
 
+@slash.slash(name='counts')
+async def _counts(ctx, type='SKYBLOCK'):
+	gmname = "undefined"
+	if type == 'SKYBLOCK':
+		gmname = 'Skyblock'
+	# elif type == 'BEDWARS':
+		# gmname = 'Bedwars'
+	# elif type == 'SKYWARS':
+		# gmname = 'Skywars'
+	# elif type == 'mini':
+		# gmname = 'Arcade/Build Battle/Legacy Games/TNT Games'
+	elif type == 'etc':
+		gmname = 'SMP/Replay/Housing/Pit/Tournament/Prototype'
+	count = requests.get('https://api.hypixel.net/counts?key=1663194c-20d2-4255-b85b-82fa68236d4e').json()
+	if count['success'] is False:
+		await ctx.send("Error getting player counts, please report this!", hidden=True)
+		return
+	e = discord.Embed(title=f"Player counts for {gmname}", description=f"**Network-wide player count**\n```yaml\n{count['playerCount']}```", color=discord.Color.blurple(), timestamp=datetime.utcnow())
+	e.set_footer(text='Counts recieved')
+	# Set counts
+	if type == 'SKYBLOCK':
+		base = count["games"][type]
+		modes = base["modes"]
+		e.add_field(name='Total skyblock count (skyblock-wide)', value=f'```fix\n{base["players"]}```', inline=False)
+		e.add_field(name='Private Island', value=f'`{modes["dynamic"]}`')
+		e.add_field(name='Main Hub', value=f'`{modes["hub"]}`')
+		e.add_field(name='Dungeon Hub', value=f'`{modes["dungeon_hub"]}`')
+		e.add_field(name='Dungeon', value=f'`{modes["dungeon"]}`')
+		e.add_field(name='Farming Islands', value=f'`{modes["farming_1"]}`', inline=False)
+		e.add_field(name='Gold Mines', value=f'`{modes["mining_1"]}`')
+		e.add_field(name='Deep Caverns', value=f'`{modes["mining_2"]}`')
+		e.add_field(name='Dwarven Mines', value=f'`{modes["mining_3"]}`')
+		e.add_field(name='The Park', value=f'`{modes["foraging_1"]}`', inline=False)
+		e.add_field(name='Spider\'s Den', value=f'`{modes["combat_1"]}`')
+		e.add_field(name='Blazing Fortress', value=f'`{modes["combat_2"]}`')
+		e.add_field(name='The End', value=f'`{modes["combat_3"]}`')
+	elif type == 'etc':
+		base = count["games"]
+		e.add_field(name='Main Lobby', value=f'`{base["MAIN_LOBBY"]["players"]}`')
+		e.add_field(name='Limbo', value=f'`{base["LIMBO"]["players"]}`')
+		e.add_field(name='Idle', value=f'`{base["IDLE"]["players"]}`')
+		tmnt = base["TOURNAMENT_LOBBY"]["players"]
+		if tmnt == 0: tmnt = "No current ongoing tournament"
+		e.add_field(name='Tournament Lobby', value=f'`{tmnt}`')
+		e.add_field(name='SMP', value=f'`{base["SMP"]["players"]}`')
+		e.add_field(name='The Pit', value=f'`{base["PIT"]["players"]}`')
+		e.add_field(name='Replay', value=f'`{base["REPLAY"]["players"]}`')
+		e.add_field(name='Housing', value=f'`{base["HOUSING"]["players"]}`')
+		ptp = base["PROTOTYPE"]
+		e.add_field(name='Prototype (lobby & games)', value=f'`{ptp["players"]}`')
+		e.add_field(name='TOWERWARS', value=f'Towerwars (solo): `{ptp["modes"]["TOWERWARS_SOLO"]}`\nTowerwars (doubles): `{ptp["modes"]["TOWERWARS_TEAM_OF_TWO"]}`')
+
+	d = await ctx.send(embed=e)
+	await boogie(d)
+
+@slash.slash(name='test')
+async def _test(ctx, thing):
+	r = requests.get(f'https://api.hypixel.net/{thing}?key=1663194c-20d2-4255-b85b-82fa68236d4e').json()
+	store('cmds.json', r)
+
+# fix this
 @client.command()
 @commands.is_owner()
 async def s(ctx, *, message='poopie farts'):
