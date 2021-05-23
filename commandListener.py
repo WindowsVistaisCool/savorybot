@@ -84,7 +84,7 @@ async def listenerOnRawReactionAdd(payload, client):
 			await payload.member.remove_roles(mrole)
 
 async def msg(message, client):
-	ctx = await client.get_context(message)
+    ctx = await client.get_context(message)
     if message.author.id != 713461668667195553:
         if message.author.id == 392502213341216769:
             if message.content == 'embed':
