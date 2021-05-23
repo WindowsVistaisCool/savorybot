@@ -96,9 +96,6 @@ async def msg(message, client):
                 msg = await ctx.send(embed=e)
                 await msg.add_reaction('✅')
                 store('config.json', 'verify', False, str(msg.id))
-        else:
-            await message.delete()
-            return 1
     # if "@someone" in message.content and message.author.bot == False:
         # g = await message.guild.fetch_members(limit=150).flatten()
         # e = []
