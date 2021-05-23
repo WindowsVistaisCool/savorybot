@@ -73,40 +73,44 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 			with open(file, 'w') as v:
 				json.dump(x, v, indent=4)
 
+async def listenerOnRawReactionAdd(payload, client):
+	x = store('config.json', 'verify', True)
+	if payload.message_id == int(x):
+		if payload.emoji.name == "✅":
+			guild = client.get_guild(payload.guild_id)
+			role = guild.get_role(788914323485491232)
+			mrole = guild.get_role(788890991028469792)
+			await payload.member.add_roles(role)
+			await payload.member.remove_roles(mrole)
+
 async def msg(message, client):
 	ctx = await client.get_context(message)
-	if message.channel.id == 789303598957199441:
-		if message.content != "verify" and message.author.id != 713461668667195553:
-			if message.author.id == 392502213341216769:
-				if message.content == 'embed':
-					# convert to reaction
-					await message.delete()
-					e = discord.Embed(title="Verification", color=discord.Color.blurple())
-					e.add_field(name="Verify", value="To verify, type *`verify`* in this channel.", inline=False)
-					e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
-					e.set_footer(text="Thank you for joining!")
-					await ctx.send(embed=e)
-				else:
-					await message.delete()
-					return
-			else:
-				await message.delete()
-				return
-		elif message.content == 'verify':
-			await message.delete()
-			r = ctx.guild.get_role(788914323485491232)
-			if r in ctx.author.roles:
-				e = await ctx.send("You have already been verified!")
-				await sleep(3)
-				await e.delete()
-				return
-			d = ctx.guild.get_role(788890991028469792)
-			await message.author.remove_roles(d)
-			await message.author.add_roles(r)
-			g = await ctx.send("You have been verified, you now have access to all channels.")
-			await sleep(5)
-			await g.delete()
-			return
+    if message.author.id != 713461668667195553:
+        if message.author.id == 392502213341216769:
+            if message.content == 'embed':
+                await message.delete()
+                e = discord.Embed(title="Verification", color=discord.Color.blurple())
+                e.add_field(name="Verify", value="To verify, react to this message with :white_check_mark:.", inline=False)
+                e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
+                e.set_footer(text="Thank you for joining!")
+                msg = await ctx.send(embed=e)
+                await msg.add_reaction('✅')
+                store('config.json', 'verify', False, str(msg.id))
+        else:
+            await message.delete()
+            return 1
+    # if "@someone" in message.content and message.author.bot == False:
+        # g = await message.guild.fetch_members(limit=150).flatten()
+        # e = []
+        # d = None
+        # m = None
+        # while True:
+            # for member in g:
+                # e.append(str(member.id))            
+            # d = random.choice(e)
+            # m = await message.guild.fetch_member(int(d))
+            # if m.bot is False: break
+        # await message.channel.send(f"{message.author.mention}, you pinged {m.mention}!")
 
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something

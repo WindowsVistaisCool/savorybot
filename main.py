@@ -43,6 +43,10 @@ async def on_message(message):
 	await client.process_commands(message)
 
 @client.event
+async def on_raw_reaction_add(payload):
+	await commandListener.listenerOnRawReactionAdd(payload, client)
+
+@client.event
 async def on_ready():
 	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Bonzo"))
 	print("Ready")
@@ -91,14 +95,24 @@ async def _suggest(ctx, type, request):
 async def _docs(ctx):
 	await ctx.send("https://reddocs.gitbook.io",hidden=True)
 
-@slash.slash(name='genusername')
-async def _genusername(ctx, setnick=False):
-	await commandListener.genuser(ctx, setNick)
+# @slash.slash(name='genusername')
+# async def _genusername(ctx, setnick=False):
+	# await commandListener.genuser(ctx, setNick)
 
 # clean up THIS mess
 async def boogie(msg):
 	await sleep(40)
 	await msg.delete()
+
+@client.command()
+@commands.has_role("Trusted")
+async def poll(ctx, *, msg):
+	await ctx.message.delete()
+	e = discord.Embed(title=msg, color=discord.Color.blurple(), timestamp=datetime.utcnow())
+	e.set_footer(text="Poll started")
+	msg = await ctx.send(embed=e)
+	await msg.add_reaction('👍')
+	await msg.add_reaction('👎')
 
 @slash.slash(name='banstats')
 async def _banstats(ctx):
@@ -116,7 +130,7 @@ async def _banstats(ctx):
 
 @slash.slash(name='counts')
 async def _counts(ctx, type='SKYBLOCK'):
-	gmname = "undefined"
+	gmname = "(not yet implemented)"
 	if type == 'SKYBLOCK':
 		gmname = 'Skyblock'
 	# elif type == 'BEDWARS':
