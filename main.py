@@ -48,7 +48,7 @@ async def on_raw_reaction_add(payload):
 
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Bonzo"))
+	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=store('config.json', 'activity', True)))
 	print("Ready")
 
 @client.event
