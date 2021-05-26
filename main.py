@@ -200,6 +200,15 @@ async def _status(ctx, user):
 	await hystats.status(client, ctx, user)
 	#https://wiki.vg/Mojang_API
 
+@slash.slash(name='iuselightmode')
+async def _lightmode(ctx):
+	r = ctx.guild.get_role(841710215174684714)
+	try:
+		await ctx.author.add_roles(r)
+	except:
+		await ctx.send("you broke my bot you turd", hidden=True)
+	await ctx.send("you absolute piece of pooper", hidden=True)
+
 # fix this
 @client.command()
 @commands.is_owner()
