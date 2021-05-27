@@ -97,12 +97,12 @@ async def msg(message, client):
                 await msg.add_reaction('✅')
                 store('config.json', 'verify', False, str(msg.id))
     if message.content == 'cap' and ctx.author.bot == False:
-	if dang:
-		await ctx.send("CAPPERS")
+        if dang:
+        await ctx.send("CAPPERS")
     elif message.content == 'pizza':
-	dang = False
+        dang = False
     elif message.content == 'cheese':
-	dang = True
+        dang = True
     # if "@someone" in message.content and message.author.bot == False:
         # g = await message.guild.fetch_members(limit=150).flatten()
         # e = []
