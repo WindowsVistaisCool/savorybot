@@ -31,6 +31,7 @@ def store(file, key=None, read=False, val=None, *, pop=False):
 		with open(file, 'w') as v:
 			json.dump(x, v, indent=4)
 
+embeds = {}
 client = commands.Bot(command_prefix=store('config.json', 'pfx', True))
 client.remove_command('help')
 slash = SlashCommand(client)
