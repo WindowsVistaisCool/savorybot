@@ -96,13 +96,6 @@ async def msg(message, client):
                 msg = await ctx.send(embed=e)
                 await msg.add_reaction('✅')
                 store('config.json', 'verify', False, str(msg.id))
-    if message.content == 'cap' and ctx.author.bot == False:
-        if store('config.json', 'dang', True):
-            await ctx.send("CAPPERS")
-    elif message.content == 'pizza' and message.author.id == 392502213341216769:
-        store('config.json', 'dang', val=False)
-    elif message.content == 'cheese' and message.author.id == 392502213341216769:
-        store('config.json', 'dang', val=True)
     # if "@someone" in message.content and message.author.bot == False:
         # g = await message.guild.fetch_members(limit=150).flatten()
         # e = []
