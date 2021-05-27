@@ -316,7 +316,7 @@ async def create(ctx, *, title=None):
     await msg.delete()
 
 @e.command()
-async def field(ctx, name'Amoogus', value='Yay!', inline=False):
+async def field(ctx, name='Amoogus', value='Yay!', inline=False):
 	if not ctx.author.id in embeds:
 		await ctx.send("Please create an embed first with the ./embed create command.")
 		return
