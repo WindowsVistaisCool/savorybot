@@ -285,11 +285,11 @@ async def _getrocks(ctx):
 
 @client.group()
 @commands.is_owner()
-async def embed(ctx):
+async def e(ctx):
 	if ctx.invoked_subcommand is None:
 		await ctx.send("Please provide a valid subcommand")
 
-@embed.command()
+@e.command()
 async def help(ctx, command=None):
 	if command is None:
 		e = discord.Embed(title="Embed creator help", color=discord.Color.blurple(), timestamp=datetime.utcnow())
@@ -307,7 +307,7 @@ async def help(ctx, command=None):
 
 	await ctx.send(embed=e)
 
-@embed.command()
+@e.command()
 async def create(ctx, *, title=None):
     if not ctx.author.id in embeds:
     	embeds[ctx.author.id] = {}
@@ -323,10 +323,10 @@ async def create(ctx, *, title=None):
     embeds[ctx.author.id]['authorname'] = 'null'
     await ctx.message.delete()
     msg = await ctx.send("Created embed")
-    await asyncio.sleep(1)
+    await sleep(1)
     await msg.delete()
 
-@embed.command()
+@e.command()
 async def color(ctx, color='blurple'):
     if not ctx.author.id in embeds:
     	await ctx.send("Please create an embed first with the ./embed create command.")
@@ -337,7 +337,7 @@ async def color(ctx, color='blurple'):
     await asyncio.sleep(1)
     await msg.delete()
 
-@embed.command()
+@e.command()
 async def description(ctx, *, desc='Nice and short description!'):
 	if not ctx.author.id in embeds:
 		await ctx.send("Please create an embed first with the ./embed create command.")
@@ -348,7 +348,7 @@ async def description(ctx, *, desc='Nice and short description!'):
 	await asyncio.sleep(1)
 	await msg.delete()
 
-@embed.command()
+@e.command()
 async def timestamp(ctx, times='False'):
 	if not ctx.author.id in embeds:
 		await ctx.send("Please create an embed first with the ./embed create command.")
@@ -366,7 +366,7 @@ async def timestamp(ctx, times='False'):
 	await asyncio.sleep(1)
 	await msg.delete()
 
-@embed.command()
+@e.command()
 async def author(ctx, link=None, icontype='self', *, name='self'):
 	if not ctx.author.id in embeds:
 		await ctx.send("Please create an embed first with the ./embed create command.")
@@ -389,7 +389,7 @@ async def author(ctx, link=None, icontype='self', *, name='self'):
 	await asyncio.sleep(1)
 	await msg.delete()
 
-@embed.command()
+@e.command()
 async def build(ctx):
 	# also maybe change null str to None
 	if not ctx.author.id in embeds:
@@ -422,6 +422,7 @@ async def build(ctx):
 	color = embeds[ctx.author.id]['color']
 	await advancedEmbed(ctx, title, color, timestamp, description, authorname, authoricon, authorlink)
 	await ctx.message.delete()
+
 @client.command()
 @commands.is_owner()
 async def purge(ctx, message):
