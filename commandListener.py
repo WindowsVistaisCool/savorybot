@@ -82,6 +82,7 @@ async def listenerOnRawReactionAdd(payload, client):
 			mrole = guild.get_role(788890991028469792)
 			await payload.member.add_roles(role)
 			await payload.member.remove_roles(mrole)
+global dang
 dang = False
 async def msg(message, client):
     ctx = await client.get_context(message)
