@@ -36,6 +36,42 @@ client.remove_command('help')
 slash = SlashCommand(client)
 header = store('config.json', 'token', True)		
 
+def getcolor(clr):
+    if clr == "blurple":
+        return discord.Color.blurple()
+    elif clr == "red":
+        return discord.Color.red()
+    elif clr == "blue":
+        return discord.Color.blue()
+    else:
+        return discord.Color.light_gray()
+
+async def advancedEmbed(ctx, title, color='blurple', timestamp=False, description=None, authorname=None, authoricon=None, authorlink=None):
+	def time():
+		if timestamp is False:
+			return discord.Embed.Empty
+		elif timestamp is True:
+			return datetime.utcnow()
+	def desc():
+		if description is None:
+			return discord.Embed.Empty
+		else:
+			return description
+	def alink():
+		if authorlink is None:
+			return discord.Embed.Empty
+		else:
+			return authorlink
+	def aicon():
+		if authoricon is None:
+			return discord.Embed.Empty
+		else:
+			return authoricon
+	e = discord.Embed(title=title, color=getcolor(color), timestamp=time(), description=desc())
+	if authorname is not None:
+		e.set_author(name=authorname, url=alink(), icon_url=aicon())
+	await ctx.send(embed=e)
+
 @client.event
 async def on_message(message):
 	e = await commandListener.msg(message, client)
@@ -246,6 +282,145 @@ async def _getnecronstick(ctx):
 async def _getrocks(ctx):
 	await commandListener.getitem(ctx, 'Jolly Pink Rock', 60, rocks=True)
 
+@client.group()
+@commands.is_owner()
+async def embed(ctx):
+	if ctx.invoked_subcommand is None:
+		await ctx.send("Please provide a valid subcommand")
+
+@embed.command()
+async def help(ctx, command=None):
+	if command is None:
+		e = discord.Embed(title="Embed creator help", color=discord.Color.blurple(), timestamp=datetime.utcnow())
+		e.add_field(name="Creating an embed", value="To create an embed, you first need need to run `./embed create <title>`. More info with `./embed help create'.", inline=False)
+		e.add_field(name="Customization", value="To customize your embed, you can run `./embed help color`, `./embed help timestamp`, `./embed help author`, or `./embed help description`.")
+		await ctx.send(embed=e)
+		return
+	elif command == 'create':
+		e = discord.Embed(title="Specific embed command help", color=discord.Color.blurple())
+		e.add_field(name="Syntax:", value="`./embed create <title>`")
+	elif command == 'color':
+		e = discord.Embed(title="Specific embed command help", color=discord.Color.blurple())
+		e.add_field(name="Syntax:", value="`./embed color <color>`")
+		e.add_field(name="Acceptable Color Fields:", value="dark_purple\nblurple")
+
+	await ctx.send(embed=e)
+
+@embed.command()
+async def create(ctx, *, title=None):
+    if not ctx.author.id in embeds:
+    	embeds[ctx.author.id] = {}
+    if title is None:
+        await ctx.send("Please provide a title!")
+        return
+    embeds[ctx.author.id]['title'] = title
+    embeds[ctx.author.id]['color'] = 'null'
+    embeds[ctx.author.id]['description'] = 'null'
+    embeds[ctx.author.id]['timestamp'] = 'False'
+    embeds[ctx.author.id]['authorlink'] = 'null'
+    embeds[ctx.author.id]['authoricon'] = 'null'
+    embeds[ctx.author.id]['authorname'] = 'null'
+    await ctx.message.delete()
+    msg = await ctx.send("Created embed")
+    await asyncio.sleep(1)
+    await msg.delete()
+
+@embed.command()
+async def color(ctx, color='blurple'):
+    if not ctx.author.id in embeds:
+    	await ctx.send("Please create an embed first with the ./embed create command.")
+    	return
+    embeds[ctx.author.id]['color'] = color
+    await ctx.message.delete()
+    msg = await ctx.send("Color set")
+    await asyncio.sleep(1)
+    await msg.delete()
+
+@embed.command()
+async def description(ctx, *, desc='Nice and short description!'):
+	if not ctx.author.id in embeds:
+		await ctx.send("Please create an embed first with the ./embed create command.")
+		return
+	embeds[ctx.author.id]['description'] = desc
+	await ctx.message.delete()
+	msg = await ctx.send("Embed description set")
+	await asyncio.sleep(1)
+	await msg.delete()
+
+@embed.command()
+async def timestamp(ctx, times='False'):
+	if not ctx.author.id in embeds:
+		await ctx.send("Please create an embed first with the ./embed create command.")
+		return
+	if times == 'False':
+		pass
+	elif times == 'True':
+		pass
+	else:
+		await ctx.send("Please use \"False\" or \"True\".")
+		return
+	embeds[ctx.author.id]['timestamp'] = times
+	await ctx.message.delete()
+	msg = await ctx.send("Timestamp set")
+	await asyncio.sleep(1)
+	await msg.delete()
+
+@embed.command()
+async def author(ctx, link=None, icontype='self', *, name='self'):
+	if not ctx.author.id in embeds:
+		await ctx.send("Please create an embed first with the ./embed create command.")
+		return
+	authorlink = None
+	authorname = None
+	if link != None:
+		authorlink = link
+	if name == 'self':
+		authorname = ctx.author.name
+	else:
+		authorname = name
+	if icontype == 'self':
+		icontype = ctx.author.avatar_url
+	embeds[ctx.author.id]['authorlink'] = authorlink
+	embeds[ctx.author.id]['authoricon'] = icontype
+	embeds[ctx.author.id]['authorname'] = authorname
+	await ctx.message.delete()
+	msg = await ctx.send("Author set")
+	await asyncio.sleep(1)
+	await msg.delete()
+
+@embed.command()
+async def build(ctx):
+	# also maybe change null str to None
+	if not ctx.author.id in embeds:
+		await ctx.send("Please create an embed with the ./embed create command.")
+		return
+	description = None
+	if embeds[ctx.author.id]['description'] == 'null':
+		pass
+	else:
+		description = embeds[ctx.author.id]['description']
+	timestamp = False
+	if embeds[ctx.author.id]['timestamp'] == 'False':
+		pass
+	else:
+		timestamp = True
+	authorname = None
+	authoricon = None
+	authorlink = None
+	if embeds[ctx.author.id]['authorname'] == 'null':
+		pass
+	else:
+		authorname = embeds[ctx.author.id]['authorname']
+		if embeds[ctx.author.id]['authorlink'] == 'null':
+			pass
+		else:
+			authorlink = embeds[ctx.author.id]['authorlink']
+		if embeds[ctx.author.id]['authoricon'] != 'null':
+			authoricon = embeds[ctx.author.id]['authoricon']
+	title = embeds[ctx.author.id]['title']
+	color = embeds[ctx.author.id]['color']
+	await advancedEmbed(ctx, title, color, timestamp, description, authorname, authoricon, authorlink)
+	await ctx.message.delete()
 @client.command()
 @commands.is_owner()
 async def purge(ctx, message):
