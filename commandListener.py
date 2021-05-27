@@ -98,7 +98,7 @@ async def msg(message, client):
                 store('config.json', 'verify', False, str(msg.id))
     if message.content == 'cap' and ctx.author.bot == False:
         if dang:
-        await ctx.send("CAPPERS")
+            await ctx.send("CAPPERS")
     elif message.content == 'pizza':
         dang = False
     elif message.content == 'cheese':
