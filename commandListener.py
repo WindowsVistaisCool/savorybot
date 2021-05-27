@@ -82,8 +82,7 @@ async def listenerOnRawReactionAdd(payload, client):
 			mrole = guild.get_role(788890991028469792)
 			await payload.member.add_roles(role)
 			await payload.member.remove_roles(mrole)
-global dang
-dang = False
+
 async def msg(message, client):
     ctx = await client.get_context(message)
     if message.author.id != 713461668667195553:
@@ -98,12 +97,12 @@ async def msg(message, client):
                 await msg.add_reaction('✅')
                 store('config.json', 'verify', False, str(msg.id))
     if message.content == 'cap' and ctx.author.bot == False:
-        if dang:
+        if store('config.json', 'dang', True):
             await ctx.send("CAPPERS")
-    elif message.content == 'pizza':
-        dang = False
-    elif message.content == 'cheese':
-        dang = True
+    elif message.content == 'pizza' and message.author.id == 392502213341216769:
+        store('config.json', 'dang', val=False)
+    elif message.content == 'cheese' and message.author.id == 392502213341216769:
+        store('config.json', 'dang', val=True)
     # if "@someone" in message.content and message.author.bot == False:
         # g = await message.guild.fetch_members(limit=150).flatten()
         # e = []
