@@ -214,9 +214,8 @@ async def _lightmode(ctx):
 @commands.is_owner()
 async def s(ctx, *, message='poopie farts'):
 	await ctx.message.delete()
-	if 'usr' in message:
-		message = message.replace(' usr', '')
-		message = f"<@!{message}>"
+	if 'p!' in message:
+		message = message.replace('p!', '<@!')
 	await ctx.send(message)
 
 @client.command()
