@@ -221,6 +221,12 @@ async def s(ctx, *, message='poopie farts'):
 
 @client.command()
 @commands.is_owner()
+async def n(ctx, *, nickname=None):
+	await client.user.edit(nick=nickname)
+	await ctx.message.delete()
+
+@client.command()
+@commands.is_owner()
 async def d(ctx, meID):
 	await ctx.message.delete()
 	e = await ctx.channel.fetch_message(int(meID))
