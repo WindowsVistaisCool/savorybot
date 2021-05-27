@@ -222,7 +222,8 @@ async def s(ctx, *, message='poopie farts'):
 @client.command()
 @commands.is_owner()
 async def n(ctx, *, nickname=None):
-	await client.user.edit(nick=nickname)
+	d = await ctx.guild.fetch_member(client.user.id)
+	await d.edit(nick=nickname)
 	await ctx.message.delete()
 
 @client.command()
