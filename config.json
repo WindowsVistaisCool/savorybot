@@ -6,7 +6,7 @@
     "atype": "l",
     "status": "online",
     "activity": "Wayne Lytle",
-    "testMode": true,
+    "testMode": false,
     "verify": "846061935002386462",
     "slashConfig": {
         "auth": {

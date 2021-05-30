@@ -90,6 +90,20 @@ class sc:
 		url = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands/{commandID}/permissions"
 		eurl = f"https://discord.com/api/v8/applications/{k[0]}/guilds/{k[1]}/commands"
 		if setAll is False:
+			g = None
+			f = requests.get(eurl, headers=head)
+			for com in f.json():
+				if com['id'] == f"{commandID}":
+					g = com
+					break
+			if g['default_permission'] == True:
+				g.pop('id')
+				g.pop('version')
+				g.pop('application_id')
+				g.pop('guild_id')
+				g['default_permission'] = False
+				d = requests.post(eurl, headers=head, json=g)
+				return d
 			jData = {
 				"permissions": []
 			}

@@ -8,7 +8,6 @@ from datetime import datetime
 from asyncio import sleep
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False, specKey=None, specBin=None, n=False):
-	# needs to be updated to api v3
 	ke = specKey
 	bi = specBin
 	if specKey is None:
@@ -16,20 +15,20 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 	if specBin is None:
 		bi = "6084ce3c5210f622be390873"
 	rheaders = {
-		'secret-key': ke
+		'X-Master-Key': ke
 	}
 	uheaders = {
 		'Content-Type': 'application/json',
-		'secret-key': ke
+		'X-Master-Key': ke
 	}
-	rurl = f"https://api.jsonbin.io/b/{bi}/latest"
-	url = f"https://api.jsonbin.io/b/{bi}"
+	rurl = f"https://api.jsonbin.io/v3/b/{bi}/latest"
+	url = f"https://api.jsonbin.io/v3/b/{bi}"
 	def get_read():
 			x = requests.get(rurl, headers=rheaders, json=None).json()
 			return x
 	x = None
 	if app or n:
-		x = get_read()
+		x = get_read()['record']
 		# print(x)
 	else:
 		with open(file, 'r') as v:
@@ -157,7 +156,7 @@ async def apply(client, ctx, ign, skycrypt):
 	appType = None
 	e = store('apps.json', 'guildApps', True, app=True)
 	if str(ctx.author.id) in e:
-		await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]})``", hidden=True)
+		await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]}`)", hidden=True)
 		return
 	b = store('apps.json', 'acceptedGuildApps', True, app=True)
 	if str(ctx.author.id) in b:
@@ -204,6 +203,12 @@ async def acceptGuild(ctx, appID):
 	await f.edit(content="Sending data to API...")
 	store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
 	store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
+	e = await ctx.guild.fetch_member(appID)
+	try:
+		await e.send("Your application for `Red Gladiators` has been accepted! Head over to the server to check it out!")
+	except:
+		await f.edit(content='Application accepted but could not send messages to user')
+		return
 	await f.edit(content="Application accepted")
 
 async def delApp(ctx, appID):
