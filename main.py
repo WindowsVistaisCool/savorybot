@@ -1,7 +1,7 @@
 import json
 import random
 import requests
-# import hystats
+import hystats
 import string
 import commandListener
 import discord
@@ -223,7 +223,6 @@ async def _giveaway(ctx, winners, time, prize):
 @slash.slash(name='status')
 async def _status(ctx, user):
 	await hystats.status(client, ctx, user)
-	#https://wiki.vg/Mojang_API
 
 @slash.slash(name='iuselightmode')
 async def _lightmode(ctx):

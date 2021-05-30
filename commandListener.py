@@ -151,6 +151,9 @@ async def commandErrorListener(ctx, error):
 		await ctx.send(embed=e)
 
 async def apply(client, ctx, ign, skycrypt):
+	if store('config.json', 'testMode', True):
+		await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later", hidden=True)
+		return
 	appType = None
 	e = store('apps.json', 'guildApps', True, app=True)
 	if str(ctx.author.id) in e:
@@ -180,6 +183,9 @@ async def apply(client, ctx, ign, skycrypt):
 	store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
 
 async def acceptGuild(ctx, appID):
+	if store('config.json', 'testMode', True):
+		await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
+		return
 	f = await ctx.send("Fetching data from api...")
 	e = store('apps.json', 'guildApps', True, app=True)
 	if appID not in e:
@@ -201,6 +207,9 @@ async def acceptGuild(ctx, appID):
 	await f.edit(content="Application accepted")
 
 async def delApp(ctx, appID):
+	if store('config.json', 'testMode', True):
+		await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
+		return
 	f = await ctx.send("Fetching data from api...")
 	e = store('apps.json', 'guildApps', True, app=True)
 	if appID not in e:
@@ -259,8 +268,6 @@ async def suggest(client, ctx, type, request):
 		e = discord.Embed(title=f"Suggestion from {d}", description=request, timestamp=datetime.utcnow())
 		await c.send(embed=e)
 		await ctx.send("The request has been sent, thank you!", hidden=True)
-	else:
-		await ctx.send("EOL: 404 not found param 'type'")
 
 # async def pinglist(ctx, action, str):
 # 	if action != 'list' and str is None:
