@@ -29,6 +29,38 @@ def toUUID(name):
         return False
     return d.json()["id"]
 
+# sbprofiles
+async def profiles(ctx, name):
+    a = await ctx.send("Getting data...")
+    uuid = toUUID(name)
+    if uuid is False:
+        await a.edit(content="Could not find that username!")
+        return
+    d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
+    if d.status_code == 429:
+        await a.edit(content="API Error (name looked up recently). Try again later")
+        return
+    f = d.json()
+    if f['profiles'] is None:
+        await a.edit(content="That user has not played skyblock!")
+        return
+    plen = len(f['profiles'])
+    if plen == 1:
+        pfls = "1 profile was"
+    else:
+        pfls = f"{plen} profiles were"
+    e = discord.Embed(title=f"Profiles for user {name}", description=f"{pfls} detected for {name}", color=discord.Color.green())
+    for pf in f['profiles']:
+        msg = f"ID: {pf['profile_id']}"
+        title = pf['cute_name']
+        try:
+            if pf['game_mode'] == 'ironman':
+                title = title + " **(Ironman)**"
+        except:
+            pass
+        e.add_field(name=title, value=msg, inline=False)
+    await a.edit(content=None, embed=e)
+
 #broken
 def getOnline(name):
 	key = store("config.json", "key", True)

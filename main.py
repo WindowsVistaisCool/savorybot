@@ -219,10 +219,13 @@ async def _giveaway(ctx, winners, time, prize):
 	await d.send("<@&840038424332337202>", embed=e)
 	await ctx.send("Your request has been sent", hidden=True)
 
-#broken
 @slash.slash(name='status')
 async def _status(ctx, user):
 	await hystats.status(client, ctx, user)
+
+@slash.slash(name='profiles')
+async def _profiles(ctx, user):
+	await hystats.profiles(ctx, user)
 
 @slash.slash(name='iuselightmode')
 async def _lightmode(ctx):
