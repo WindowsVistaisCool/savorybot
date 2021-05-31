@@ -73,6 +73,10 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 				json.dump(x, v, indent=4)
 
 async def listenerOnRawReactionAdd(payload, client):
+	if payload.user_id == 392502213341216769:
+		m = client.get_channel(payload.channel_id)
+		d = await m.fetch_message(payload.message_id)
+		await d.remove_reaction(payload.emoji, client.user)
 	x = store('config.json', 'verify', True)
 	if payload.message_id == int(x):
 		if payload.emoji.name == "✅":
