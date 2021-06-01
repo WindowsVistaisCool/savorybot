@@ -35,18 +35,18 @@ def checkURL():
   if x['appID'] is not None:
     returns.append(x['appID'])
 
-  if x['guildID'] is not None and gid is None:
+  if x['guildID'] is not None and x['tempID'] is None:
     returns.append(x['guildID'])
   else:
-    returns.append(gid)
+    returns.append(x['tempID'])
 
   return returns
 
 class sc:
-	global gid
-	gid = None
 	def setGID(ngid):
-		gid = ngid
+		x = store('config.json', None, True)
+		x['slashConfig']['tempID'] = ngid
+		store('config.json', x)
 		print(f"Set new guild id to {ngid}")
 	# Basic functions
 	def get(comName=None, all=False):
