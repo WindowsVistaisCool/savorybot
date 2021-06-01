@@ -35,12 +35,19 @@ def checkURL():
   if x['appID'] is not None:
     returns.append(x['appID'])
 
-  if x['guildID'] is not None:
+  if x['guildID'] is not None and gid is None:
     returns.append(x['guildID'])
+  else:
+    returns.append(gid)
 
   return returns
 
 class sc:
+	global gid
+	gid = None
+	def setGID(ngid):
+		gid = ngid
+		print(f"Set new guild id to {ngid}")
 	# Basic functions
 	def get(comName=None, all=False):
 		k = checkURL()
