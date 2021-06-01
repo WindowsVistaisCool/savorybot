@@ -56,9 +56,6 @@ async def commandcheck(message, ctx, lms):
         except:
             print("Failed")
         return "Done"
-    elif message.startswith('/type'):
-        await ctx.trigger_typing()
-        return "Done"
     elif message.startswith('/embed'):
         await embed(ctx)
         return "Done"
@@ -163,7 +160,9 @@ async def on_ready():
     lms = None
     while True:
         message = input("Message: ")
-        if message == '': continue
+        if message == '':
+            await c.trigger_typing()
+            continue
         command = await commandcheck(message, c, lms)
         if command == "Close":
             try:
