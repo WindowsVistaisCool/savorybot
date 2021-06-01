@@ -44,8 +44,8 @@ async def commandcheck(message, ctx, lms):
         await ctx.purge(limit=1, check=c)
         print("Deleted last sent message")
         return "Done"
-    elif message.startswith('/e'):
-        new = message.replace('/e ', '')
+    elif message.startswith('/edit'):
+        new = message.replace('/edit ', '')
         await lms.edit(content=new)
         return "Done"
     elif message.startswith('/r'):
@@ -122,6 +122,8 @@ async def embed(ctx):
     def clr(color):
         if color == 'green':
             return discord.Color.green()
+        elif color == 'red':
+            return discord.Color.red()
         else:
             return discord.Color.blurple()
     etitle = input("Embed title: ")
