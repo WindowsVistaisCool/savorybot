@@ -73,7 +73,28 @@ async def on_raw_reaction_add(payload):
 
 @client.event
 async def on_ready():
-	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=store('config.json', 'activity', True)))
+	x = store('config.json', 'atype', True)
+	def type():
+		d = store('config.json', 'activity', True)
+		if x == 'l':
+			return discord.Activity(type=discord.ActivityType.listening, name=d)
+		elif x == 'w':
+			return discord.Activity(type=discord.ActivityType.watching, name=d)
+		elif x == 's':
+			return discord.Streaming(name=d, url=store('config.json', 'surl', True))
+		else:
+			return discord.Game(name=d)
+	def stat():
+		l = store('config.json', 'status', True)
+		if l == 'online':
+			return discord.Status.online
+		elif l == 'afk':
+			return discord.Status.idle
+		elif l == 'dnd':
+			return discord.Status.dnd
+		else:
+			return discord.Status.invisible
+	await client.change_presence(status=stat(), activity=type())
 	print("Ready")
 
 @client.event
