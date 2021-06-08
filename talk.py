@@ -10,7 +10,7 @@ async def commandcheck(message, ctx, lms):
             return "Close"
     elif message.startswith('/channel'):
         new = message.replace('/channel ', '')
-        if new != '':
+        if new != ' ':
             try:
                 d = discord.utils.get(ctx.guild.text_channels, name=new)
             except:
@@ -50,6 +50,11 @@ async def commandcheck(message, ctx, lms):
         return "Done"
     elif message.startswith('/r'):
         new = message.replace('/r ', '')
+        if new == ' ':
+            f = ctx.guild.emojis
+            for emoji in f:
+                print(emoji.name)
+            return "Done"
         try:
             e = discord.utils.get(ctx.guild.emojis, name=new)
             await lms.add_reaction(e)
@@ -192,6 +197,6 @@ async def on_ready():
             try:
                 lms = await c.send(message)
             except:
-                continue
+                print("Error in setting LMS")
 
 client.run(store('config.json', 'token', True))
