@@ -240,7 +240,7 @@ async def _giveaway(ctx, winners, time, prize):
 	await d.send("<@&840038424332337202>", embed=e)
 	await ctx.send("Your request has been sent", hidden=True)
 
-@slash.slash(name='status')
+@slash.subcommand(base='hy', name='status')
 async def _status(ctx, username):
 	await hystats.status(client, ctx, user)
 
