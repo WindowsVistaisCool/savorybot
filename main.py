@@ -160,7 +160,7 @@ async def poll(ctx, *, msg):
 	await msg.add_reaction('👍')
 	await msg.add_reaction('👎')
 
-@slash.slash(name='banstats')
+@slash.slash(sub='hy', name='banstats')
 async def _banstats(ctx):
 	f = requests.get('https://api.hypixel.net/punishmentstats?key=1663194c-20d2-4255-b85b-82fa68236d4e').json()
 	if f['success'] is False:
@@ -174,7 +174,7 @@ async def _banstats(ctx):
 	f = await ctx.send(embeds=[e])
 	await boogie(f)
 
-@slash.slash(name='counts')
+@slash.slash(sub='hy', name='counts')
 async def _counts(ctx, type='SKYBLOCK'):
 	gmname = "(not yet implemented)"
 	if type == 'SKYBLOCK':
@@ -244,18 +244,9 @@ async def _giveaway(ctx, winners, time, prize):
 async def _status(ctx, user):
 	await hystats.status(client, ctx, user)
 
-@slash.slash(name='profiles')
+@slash.slash(sub='hy', name='profiles')
 async def _profiles(ctx, user):
 	await hystats.profiles(ctx, user)
-
-@slash.slash(name='iuselightmode')
-async def _lightmode(ctx):
-	r = ctx.guild.get_role(841710215174684714)
-	try:
-		await ctx.author.add_roles(r)
-	except:
-		await ctx.send("you broke my bot you turd", hidden=True)
-	await ctx.send("you absolute piece of pooper", hidden=True)
 
 # fix this
 @client.command()
