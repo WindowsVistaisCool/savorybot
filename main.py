@@ -241,7 +241,7 @@ async def _giveaway(ctx, winners, time, prize):
 	await ctx.send("Your request has been sent", hidden=True)
 
 @slash.slash(name='status')
-async def _status(ctx, user):
+async def _status(ctx, username):
 	await hystats.status(client, ctx, user)
 
 @slash.subcommand(base='hy', name='profiles')
