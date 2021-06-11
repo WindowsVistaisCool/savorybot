@@ -94,13 +94,14 @@ async def on_ready():
 			return discord.Status.dnd
 		else:
 			return discord.Status.invisible
-	await client.change_presence(status=stat(), activity=type())
+	if x != 'n':
+		await client.change_presence(status=stat(), activity=type())
 	print("Ready")
 
 @client.event
 async def on_command_error(ctx, error):
 	await commandListener.commandErrorListener(ctx, error)
-	
+
 #applications
 @slash.slash(name='apply')
 async def _apply(ctx, ign, skycrypt):
