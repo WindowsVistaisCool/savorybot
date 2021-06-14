@@ -80,6 +80,8 @@ async def on_ready():
 			return discord.Activity(type=discord.ActivityType.listening, name=d)
 		elif x == 'w':
 			return discord.Activity(type=discord.ActivityType.watching, name=d)
+		elif x == 'c':
+			return discord.Activity(type=discord.ActivityType.competing, name=d)
 		elif x == 's':
 			return discord.Streaming(name=d, url=store('config.json', 'surl', True))
 		else:
