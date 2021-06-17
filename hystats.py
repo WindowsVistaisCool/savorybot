@@ -41,6 +41,7 @@ async def profiles(ctx, name):
         await a.edit(content="API Error (name looked up recently). Try again later")
         return
     f = d.json()
+    store('req.json', f)
     if f['profiles'] is None:
         await a.edit(content="That user has not played skyblock!")
         return
@@ -51,7 +52,13 @@ async def profiles(ctx, name):
         pfls = f"{plen} profiles were"
     e = discord.Embed(title=f"Profiles for user {name}", description=f"{pfls} detected for {name}", color=discord.Color.green())
     for pf in f['profiles']:
-        msg = f"ID: {pf['profile_id']}"
+        coopm = []
+        for member in pf['members']:
+            if member.has_key("coop_invitation"):
+                continue
+        coop = "Coming soon"
+                
+        msg = f"`ID`: {pf['profile_id']}\n`Coop members`:{coop}"
         title = pf['cute_name']
         try:
             if pf['game_mode'] == 'ironman':
@@ -69,8 +76,8 @@ def getOnline(name):
 		return ['err', 'Could not find that username!']
 	ruff = requests.get(f'https://api.hypixel.net/status?key={key}&uuid={uuid}').json()
 	sus = requests.get(f"https://api.hypixel.net/player?key={key}&name={name}")
-	print(sus)
 	res = sus
+	# print(res.json())
 	if res.status_code == 429:
 		return ['err', 'This name has recently been looked up (check older messages or wait a minute)']
 	sus = sus.json()
@@ -84,8 +91,11 @@ def getOnline(name):
 	if lout is True:
 		return [True, stuff["gameType"], stuff["mode"], res]
 	else:
-		time = datetime.fromtimestamp(int(sus["player"]["lastLogout"])/1000)
-		return [False, time, res]
+		try:
+			time = datetime.fromtimestamp(int(sus["player"]["lastLogout"])/1000)
+			return [False, time, res]
+		except:
+			return [False, "Invalid Timestamp", res]
 
 # add modes later
 def sbmode(g):
