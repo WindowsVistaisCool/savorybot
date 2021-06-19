@@ -229,12 +229,9 @@ async def delApp(ctx, appID):
 	await f.edit(content='Deleted. (You must remove roles)')
 
 async def about(ctx):
-	await ctx.send(content='If you are a guild member and want to add something, please dm <@!392502213341216769>!', hidden=True)
 	e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
 	e.add_field(name="Features",value="**-** Active Skyblock Guild\n\n**-** Dungeons\n\n**-** Skyblock advice\n\n**-** Trusted members\n\n**-** Good community")
-	d = await ctx.send(embeds=[e])
-	await sleep(20)
-	await d.delete()
+	await ctx.send(embed=e, hidden=True)
 
 async def genuser(ctx, setNick):
 	rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
