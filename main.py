@@ -170,6 +170,10 @@ async def _banstats(ctx):
 async def _counts(ctx, type='SKYBLOCK'):
     await hystats.counts(ctx, type)
 
+@slash.slash(name='think')
+async def _think(ctx):
+    await ctx.defer()
+
 @slash.slash(name='giveaway')
 async def _giveaway(ctx, winners, time, prize):
     d = client.get_channel(834960422004064266)
