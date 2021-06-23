@@ -98,9 +98,9 @@ async def profiles(ctx, name):
     e = discord.Embed(title=f"Profiles for user {name}", description=f"{pfls} detected for {name}", color=discord.Color.green())
     for pf in f['profiles']:
         coopm = []
-        for member in pf['members']:
-            if member.has_key("coop_invitation"):
-                continue
+#         for member in pf['members']:
+#             if member.has_key("coop_invitation"):
+#                 continue
         coop = "Coming soon"
                 
         msg = f"`ID`: {pf['profile_id']}\n`Coop members`:{coop}"
