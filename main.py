@@ -144,10 +144,6 @@ async def _about(ctx):
 async def _suggest(ctx, type, request):
     await commandListener.suggest(client, ctx, type, request)
 
-@slash.slash(name='docs')
-async def _docs(ctx):
-    await ctx.send("https://reddocs.gitbook.io",hidden=True)
-
 # @slash.slash(name='genusername')
 # async def _genusername(ctx, setnick=False):
     # await commandListener.genuser(ctx, setNick)

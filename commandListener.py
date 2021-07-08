@@ -99,6 +99,9 @@ async def msg(message, client):
                 msg = await ctx.send(embed=e)
                 await msg.add_reaction('✅')
                 store('config.json', 'verify', False, str(msg.id))
+    if message.channel.id == 788886124159828012:
+        if '.n' in message.content or '.d' in message.content or '.skills' in message.content or 'sbs guild' in message.content:
+            await message.reply(content='Please use this command in the bot commands channel!')
     # if "@someone" in message.content and message.author.bot == False:
         # g = await message.guild.fetch_members(limit=150).flatten()
         # e = []
@@ -106,7 +109,7 @@ async def msg(message, client):
         # m = None
         # while True:
             # for member in g:
-                # e.append(str(member.id))            
+                # e.append(str(member.id))
             # d = random.choice(e)
             # m = await message.guild.fetch_member(int(d))
             # if m.bot is False: break
