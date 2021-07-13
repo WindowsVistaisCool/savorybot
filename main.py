@@ -1,7 +1,6 @@
 import json
 import random
 import requests
-import hystats
 import string
 import commandListener
 import discord
@@ -78,7 +77,7 @@ async def on_ready():
     def type():
         d = store('config.json', 'activity', True)
         if f:
-            return discord.Game(name='DEV MODE') 
+            return discord.Game(name='test mode (commands don\'t work)')
         elif x == 'l':
             return discord.Activity(type=discord.ActivityType.listening, name=d)
         elif x == 'w':
@@ -100,7 +99,7 @@ async def on_ready():
             return discord.Status.idle
         else:
             return discord.Status.invisible
-    if x != 'n':
+    if x != 'n' or f:
         await client.change_presence(status=stat(), activity=type())
     print("Ready")
 
@@ -160,11 +159,11 @@ async def poll(ctx, *, msg):
 
 @slash.subcommand(base='hy', name='banstats')
 async def _banstats(ctx):
-    await hystats.banstats(ctx)
+    await commandListener.hystats.banstats(ctx)
 
 @slash.subcommand(base='hy', name='counts')
 async def _counts(ctx, type='SKYBLOCK'):
-    await hystats.counts(ctx, type)
+    await commandListener.hystats.counts(ctx, type)
 
 @slash.slash(name='think')
 async def _think(ctx):
@@ -183,11 +182,11 @@ async def _giveaway(ctx, winners, time, prize):
 
 @slash.subcommand(base='hy', name='status')
 async def _status(ctx, username):
-    await hystats.status(client, ctx, username)
+    await commandListener.hystats.status(client, ctx, username)
 
 @slash.subcommand(base='hy', name='profiles')
 async def _profiles(ctx, user):
-    await hystats.profiles(ctx, user)
+    await commandListener.hystats.profiles(ctx, user)
 
 # fix this
 @client.command()
