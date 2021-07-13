@@ -35,6 +35,7 @@ client = commands.Bot(command_prefix=store('config.json', 'pfx', True))
 client.remove_command('help')
 slash = SlashCommand(client)
 header = store('config.json', 'token', True)        
+tmode = store('config.json', 'testMode', True)
 
 def getcolor(clr):
     if clr == "blurple":
@@ -162,8 +163,8 @@ async def _banstats(ctx):
     await commandListener.hystats.banstats(ctx)
 
 @slash.subcommand(base='hy', name='counts')
-async def _counts(ctx, type='SKYBLOCK'):
-    await commandListener.hystats.counts(ctx, type)
+async def _counts(ctx, gamemode='SKYBLOCK'):
+    await commandListener.hystats.counts(ctx, gamemode)
 
 @slash.slash(name='think')
 async def _think(ctx):
@@ -185,8 +186,8 @@ async def _status(ctx, username):
     await commandListener.hystats.status(client, ctx, username)
 
 @slash.subcommand(base='hy', name='profiles')
-async def _profiles(ctx, user):
-    await commandListener.hystats.profiles(ctx, user)
+async def _profiles(ctx, user, profile=None):
+    await commandListener.hystats.profiles(ctx, user, profile)
 
 # fix this
 @client.command()
