@@ -493,7 +493,7 @@ async def apply(client, ctx, ign, skycrypt):
 	if str(ctx.author.id) in e:
 		await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]}`)", hidden=True)
 		return
-	l = store('apps.json', 'deniedGuildApps', True, app=True
+	l = store('apps.json', 'deniedGuildApps', True, app=True)
 	if str(ctx.author.id) in l:
 		await ctx.send("Sorry, your application has already been denied. Talk to a staff member if you need to re-apply.")
 		return
