@@ -67,7 +67,7 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 		elif n is True:
 			x[key] = val
 			e = requests.put(url, json=x, headers=uheaders)
-			return e 
+			return e
 		else:
 			x[key] = val
 			with open(file, 'w') as v:
@@ -428,7 +428,7 @@ async def msg(message, client):
                 await msg.add_reaction('✅')
                 store('config.json', 'verify', False, str(msg.id))
     if message.channel.id == 788886124159828012:
-        if '.n' in message.content or '.d' in message.content or '.skills' in message.content or 'sbs guild' in message.content:
+        if message.startswith('.n') or message.startswith('.d') or message.startswith('.skills') or 'sbs guild' in message.content or message.startswith('.sk') or message.startswith('.stats'):
             await message.reply(content='Please use this command in the bot commands channel!')
     # if "@someone" in message.content and message.author.bot == False:
         # g = await message.guild.fetch_members(limit=150).flatten()
@@ -493,6 +493,10 @@ async def apply(client, ctx, ign, skycrypt):
 	if str(ctx.author.id) in e:
 		await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]}`)", hidden=True)
 		return
+	l = store('apps.json', 'deniedGuildApps', True, app=True
+	if str(ctx.author.id) in l:
+		await ctx.send("Sorry, your application has already been denied. Talk to a staff member if you need to re-apply.")
+		return
 	b = store('apps.json', 'acceptedGuildApps', True, app=True)
 	if str(ctx.author.id) in b:
 		await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
@@ -545,6 +549,31 @@ async def acceptGuild(ctx, appID):
 		await f.edit(content='Application accepted but could not send messages to user')
 		return
 	await f.edit(content="Application accepted")
+
+async def denyApp(ctx, appID):
+	f = await ctx.send("Fetching data from api...")
+	e = store('apps.json', 'guildApps', True, app=True)
+	if appID not in e:
+		await f.edit(content='Could not find that application!')
+		return
+	b = ctx.guild.get_role(831614870256353330)
+	try:
+		m = await ctx.guild.fetch_member(int(appID))
+		await m.remove_roles(b)
+	except:
+		await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
+		store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+		return
+	await f.edit(content='Sending data to API...')
+	store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+	store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
+	e = await ctx.guild.fetch_member(appID)
+	try:
+		e.send(f"Your application to `Red Gladiators` has been denied. You cannot apply again. Talk to a staff member if you have any issues. Reason: {reason}")
+	except:
+		await f.edit(content="Data sent successfully but user has private messages turned off")
+		return
+	await f.edit(content="Application denied")
 
 async def delApp(ctx, appID):
 	if store('config.json', 'testMode', True):

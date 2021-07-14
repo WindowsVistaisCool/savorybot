@@ -28,13 +28,13 @@ def store(file, key=None, read=False, val=None, *, pop=False):
             return
         x[key] = val
         with open(file, 'w') as v:
-            json.dump(x, v, indent=4)    
+            json.dump(x, v, indent=4)
 
 embeds = {}
 client = commands.Bot(command_prefix=store('config.json', 'pfx', True))
 client.remove_command('help')
 slash = SlashCommand(client)
-header = store('config.json', 'token', True)        
+header = store('config.json', 'token', True)
 tmode = store('config.json', 'testMode', True)
 
 def getcolor(clr):
@@ -78,7 +78,7 @@ async def on_ready():
     def type():
         d = store('config.json', 'activity', True)
         if f:
-            return discord.Game(name='test mode (commands don\'t work)')
+            return discord.Game(name='Test mode (commands don\'t work)')
         elif x == 'l':
             return discord.Activity(type=discord.ActivityType.listening, name=d)
         elif x == 'w':
@@ -113,14 +113,14 @@ async def on_command_error(ctx, error):
 async def _apply(ctx, ign, skycrypt):
     await commandListener.apply(client, ctx, ign, skycrypt)
 
-@client.group(name='a')
+@client.group(name='app')
 async def accept(ctx):
     role = ctx.guild.get_role(789592786287915010)
     if ctx.author.id != 392502213341216769 and role not in ctx.author.roles:
         await ctx.send('`CheckFailure:` You do not have permission to do this!')
         return
     await ctx.message.delete()
-    if ctx.invoked_subcommand is None: await ctx.send(f"(bad sub err) example: `{ctx.prefix}a g 1234567890` accepts a guild application with the id of 1234567890")
+    if ctx.invoked_subcommand is None: await ctx.send(f"(bad sub err) example: `{ctx.prefix}app accept  1234567890` accepts a guild application with the id of 1234567890\nto deny an application, run this: `{ctx.prefix}app deny 124567890` which denies that user from creating applications again\nrun this command to pardon them: `{ctx.prefix}acc pardon 1234567890` which will allow them to create applications again")
 
 @accept.command(name='g')
 async def acceptGuild(ctx, appID):
