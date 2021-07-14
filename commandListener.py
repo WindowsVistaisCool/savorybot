@@ -130,14 +130,11 @@ class hystats:
         return d.json()[-1]['name']
 
     # sbprofiles
-    async def profiles(ctx, name, id=None):
-        if id != None:
-            await ctx.send("Sorry, this feature is coming soon!",hidden=True)
-            return
+    async def profiles(ctx, name, id):
         await ctx.defer()
         uuid = hystats.toUUID(name)
         if uuid is False:
-            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username! (Possibly due to rate limited on mojang's servers)",color=discord.Color.red()))
             return
         d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
         if d.status_code == 429 or d.status_code == 521:
@@ -147,13 +144,7 @@ class hystats:
         if f['profiles'] is None:
             await ctx.send(content="That user has not played skyblock!")
             return
-        plen = len(f['profiles'])
-        if plen == 1:
-            pfls = "1 profile was"
-        else:
-            pfls = f"{plen} profiles were"
-        e = discord.Embed(title=f"Profiles for user {name}", description=f"{pfls} detected for {name}\nGet more information about a profile by providing the name in the command!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
-        for pf in f['profiles']:
+        def get_coop(pf):
             coopm = []
             isCoop = False
             for name, member in pf['members'].items():
@@ -168,14 +159,54 @@ class hystats:
             if isCoop == False:
                 coopm[0]["title"] = "Solo Profile"
             coop = ""
+            first = True
             for member in coopm:
                 try:
+                    if first:
+                        coop = f"**{member['name']}** ({member['title']})"
+                        first = False
+                        continue
                     coop = f"{coop}, **{member['name']}** ({member['title']})"
                 except:
                     coop = "Error"
                     break
+            return coop
+        # store('req.json', f)
+        if id != None:
+            pf = ''
+            for pfl in f['profiles']:
+                try:
+                    if pfl['cute_name'].lower() == id or pfl['cute_name'] == id:
+                        pf = pfl
+                        break
+                except:
+                    continue
+            if pf == '':
+                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile!",color=discord.Color.red()))
+                return
+            def try_pass(val, bold=True):
+                try:
+                    if bold:
+                        return f"**{pf['members'][uuid][val]}**"
+                    return f"{pf['members'][uuid][val]}"
+                except:
+                    return "Error getting value (Not completed?)"
+            store('req .json', pf)
+            e = discord.Embed(title=f"{hystats.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
+            e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
+            e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
+            e.add_field(name='Basic info', value=f"`Skill Average`: {}\n`Purse`: **{'{:,.2f}'.format(float(try_pass('coin_purse', False).partition('.')[0]))}**\n`Fairy Souls`: {try_pass('fairy_souls_collected')}\n`Deaths`: {try_pass('death_count')}", inline=False)
+            await ctx.send(embed=e, delete_after=60)
+            return
+        plen = len(f['profiles'])
+        if plen == 1:
+            pfls = "1 profile was"
+        else:
+            pfls = f"{plen} profiles were"
+        e = discord.Embed(title=f"Profiles for user {hystats.toName(uuid)}", description=f"{pfls} detected for {hystats.toName(uuid)}\n\nGet more information about a profile by providing the name in the command!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
+        for pf in f['profiles']:
             # `ID`: {pf['profile_id']}
-            msg = f"`Coop members`: {coop}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
+            msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
             title = pf['cute_name']
             try:
                 if pf['game_mode'] == 'ironman':
@@ -428,7 +459,7 @@ async def msg(message, client):
                 await msg.add_reaction('✅')
                 store('config.json', 'verify', False, str(msg.id))
     if message.channel.id == 788886124159828012:
-        if message.startswith('.n') or message.startswith('.d') or message.startswith('.skills') or 'sbs guild' in message.content or message.startswith('.sk') or message.startswith('.stats'):
+        if message.content.startswith('.n') or message.content.startswith('.d') or message.content.startswith('.skills') or 'sbs guild' in message.content or message.content.startswith('.sk') or message.content.startswith('.stats'):
             await message.reply(content='Please use this command in the bot commands channel!')
     # if "@someone" in message.content and message.author.bot == False:
         # g = await message.guild.fetch_members(limit=150).flatten()
