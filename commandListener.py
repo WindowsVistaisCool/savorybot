@@ -195,7 +195,7 @@ class hystats:
             e = discord.Embed(title=f"{hystats.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
             e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
             e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
-            e.add_field(name='Basic info', value=f"`Skill Average`: {}\n`Purse`: **{'{:,.2f}'.format(float(try_pass('coin_purse', False).partition('.')[0]))}**\n`Fairy Souls`: {try_pass('fairy_souls_collected')}\n`Deaths`: {try_pass('death_count')}", inline=False)
+            e.add_field(name='Basic info', value=f"`Skill Average`: none\n`Purse`: **{'{:,.2f}'.format(float(try_pass('coin_purse', False).partition('.')[0]))}**\n`Fairy Souls`: {try_pass('fairy_souls_collected')}\n`Deaths`: {try_pass('death_count')}", inline=False)
             await ctx.send(embed=e, delete_after=60)
             return
         plen = len(f['profiles'])
