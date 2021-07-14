@@ -120,16 +120,20 @@ async def accept(ctx):
         await ctx.send('`CheckFailure:` You do not have permission to do this!')
         return
     await ctx.message.delete()
-    if ctx.invoked_subcommand is None: await ctx.send(f"(bad sub err) example: `{ctx.prefix}app accept  1234567890` accepts a guild application with the id of 1234567890\nto deny an application, run this: `{ctx.prefix}app deny 124567890` which denies that user from creating applications again\nrun this command to pardon them: `{ctx.prefix}acc pardon 1234567890` which will allow them to create applications again")
+    if ctx.invoked_subcommand is None: await ctx.send(f"(err: invalid command called) example: `{ctx.prefix}app accept 1234567890` accepts a guild application with the id of 1234567890\nto deny an application, run this: `{ctx.prefix}app deny 124567890` which denies that user from creating applications again\nrun this command to pardon them: `{ctx.prefix}app pardon 1234567890` which will allow them to create applications again")
 
-@accept.command(name='g')
+@accept.command(name='accept')
 async def acceptGuild(ctx, appID):
     await commandListener.acceptGuild(ctx, appID)
+
+@accept.command(name='deny')
+async def denyGuild(ctx, appID, *, reason):
+    await commandListener.denyGuild(ctx, appID, reason)
 
 @client.command()
 async def delapp(ctx, appID):
     await commandListener.delApp(ctx, appID)
-    
+
 #slash commands
 @slash.slash(name="about")
 async def _about(ctx):

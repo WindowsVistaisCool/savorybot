@@ -550,7 +550,7 @@ async def acceptGuild(ctx, appID):
 		return
 	await f.edit(content="Application accepted")
 
-async def denyApp(ctx, appID):
+async def denyGuild(ctx, appID, reason):
 	f = await ctx.send("Fetching data from api...")
 	e = store('apps.json', 'guildApps', True, app=True)
 	if appID not in e:
@@ -561,7 +561,7 @@ async def denyApp(ctx, appID):
 		m = await ctx.guild.fetch_member(int(appID))
 		await m.remove_roles(b)
 	except:
-		await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
+		await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
 		store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
 		return
 	await f.edit(content='Sending data to API...')
@@ -569,7 +569,7 @@ async def denyApp(ctx, appID):
 	store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
 	e = await ctx.guild.fetch_member(appID)
 	try:
-		e.send(f"Your application to `Red Gladiators` has been denied. You cannot apply again. Talk to a staff member if you have any issues. Reason: {reason}")
+		e.send(f"Your application to `Red Gladiators` has been denied (by {ctx.author}). You cannot apply again. Talk to a staff member if you have any issues. Reason: {reason}")
 	except:
 		await f.edit(content="Data sent successfully but user has private messages turned off")
 		return
