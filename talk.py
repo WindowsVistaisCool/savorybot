@@ -1,4 +1,5 @@
 import discord
+import asyncio
 from slashrequest import store
 
 client = discord.Client()
@@ -102,7 +103,7 @@ async def commandcheck(message, ctx, lms):
         message = input("Spam Message: ")
         for x in range(int(m)):
             await ctx.send(message)
-            await sleep(0.1)
+            await asyncio.sleep(0.1)
         return "Done"
     # voice commands
     for comm in voicecom:
