@@ -147,6 +147,7 @@ class hystats:
         def get_coop(pf):
             coopm = []
             isCoop = False
+            isCoop2 = False
             for name, member in pf['members'].items():
                 if "coop_invitation" in member:
                     if member["coop_invitation"]["confirmed"] == False:
@@ -155,7 +156,9 @@ class hystats:
                     isCoop = True
                     coopm.append({"name":hystats.toName(name), "title":"Coop Member"})
                 else:
+                    if isCoop2: isCoop = True
                     coopm.append({"name":hystats.toName(name), "title":"Coop Owner",}) 
+                    isCoop2 = True
             if isCoop == False:
                 coopm[0]["title"] = "Solo Profile"
             coop = ""
@@ -184,25 +187,30 @@ class hystats:
             if pf == '':
                 await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile!",color=discord.Color.red()))
                 return
-            def try_pass(val, bold=True):
+            def try_pass(val, bold=True, sub=None):
                 try:
-                    if bold:
+                    if bold and not sub:
                         return f"**{pf['members'][uuid][val]}**"
+                    if sub and not bold:
+                        return f"{pf['members'][uuid][val]}"
                     return f"{pf['members'][uuid][val]}"
                 except:
-                    return "Error getting value (Not completed?)"
-            store('req .json', pf)
+                    return "Error getting value (Incomplete?)"
+            def convert_dec(inp):
+                try:
+                    return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
+                except:
+                    return "Failure converting str-int to float (Unstarted quest/task/stat?)"
+            store('req.json', pf)
             e = discord.Embed(title=f"{hystats.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
             e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
             e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
-            e.add_field(name='Basic info', value=f"`Skill Average`: none\n`Purse`: **{'{:,.2f}'.format(float(try_pass('coin_purse', False).partition('.')[0]))}**\n`Fairy Souls`: {try_pass('fairy_souls_collected')}\n`Deaths`: {try_pass('death_count')}", inline=False)
+            e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
             await ctx.send(embed=e, delete_after=60)
             return
         plen = len(f['profiles'])
-        if plen == 1:
-            pfls = "1 profile was"
-        else:
-            pfls = f"{plen} profiles were"
+        if plen == 1: pfls = "1 profile was"
+        else: pfls = f"{plen} profiles were"
         e = discord.Embed(title=f"Profiles for user {hystats.toName(uuid)}", description=f"{pfls} detected for {hystats.toName(uuid)}\n\nGet more information about a profile by providing the name in the command!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
         for pf in f['profiles']:
             # `ID`: {pf['profile_id']}
