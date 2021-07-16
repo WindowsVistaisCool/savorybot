@@ -37,7 +37,7 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 	if x is None: return
 	if read is not False:
 		if key is None:
-			return
+			return x
 		else:
 			return x[key]
 	elif pop is True:
@@ -174,7 +174,6 @@ class hystats:
                     coop = "Error"
                     break
             return coop
-        # store('req.json', f)
         if id != None:
             pf = ''
             for pfl in f['profiles']:
@@ -187,25 +186,27 @@ class hystats:
             if pf == '':
                 await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile!",color=discord.Color.red()))
                 return
-            def try_pass(val, bold=True, sub=None):
+            def try_pass(val, bold=True, sub=None, coop=False):
                 try:
                     if bold and not sub:
                         return f"**{pf['members'][uuid][val]}**"
-                    if sub and not bold:
-                        return f"{pf['members'][uuid][val]}"
+                    elif sub:
+                        return f"{pf['members'][uuid][val][sub]}"
+                    elif coop:
+                        return f"{pf[val][sub]}"
                     return f"{pf['members'][uuid][val]}"
                 except:
                     return "Error getting value (Incomplete?)"
             def convert_dec(inp):
                 try:
                     return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
-                except:
-                    return "Failure converting str-int to float (Unstarted quest/task/stat?)"
+                except Exception as e:
+                    return f"Failure converting str-int to float (Unstarted quest/task/stat?) [{e}]"
             store('req.json', pf)
             e = discord.Embed(title=f"{hystats.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
             e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
             e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
-            e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
+            e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
             await ctx.send(embed=e, delete_after=60)
             return
         plen = len(f['profiles'])
@@ -439,48 +440,114 @@ class hystats:
             e.add_field(name='TOWERWARS', value=f'Tower wars (solo): `{ptp["modes"]["TOWERWARS_SOLO"]}`\nTower wars (doubles): `{ptp["modes"]["TOWERWARS_TEAM_OF_TWO"]}`')
         await ctx.send(embed=e, delete_after=40)
 
-async def listenerOnRawReactionAdd(payload, client):
-	if payload.user_id == 392502213341216769:
-		m = client.get_channel(payload.channel_id)
-		d = await m.fetch_message(payload.message_id)
-		await d.remove_reaction(payload.emoji, client.user)
-	x = store('config.json', 'verify', True)
-	if payload.message_id == int(x):
-		if payload.emoji.name == "✅":
-			guild = client.get_guild(payload.guild_id)
-			role = guild.get_role(788914323485491232)
-			mrole = guild.get_role(788890991028469792)
-			await payload.member.add_roles(role)
-			await payload.member.remove_roles(mrole)
+class listener:
+    async def onRawReactionAdd(payload, client):
+        # if payload.user_id == 392502213341216769:
+            # m = client.get_channel(payload.channel_id)
+            # d = await m.fetch_message(payload.message_id)
+            # await d.remove_reaction(payload.emoji, client.user)
+        x = store('config.json', 'verify', True)
+        y = store('rroles.json', None, True)
+        if payload.message_id == int(x):
+            if payload.emoji.name == "✅":
+                guild = client.get_guild(payload.guild_id)
+                role = guild.get_role(788914323485491232)
+                mrole = guild.get_role(788890991028469792)
+                await payload.member.add_roles(role)
+                await payload.member.remove_roles(mrole)
+            return
 
-async def msg(message, client):
-    ctx = await client.get_context(message)
-    if message.author.id != 713461668667195553:
-        if message.author.id == 392502213341216769:
-            if message.content == 'embed':
-                await message.delete()
-                e = discord.Embed(title="Verification", color=discord.Color.blurple())
-                e.add_field(name="Verify", value="To verify, react to this message with :white_check_mark:.", inline=False)
-                e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
-                e.set_footer(text="Thank you for joining!")
-                msg = await ctx.send(embed=e)
-                await msg.add_reaction('✅')
-                store('config.json', 'verify', False, str(msg.id))
-    if message.channel.id == 788886124159828012:
-        if message.content.startswith('.n') or message.content.startswith('.d') or message.content.startswith('.skills') or 'sbs guild' in message.content or message.content.startswith('.sk') or message.content.startswith('.stats'):
-            await message.reply(content='Please use this command in the bot commands channel!')
-    # if "@someone" in message.content and message.author.bot == False:
-        # g = await message.guild.fetch_members(limit=150).flatten()
-        # e = []
-        # d = None
-        # m = None
-        # while True:
-            # for member in g:
-                # e.append(str(member.id))
-            # d = random.choice(e)
-            # m = await message.guild.fetch_member(int(d))
-            # if m.bot is False: break
-        # await message.channel.send(f"{message.author.mention}, you pinged {m.mention}!")
+        if str(payload.message_id) in y['rroles']:
+            for msg in y['rroles']:
+                if str(payload.message_id) == msg:
+                    if payload.emoji.name == "✅":
+                        guild = client.get_guild(payload.guild_id)
+                        role = guild.get_role(int(y['rrolesrole'][msg]))
+                        await payload.member.add_roles(role)
+    
+    async def onRawReactionRemove(payload, client):
+        x = store('rroles.json', None, True)
+        if str(payload.message_id) in x['rroles']:
+            for msg in x['rroles']:
+                if str(payload.message_id) == msg:
+                    if payload.emoji.name == "✅":
+                        guild = client.get_guild(payload.guild_id)
+                        member = await guild.fetch_member(payload.user_id)
+                        role = guild.get_role(int(x['rrolesrole'][msg]))
+                        await member.remove_roles(role)
+
+    async def onReady(client):
+        x = store('config.json', 'atype', True)
+        f = store('config.json', 'testMode', True)
+        def type():
+            d = store('config.json', 'activity', True)
+            if f:
+                return discord.Game(name='Test mode (commands don\'t work)')
+            elif x == 'l':
+                return discord.Activity(type=discord.ActivityType.listening, name=d)
+            elif x == 'w':
+                return discord.Activity(type=discord.ActivityType.watching, name=d)
+            elif x == 'c':
+                return discord.Activity(type=discord.ActivityType.competing, name=d)
+            elif x == 's':
+                return discord.Streaming(name=d, url=store('config.json', 'surl', True))
+            else:
+                return discord.Game(name=d)
+        def stat():
+            l = store('config.json', 'status', True)
+            f = store('config.json', 'testMode', True)
+            if l == 'dnd' or f:
+                return discord.Status.dnd
+            elif l == 'online':
+                return discord.Status.online
+            elif l == 'afk':
+                return discord.Status.idle
+            else:
+                return discord.Status.invisible
+        if x != 'n' or f:
+            await client.change_presence(status=stat(), activity=type())
+        print("Ready")
+
+    async def onMessage(message, client):
+        ctx = await client.get_context(message)
+        if message.author.id != 713461668667195553:
+            if message.author.id == 392502213341216769:
+                if message.content == 'embed':
+                    await message.delete()
+                    e = discord.Embed(title="Verification", color=discord.Color.blurple())
+                    e.add_field(name="Verify", value="To verify, react to this message with :white_check_mark:.", inline=False)
+                    e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
+                    e.set_footer(text="Thank you for joining!")
+                    msg = await ctx.send(embed=e)
+                    await msg.add_reaction('✅')
+                    store('config.json', 'verify', False, str(msg.id))
+        if message.channel.id == 788886124159828012:
+            if message.content.startswith('.n') or message.content.startswith('.d') or message.content.startswith('.skills') or 'sbs guild' in message.content or message.content.startswith('.sk') or message.content.startswith('.stats'):
+                await message.reply(content='Please use this command in the bot commands channel!')
+        # if "@someone" in message.content and message.author.bot == False:
+            # g = await message.guild.fetch_members(limit=150).flatten()
+            # e = []
+            # d = None
+            # m = None
+            # while True:
+                # for member in g:
+                    # e.append(str(member.id))
+                # d = random.choice(e)
+                # m = await message.guild.fetch_member(int(d))
+                # if m.bot is False: break
+            # await message.channel.send(f"{message.author.mention}, you pinged {m.mention}!")
+    
+    async def onCommandError(ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
+            await ctx.send(embed=e, delete_after=3)
+        elif isinstance(error, commands.CommandNotFound):
+            await ctx.message.delete()
+            e = discord.Embed(title="Command not found!", color=discord.Color.red())
+            await ctx.send(embed=e, delete_after=3)
+        else:
+            e = discord.Embed(title="An exception occurred", description=f"{error}")
+            await ctx.send(embed=e, delete_after=10)
 
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something
@@ -512,16 +579,6 @@ async def getitem(ctx, item, time, *, username=None, rocks=False):
 	await sleep(10)
 	await d.delete()
 
-async def commandErrorListener(ctx, error):
-	if isinstance(error, commands.CheckFailure):
-		e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
-		await ctx.send(embed=e)
-	elif isinstance(error, commands.CommandNotFound):
-		e = discord.Embed(title="Command not found!", color=discord.Color.red())
-		await ctx.send(embed=e)
-	else:
-		e = discord.Embed(title="An exception occurred", description=f"{error}")
-		await ctx.send(embed=e)
 
 async def apply(client, ctx, ign, skycrypt):
 	if store('config.json', 'testMode', True):
