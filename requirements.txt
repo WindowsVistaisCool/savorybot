@@ -2,3 +2,4 @@ discord
 asyncio
 discord-py-slash-command
 requests
+discord-components

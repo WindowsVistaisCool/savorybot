@@ -5,6 +5,7 @@ import string
 import commandListener
 import discord
 from discord.ext import commands
+from discord_components import DiscordComponents, Button, Select, SelectOption
 from commandListener import store as jbin
 from discord_slash import SlashCommand, utils
 from datetime import datetime
@@ -32,11 +33,61 @@ def store(file, key=None, read=False, val=None, *, pop=False):
 
 client = commands.Bot(command_prefix=store('config.json', 'pfx', True))
 client.remove_command('help')
+dcpnt = DiscordComponents(client)
 slash = SlashCommand(client)
 header = store('config.json', 'token', True)
 tmode = store('config.json', 'testMode', True)
 
+# Bot testing commands
+@slash.subcommand(base='bt', name='info')
+async def _bt_info(ctx):
+    await ctx.send("You're here because you signed up to help me improve this bot! As of this first testing session, there are a few commands, and you will be pinged when a new one arrives. **DO NOT USE THESE COMMANDS OUTSIDE OF THE #bot-testing CHANNEL. YOU WILL RECIEVE A WARNING** If you recieve a message saying \"This interaction failed\", **please let me know as soon as possible**. Thank you for signing up and helping me iron out any bugs!", hidden=True)
+
+@slash.subcommand(base='bt', name='interaction')
+async def _bt_interaction(ctx, type):
+    await ctx.defer()
+    c = client.get_channel(ctx.channel.id)
+    if type == 'b':
+        m = await c.send(f"These are test buttons! ({ctx.author})", components=[Button(label="Test")])
+        while True:
+            interaction = await client.wait_for("button_click", check=lambda i: i.component.label.startswith("Test"))
+            if interaction.user.id != ctx.author.id:
+                mem = await ctx.guild.fetch_member(interaction.user.id)
+                await ctx.send(f"{mem.mention}, this isn't your button!")
+                continue
+            break
+        await m.edit(content=f"{ctx.author.name} clicked a button!", components=[])
+        await interaction.respond(content="You clicked a button!")
+    else:
+        m = await c.send(f"This is an example dropdown menu! ({ctx.author})", components=[Select(placeholder="Select an option...", options=[SelectOption(label="Apple",value="apple"),SelectOption(label="Pear",value="pear"),SelectOption(label="Cucumber",value="cucumber")])])
+        while True:
+            interaction = await client.wait_for("select_option")
+            if interaction.user.id != ctx.author.id:
+                mem = await ctx.guild.fetch_member(interaction.user.id)
+                await ctx.send(f"{mem.mention}, this isn't your menu!")
+                continue
+            break
+        await m.edit(content=f"Expired menu - {ctx.author.name} selected {interaction.component[0].label}",components=[])
+        await interaction.respond(context="You selected an item!")
+
+@slash.subcommand(base='bt', name='hyprofiles')
+async def _bt_hyprofiles(ctx, user):
+    await commandListener.btesting.profiles(client, ctx, user)
+
 # Events
+@client.event
+async def on_button_click(interaction):
+    try:
+        if interaction.component.label == "Delete":
+            await interaction.message.delete()
+        if str(interaction.user.id) != interaction.message.embeds[0].to_dict()['footer']['text'].replace('ID: ',''): return
+        if interaction.component.label == 'Exit (Keep msg)':
+            await interaction.message.edit(components=[])
+        elif interaction.component.label == 'Delete (Delete msg)':
+            await interaction.message.delete()
+    except:
+        pass
+
 @client.event
 async def on_message(message):
     e = await commandListener.listener.onMessage(message, client)

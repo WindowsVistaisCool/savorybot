@@ -3,9 +3,10 @@ import requests
 import random
 import string
 import discord
+from discord_components import DiscordComponents, Button, Select, SelectOption
 from discord.ext import commands
 from datetime import datetime
-from asyncio import sleep
+from asyncio import sleep, TimeoutError
 
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False, specKey=None, specBin=None, n=False):
@@ -134,15 +135,15 @@ class hystats:
         await ctx.defer()
         uuid = hystats.toUUID(name)
         if uuid is False:
-            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username! (Possibly due to rate limited on mojang's servers)",color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()))
             return
         d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
         if d.status_code == 429 or d.status_code == 521:
-            await ctx.send(embed=discord.Embed(title="API Error", description=handleRequest(d.status_code), color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(title="API Error", description=hystats.handleRequest(d.status_code), color=discord.Color.red()))
             return
         f = d.json()
         if f['profiles'] is None:
-            await ctx.send(content="That user has not played skyblock!")
+            await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.red()))
             return
         def get_coop(pf):
             coopm = []
@@ -223,7 +224,7 @@ class hystats:
             except:
                 pass
             e.add_field(name=title, value=msg, inline=False)
-        await ctx.send(embed=e, delete_after=60)
+        await ctx.send(embed=e)
 
     #broken
     def getOnline(name):
@@ -439,6 +440,123 @@ class hystats:
             e.add_field(name='Prototype (lobby & games)', value=f'`{ptp["players"]}`')
             e.add_field(name='TOWERWARS', value=f'Tower wars (solo): `{ptp["modes"]["TOWERWARS_SOLO"]}`\nTower wars (doubles): `{ptp["modes"]["TOWERWARS_TEAM_OF_TWO"]}`')
         await ctx.send(embed=e, delete_after=40)
+
+class btesting:
+    async def profiles(client, ct, name):
+        # placeholder so slash interaction doesn't fail
+        await ct.send("Getting data...",delete_after=3)
+        ctx = client.get_channel(ct.channel.id)
+        uuid = hystats.toUUID(name)
+        if uuid is False:
+            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+            return
+        d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
+        if d.status_code == 429 or d.status_code == 521:
+            await ctx.send(embed=discord.Embed(title="API Error", description=hystats.handleRequest(d.status_code), color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+            return
+        f = d.json()
+        if f['profiles'] is None:
+            await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+            return
+        def get_coop(pf):
+            coopm = []
+            isCoop = False
+            isCoop2 = False
+            for name, member in pf['members'].items():
+                if "coop_invitation" in member:
+                    if member["coop_invitation"]["confirmed"] == False:
+                        coopm.append({"name":hystats.toName(name), "title":"Invited Coop Member"})
+                        continue
+                    isCoop = True
+                    coopm.append({"name":hystats.toName(name), "title":"Coop Member"})
+                else:
+                    if isCoop2: isCoop = True
+                    coopm.append({"name":hystats.toName(name), "title":"Coop Owner",}) 
+                    isCoop2 = True
+            if isCoop == False:
+                coopm[0]["title"] = "Solo Profile"
+            coop = ""
+            first = True
+            for member in coopm:
+                try:
+                    if first:
+                        coop = f"**{member['name']}** ({member['title']})"
+                        first = False
+                        continue
+                    coop = f"{coop}, **{member['name']}** ({member['title']})"
+                except:
+                    coop = "Error"
+                    break
+            return coop
+        plen = len(f['profiles'])
+        if plen == 1: pfls = "1 profile was"
+        else: pfls = f"{plen} profiles were"
+        labels = []
+        e = discord.Embed(title=f"Profiles for user {hystats.toName(uuid)}", description=f"{pfls} detected for {hystats.toName(uuid)}\n\nGet more information about a profile by selecting the name below!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
+        e.set_footer(text=f"ID: {ct.author.id}")
+        for pf in f['profiles']:
+            # `ID`: {pf['profile_id']}
+            msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
+            title = pf['cute_name']
+            labels.append(SelectOption(label=title, value=title.lower()))
+            try:
+                if pf['game_mode'] == 'ironman':
+                    title = title + " **(Ironman)**"
+            except:
+                pass
+            e.add_field(name=title, value=msg, inline=False)
+        de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels), Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
+        while True:
+            try:
+                interaction = await client.wait_for("select_option", timeout=90.0)
+                if interaction.user.id != ct.author.id: continue
+                break
+            except:
+                try:
+                    await de.edit(components=[])
+                except:
+                    pass
+                return
+        await interaction.respond(type=6)
+        await de.edit(content="Loading data...", embeds=[], components=[])
+        id = interaction.component[0].label
+        if id != None:
+            pf = ''
+            for pfl in f['profiles']:
+                try:
+                    if pfl['cute_name'] == id:
+                        pf = pfl
+                        break
+                except:
+                    continue
+            if pf == '':
+                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile! (Internal error, not your fault)",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                return
+            def try_pass(val, bold=True, sub=None, coop=False):
+                try:
+                    if bold and not sub:
+                        return f"**{pf['members'][uuid][val]}**"
+                    elif sub:
+                        return f"{pf['members'][uuid][val][sub]}"
+                    elif coop:
+                        return f"{pf[val][sub]}"
+                    return f"{pf['members'][uuid][val]}"
+                except:
+                    return "Error getting value (Incomplete?)"
+            def convert_dec(inp):
+                try:
+                    return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
+                except:
+                    return f"Failure getting value"
+            # store('req.json', pf)
+            e = discord.Embed(title=f"{hystats.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
+            e.set_footer(text=f"ID: {ct.author.id}")
+            e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
+            e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
+            e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
+            await de.edit(content='', embed=e, components=[Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
+            return
+        
 
 class listener:
     async def onRawReactionAdd(payload, client):
