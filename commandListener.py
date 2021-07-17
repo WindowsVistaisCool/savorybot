@@ -77,185 +77,301 @@ def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=F
 tmode = store('config.json', 'testMode', True)
 
 class hystats:
-    def handleRequest(status_code, err=True):
-        if err == True:
-            # Client errors
-            if status_code == 400:
-                return '**400** Bad Request'
-            elif status_code == 401:
-                return '**401** Invalid Authorization'
-            elif status_code == 403:
-                return '**403** Forbidden'
-            elif status_code == 404:
-                return '**404** Not found'
-            elif status_code == 408:
-                return '**408** Request timed out'
-            elif status_code == 413:
-                return '**413** Payload too large'
-            elif status_code == 418:
-                return '**418** I\'m a teapot! I can\'t brew coffee!'
-            elif status_code == 429:
-                return '**429** Too many requests!'
-            # Server errors
-            elif status_code == 500:
-                return '***500*** Internal Server Error'
-            elif status_code == 502:
-                return '***502*** Bad gateway'
-            elif status_code == 503:
-                return '***503*** Service down'
-            elif status_code == 504:
-                return '***504*** Gateway timeout'
-            # Cloudflare
-            elif status_code == 520:
-                return '**520** Server returned unkown error'
-            elif status_code == 521 or status_code == 523:
-                return f'**{status_code}** Origin is unreachable'
-            elif status_code == 522:
-                return '**522** Connection timed out'
+    class util:
+        def handleRequest(status_code, err=True):
+            if err == True:
+                # Client errors
+                if status_code == 400:
+                    return '**400** Bad Request'
+                elif status_code == 401:
+                    return '**401** Invalid Authorization'
+                elif status_code == 403:
+                    return '**403** Forbidden'
+                elif status_code == 404:
+                    return '**404** Not found'
+                elif status_code == 408:
+                    return '**408** Request timed out'
+                elif status_code == 413:
+                    return '**413** Payload too large'
+                elif status_code == 418:
+                    return '**418** I\'m a teapot! I can\'t brew coffee!'
+                elif status_code == 429:
+                    return '**429** Too many requests!'
+                # Server errors
+                elif status_code == 500:
+                    return '***500*** Internal Server Error'
+                elif status_code == 502:
+                    return '***502*** Bad gateway'
+                elif status_code == 503:
+                    return '***503*** Service down'
+                elif status_code == 504:
+                    return '***504*** Gateway timeout'
+                # Cloudflare
+                elif status_code == 520:
+                    return '**520** Server returned unkown error'
+                elif status_code == 521 or status_code == 523:
+                    return f'**{status_code}** Origin is unreachable'
+                elif status_code == 522:
+                    return '**522** Connection timed out'
+                else:
+                    return
             else:
                 return
-        else:
-            return
 
-    def toUUID(name):
-        d = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{name}")
-        if d.status_code == 204:
-            return False
-        return d.json()["id"]
-    
-    def toName(uuid):
-        # add other features later
-        d = requests.get(f"https://api.mojang.com/user/profiles/{uuid}/names")
-        if d.status_code == 204:
-            return False
-        return d.json()[-1]['name']
+        def getOnline(name):
+            key = store("config.json", "key", True)
+            uuid = hystats.util.toUUID(name)
+            if uuid == False:
+                return ['err', 'Could not find that username!']
+            ruf = requests.get(f'https://api.hypixel.net/status?key={key}&uuid={uuid}')
+            sus = requests.get(f"https://api.hypixel.net/player?key={key}&name={name}")
+            res = sus
+            # print(res.json())
+            if res.status_code == 429 or res.status_code == 521:
+                return ['err', handleRequest(res.status_code)]
+            ruff = ruf.json()
+            sus = sus.json()
+            if sus["success"] is False:
+                print(sus)
+            lout = ruff["session"]["online"]
+            stuff = ruff["session"]
+            time = "Error"
+
+            # doesn't fully work
+            if lout is True:
+                return [True, stuff["gameType"], stuff["mode"], res]
+            else:
+                try:
+                    time = datetime.fromtimestamp(int(sus["player"]["lastLogout"])/1000)
+                    print(time)
+                    return [False, time, res]
+                except:
+                    return [False, "Invalid Timestamp", res]
+        
+        def toUUID(name):
+            d = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{name}")
+            if d.status_code == 204:
+                return False
+            return d.json()["id"]
+        
+        def toName(uuid):
+            # add other features later
+            d = requests.get(f"https://api.mojang.com/user/profiles/{uuid}/names")
+            if d.status_code == 204:
+                return False
+            return d.json()[-1]['name']
 
     # sbprofiles
-    async def profiles(ctx, name, id):
-        await ctx.defer()
-        uuid = hystats.toUUID(name)
-        if uuid is False:
-            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()))
-            return
-        d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
-        if d.status_code == 429 or d.status_code == 521:
-            await ctx.send(embed=discord.Embed(title="API Error", description=hystats.handleRequest(d.status_code), color=discord.Color.red()))
-            return
-        f = d.json()
-        if f['profiles'] is None:
-            await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.red()))
-            return
-        def get_coop(pf):
-            coopm = []
-            isCoop = False
-            isCoop2 = False
-            for name, member in pf['members'].items():
-                if "coop_invitation" in member:
-                    if member["coop_invitation"]["confirmed"] == False:
-                        coopm.append({"name":hystats.toName(name), "title":"Invited Coop Member"})
-                        continue
-                    isCoop = True
-                    coopm.append({"name":hystats.toName(name), "title":"Coop Member"})
-                else:
-                    if isCoop2: isCoop = True
-                    coopm.append({"name":hystats.toName(name), "title":"Coop Owner",}) 
-                    isCoop2 = True
-            if isCoop == False:
-                coopm[0]["title"] = "Solo Profile"
-            coop = ""
-            first = True
-            for member in coopm:
-                try:
-                    if first:
-                        coop = f"**{member['name']}** ({member['title']})"
-                        first = False
-                        continue
-                    coop = f"{coop}, **{member['name']}** ({member['title']})"
-                except:
-                    coop = "Error"
-                    break
-            return coop
-        if id != None:
-            pf = ''
-            for pfl in f['profiles']:
-                try:
-                    if pfl['cute_name'].lower() == id or pfl['cute_name'] == id:
-                        pf = pfl
-                        break
-                except:
-                    continue
-            if pf == '':
-                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile!",color=discord.Color.red()))
+    class profiles:
+        async def legacy(ctx, name, id):
+            await ctx.defer()
+            uuid = hystats.util.toUUID(name)
+            if uuid is False:
+                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()))
                 return
-            def try_pass(val, bold=True, sub=None, coop=False):
+            d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
+            if d.status_code == 429 or d.status_code == 521:
+                await ctx.send(embed=discord.Embed(title="API Error", description=hystats.util.handleRequest(d.status_code), color=discord.Color.red()))
+                return
+            f = d.json()
+            if f['profiles'] is None:
+                await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.red()))
+                return
+            def get_coop(pf):
+                coopm = []
+                isCoop = False
+                isCoop2 = False
+                for name, member in pf['members'].items():
+                    if "coop_invitation" in member:
+                        if member["coop_invitation"]["confirmed"] == False:
+                            coopm.append({"name":hystats.util.toName(name), "title":"Invited Coop Member"})
+                            continue
+                        isCoop = True
+                        coopm.append({"name":hystats.util.toName(name), "title":"Coop Member"})
+                    else:
+                        if isCoop2: isCoop = True
+                        coopm.append({"name":hystats.util.toName(name), "title":"Coop Owner",}) 
+                        isCoop2 = True
+                if isCoop == False:
+                    coopm[0]["title"] = "Solo Profile"
+                coop = ""
+                first = True
+                for member in coopm:
+                    try:
+                        if first:
+                            coop = f"**{member['name']}** ({member['title']})"
+                            first = False
+                            continue
+                        coop = f"{coop}, **{member['name']}** ({member['title']})"
+                    except:
+                        coop = "Error"
+                        break
+                return coop
+            if id != None:
+                pf = ''
+                for pfl in f['profiles']:
+                    try:
+                        if pfl['cute_name'].lower() == id or pfl['cute_name'] == id:
+                            pf = pfl
+                            break
+                    except:
+                        continue
+                if pf == '':
+                    await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile!",color=discord.Color.red()))
+                    return
+                def try_pass(val, bold=True, sub=None, coop=False):
+                    try:
+                        if bold and not sub:
+                            return f"**{pf['members'][uuid][val]}**"
+                        elif sub:
+                            return f"{pf['members'][uuid][val][sub]}"
+                        elif coop:
+                            return f"{pf[val][sub]}"
+                        return f"{pf['members'][uuid][val]}"
+                    except:
+                        return "Error getting value (Incomplete?)"
+                def convert_dec(inp):
+                    try:
+                        return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
+                    except Exception as e:
+                        return f"Failure converting str-int to float (Unstarted quest/task/stat?) [{e}]"
+                store('req.json', pf)
+                e = discord.Embed(title=f"{hystats.util.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
+                e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
+                e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
+                e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
+                await ctx.send(embed=e, delete_after=60)
+                return
+            plen = len(f['profiles'])
+            if plen == 1: pfls = "1 profile was"
+            else: pfls = f"{plen} profiles were"
+            e = discord.Embed(title=f"Profiles for user {hystats.util.toName(uuid)}", description=f"{pfls} detected for {hystats.util.gettoName(uuid)}\n\nGet more information about a profile by providing the name in the command!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
+            for pf in f['profiles']:
+                # `ID`: {pf['profile_id']}
+                msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
+                title = pf['cute_name']
                 try:
-                    if bold and not sub:
-                        return f"**{pf['members'][uuid][val]}**"
-                    elif sub:
-                        return f"{pf['members'][uuid][val][sub]}"
-                    elif coop:
-                        return f"{pf[val][sub]}"
-                    return f"{pf['members'][uuid][val]}"
+                    if pf['game_mode'] == 'ironman':
+                        title = title + " **(Ironman)**"
                 except:
-                    return "Error getting value (Incomplete?)"
-            def convert_dec(inp):
+                    pass
+                e.add_field(name=title, value=msg, inline=False)
+            await ctx.send(embed=e)
+
+        async def profiles(client, ct, name):
+            # placeholder so slash interaction doesn't fail
+            await ct.send("Getting data...",delete_after=3)
+            ctx = client.get_channel(ct.channel.id)
+            uuid = hystats.util.toUUID(name)
+            if uuid is False:
+                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                return
+            d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
+            if d.status_code == 429 or d.status_code == 521:
+                await ctx.send(embed=discord.Embed(title="API Error", description=hystats.util.handleRequest(d.status_code), color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                return
+            f = d.json()
+            if f['profiles'] is None:
+                await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                return
+            def get_coop(pf):
+                coopm = []
+                isCoop = False
+                isCoop2 = False
+                for name, member in pf['members'].items():
+                    if "coop_invitation" in member:
+                        if member["coop_invitation"]["confirmed"] == False:
+                            coopm.append({"name":hystats.util.toName(name), "title":"Invited Coop Member"})
+                            continue
+                        isCoop = True
+                        coopm.append({"name":hystats.util.toName(name), "title":"Coop Member"})
+                    else:
+                        if isCoop2: isCoop = True
+                        coopm.append({"name":hystats.util.toName(name), "title":"Coop Owner",}) 
+                        isCoop2 = True
+                if isCoop == False:
+                    coopm[0]["title"] = "Solo Profile"
+                coop = ""
+                first = True
+                for member in coopm:
+                    try:
+                        if first:
+                            coop = f"**{member['name']}** ({member['title']})"
+                            first = False
+                            continue
+                        coop = f"{coop}, **{member['name']}** ({member['title']})"
+                    except:
+                        coop = "Error"
+                        break
+                return coop
+            plen = len(f['profiles'])
+            if plen == 1: pfls = "1 profile was"
+            else: pfls = f"{plen} profiles were"
+            labels = []
+            e = discord.Embed(title=f"Profiles for user {hystats.util.toName(uuid)}", description=f"{pfls} detected for {hystats.util.toName(uuid)}\n\nGet more information about a profile by selecting the name below!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
+            e.set_footer(text=f"ID: {ct.author.id}")
+            for pf in f['profiles']:
+                # `ID`: {pf['profile_id']}
+                msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
+                title = pf['cute_name']
+                labels.append(SelectOption(label=title, value=title.lower()))
                 try:
-                    return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
-                except Exception as e:
-                    return f"Failure converting str-int to float (Unstarted quest/task/stat?) [{e}]"
-            store('req.json', pf)
-            e = discord.Embed(title=f"{hystats.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
-            e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
-            e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
-            e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
-            await ctx.send(embed=e, delete_after=60)
-            return
-        plen = len(f['profiles'])
-        if plen == 1: pfls = "1 profile was"
-        else: pfls = f"{plen} profiles were"
-        e = discord.Embed(title=f"Profiles for user {hystats.toName(uuid)}", description=f"{pfls} detected for {hystats.toName(uuid)}\n\nGet more information about a profile by providing the name in the command!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
-        for pf in f['profiles']:
-            # `ID`: {pf['profile_id']}
-            msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
-            title = pf['cute_name']
-            try:
-                if pf['game_mode'] == 'ironman':
-                    title = title + " **(Ironman)**"
-            except:
-                pass
-            e.add_field(name=title, value=msg, inline=False)
-        await ctx.send(embed=e)
-
-    #broken
-    def getOnline(name):
-        key = store("config.json", "key", True)
-        uuid = hystats.toUUID(name)
-        if uuid == False:
-            return ['err', 'Could not find that username!']
-        ruf = requests.get(f'https://api.hypixel.net/status?key={key}&uuid={uuid}')
-        sus = requests.get(f"https://api.hypixel.net/player?key={key}&name={name}")
-        res = sus
-        # print(res.json())
-        if res.status_code == 429 or res.status_code == 521:
-            return ['err', handleRequest(res.status_code)]
-        ruff = ruf.json()
-        sus = sus.json()
-        if sus["success"] is False:
-            print(sus)
-        lout = ruff["session"]["online"]
-        stuff = ruff["session"]
-        time = "Error"
-
-        # doesn't fully work
-        if lout is True:
-            return [True, stuff["gameType"], stuff["mode"], res]
-        else:
-            try:
-                time = datetime.fromtimestamp(int(sus["player"]["lastLogout"])/1000)
-                print(time)
-                return [False, time, res]
-            except:
-                return [False, "Invalid Timestamp", res]
+                    if pf['game_mode'] == 'ironman':
+                        title = title + " **(Ironman)**"
+                except:
+                    pass
+                e.add_field(name=title, value=msg, inline=False)
+            de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels), Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
+            while True:
+                try:
+                    interaction = await client.wait_for("select_option", timeout=90.0)
+                    if interaction.user.id != ct.author.id: continue
+                    break
+                except:
+                    try:
+                        await de.edit(components=[])
+                    except:
+                        pass
+                    return
+            await interaction.respond(type=6)
+            await de.edit(content="Loading data...", embeds=[], components=[])
+            id = interaction.component[0].label
+            if id != None:
+                pf = ''
+                for pfl in f['profiles']:
+                    try:
+                        if pfl['cute_name'] == id:
+                            pf = pfl
+                            break
+                    except:
+                        continue
+                if pf == '':
+                    await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile! (Internal error, not your fault)",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                    return
+                def try_pass(val, bold=True, sub=None, coop=False):
+                    try:
+                        if bold and not sub:
+                            return f"**{pf['members'][uuid][val]}**"
+                        elif sub:
+                            return f"{pf['members'][uuid][val][sub]}"
+                        elif coop:
+                            return f"{pf[val][sub]}"
+                        return f"{pf['members'][uuid][val]}"
+                    except:
+                        return "Error getting value (Incomplete?)"
+                def convert_dec(inp):
+                    try:
+                        return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
+                    except:
+                        return f"Failure getting value"
+                # store('req.json', pf)
+                e = discord.Embed(title=f"{hystats.util.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
+                e.set_footer(text=f"ID: {ct.author.id}")
+                e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
+                e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
+                e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
+                await de.edit(content='', embed=e, components=[Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
+                
 
     # add modes later
     def sbmode(g):
@@ -264,7 +380,7 @@ class hystats:
     async def status(client, ctx, user):
         e = discord.Embed(title="Fetching data from api...", color=discord.Color.blurple())
         a = await ctx.send(embeds=[e])
-        o = hystats.getOnline(user)
+        o = hystats.util.getOnline(user)
         color = 0x000000
         description = "Error"
         on = False
@@ -441,123 +557,6 @@ class hystats:
             e.add_field(name='TOWERWARS', value=f'Tower wars (solo): `{ptp["modes"]["TOWERWARS_SOLO"]}`\nTower wars (doubles): `{ptp["modes"]["TOWERWARS_TEAM_OF_TWO"]}`')
         await ctx.send(embed=e, delete_after=40)
 
-class btesting:
-    async def profiles(client, ct, name):
-        # placeholder so slash interaction doesn't fail
-        await ct.send("Getting data...",delete_after=3)
-        ctx = client.get_channel(ct.channel.id)
-        uuid = hystats.toUUID(name)
-        if uuid is False:
-            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
-            return
-        d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
-        if d.status_code == 429 or d.status_code == 521:
-            await ctx.send(embed=discord.Embed(title="API Error", description=hystats.handleRequest(d.status_code), color=discord.Color.red()), components=[Button(label="Delete",style=4)])
-            return
-        f = d.json()
-        if f['profiles'] is None:
-            await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red()), components=[Button(label="Delete",style=4)])
-            return
-        def get_coop(pf):
-            coopm = []
-            isCoop = False
-            isCoop2 = False
-            for name, member in pf['members'].items():
-                if "coop_invitation" in member:
-                    if member["coop_invitation"]["confirmed"] == False:
-                        coopm.append({"name":hystats.toName(name), "title":"Invited Coop Member"})
-                        continue
-                    isCoop = True
-                    coopm.append({"name":hystats.toName(name), "title":"Coop Member"})
-                else:
-                    if isCoop2: isCoop = True
-                    coopm.append({"name":hystats.toName(name), "title":"Coop Owner",}) 
-                    isCoop2 = True
-            if isCoop == False:
-                coopm[0]["title"] = "Solo Profile"
-            coop = ""
-            first = True
-            for member in coopm:
-                try:
-                    if first:
-                        coop = f"**{member['name']}** ({member['title']})"
-                        first = False
-                        continue
-                    coop = f"{coop}, **{member['name']}** ({member['title']})"
-                except:
-                    coop = "Error"
-                    break
-            return coop
-        plen = len(f['profiles'])
-        if plen == 1: pfls = "1 profile was"
-        else: pfls = f"{plen} profiles were"
-        labels = []
-        e = discord.Embed(title=f"Profiles for user {hystats.toName(uuid)}", description=f"{pfls} detected for {hystats.toName(uuid)}\n\nGet more information about a profile by selecting the name below!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
-        e.set_footer(text=f"ID: {ct.author.id}")
-        for pf in f['profiles']:
-            # `ID`: {pf['profile_id']}
-            msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
-            title = pf['cute_name']
-            labels.append(SelectOption(label=title, value=title.lower()))
-            try:
-                if pf['game_mode'] == 'ironman':
-                    title = title + " **(Ironman)**"
-            except:
-                pass
-            e.add_field(name=title, value=msg, inline=False)
-        de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels), Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
-        while True:
-            try:
-                interaction = await client.wait_for("select_option", timeout=90.0)
-                if interaction.user.id != ct.author.id: continue
-                break
-            except:
-                try:
-                    await de.edit(components=[])
-                except:
-                    pass
-                return
-        await interaction.respond(type=6)
-        await de.edit(content="Loading data...", embeds=[], components=[])
-        id = interaction.component[0].label
-        if id != None:
-            pf = ''
-            for pfl in f['profiles']:
-                try:
-                    if pfl['cute_name'] == id:
-                        pf = pfl
-                        break
-                except:
-                    continue
-            if pf == '':
-                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile! (Internal error, not your fault)",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
-                return
-            def try_pass(val, bold=True, sub=None, coop=False):
-                try:
-                    if bold and not sub:
-                        return f"**{pf['members'][uuid][val]}**"
-                    elif sub:
-                        return f"{pf['members'][uuid][val][sub]}"
-                    elif coop:
-                        return f"{pf[val][sub]}"
-                    return f"{pf['members'][uuid][val]}"
-                except:
-                    return "Error getting value (Incomplete?)"
-            def convert_dec(inp):
-                try:
-                    return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
-                except:
-                    return f"Failure getting value"
-            # store('req.json', pf)
-            e = discord.Embed(title=f"{hystats.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
-            e.set_footer(text=f"ID: {ct.author.id}")
-            e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
-            e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
-            e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
-            await de.edit(content='', embed=e, components=[Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
-            return
-        
-
 class listener:
     async def onRawReactionAdd(payload, client):
         # if payload.user_id == 392502213341216769:
@@ -594,6 +593,17 @@ class listener:
                         role = guild.get_role(int(x['rrolesrole'][msg]))
                         await member.remove_roles(role)
 
+    async def onButtonClick(interaction):
+        try:
+            if interaction.component.label == "Delete":
+                await interaction.message.delete()
+            if str(interaction.user.id) != interaction.message.embeds[0].to_dict()['footer']['text'].replace('ID: ',''): return
+            if interaction.component.label == 'Exit (Keep msg)':
+                await interaction.message.edit(components=[])
+            elif interaction.component.label == 'Delete (Delete msg)':
+                await interaction.message.delete()
+        except:
+            pass
     async def onReady(client):
         x = store('config.json', 'atype', True)
         f = store('config.json', 'testMode', True)
@@ -666,6 +676,33 @@ class listener:
         else:
             e = discord.Embed(title="An exception occurred", description=f"{error}")
             await ctx.send(embed=e, delete_after=10)
+
+class btesting:
+    async def btInteraction(client, ctx, type):
+        await ctx.defer()
+        c = client.get_channel(ctx.channel.id)
+        if type == 'b':
+            m = await c.send(f"These are test buttons! ({ctx.author})", components=[Button(label="Test")])
+            while True:
+                interaction = await client.wait_for("button_click", check=lambda i: i.component.label.startswith("Test"))
+                if interaction.user.id != ctx.author.id:
+                    mem = await ctx.guild.fetch_member(interaction.user.id)
+                    await ctx.send(f"{mem.mention}, this isn't your button!")
+                    continue
+                break
+            await m.edit(content=f"{ctx.author.name} clicked a button!", components=[])
+            await interaction.respond(content="You clicked a button!")
+        else:
+            m = await c.send(f"This is an example dropdown menu! ({ctx.author})", components=[Select(placeholder="Select an option...", options=[SelectOption(label="Apple",value="apple"),SelectOption(label="Pear",value="pear"),SelectOption(label="Cucumber",value="cucumber")])])
+            while True:
+                interaction = await client.wait_for("select_option")
+                if interaction.user.id != ctx.author.id:
+                    mem = await ctx.guild.fetch_member(interaction.user.id)
+                    await ctx.send(f"{mem.mention}, this isn't your menu!")
+                    continue
+                break
+            await m.edit(content=f"Expired menu - {ctx.author.name} selected {interaction.component[0].label}",components=[])
+            await interaction.respond(context="You selected an item!")
 
 async def getitem(ctx, item, time, *, username=None, rocks=False):
 	# add item list or something

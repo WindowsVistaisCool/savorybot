@@ -3,6 +3,7 @@ import random
 import requests
 import string
 import commandListener
+import slashrequest
 import discord
 from discord.ext import commands
 from discord_components import DiscordComponents, Button, Select, SelectOption
@@ -38,6 +39,7 @@ slash = SlashCommand(client)
 header = store('config.json', 'token', True)
 tmode = store('config.json', 'testMode', True)
 
+########################################################################
 # Bot testing commands
 @slash.subcommand(base='bt', name='info')
 async def _bt_info(ctx):
@@ -45,48 +47,14 @@ async def _bt_info(ctx):
 
 @slash.subcommand(base='bt', name='interaction')
 async def _bt_interaction(ctx, type):
-    await ctx.defer()
-    c = client.get_channel(ctx.channel.id)
-    if type == 'b':
-        m = await c.send(f"These are test buttons! ({ctx.author})", components=[Button(label="Test")])
-        while True:
-            interaction = await client.wait_for("button_click", check=lambda i: i.component.label.startswith("Test"))
-            if interaction.user.id != ctx.author.id:
-                mem = await ctx.guild.fetch_member(interaction.user.id)
-                await ctx.send(f"{mem.mention}, this isn't your button!")
-                continue
-            break
-        await m.edit(content=f"{ctx.author.name} clicked a button!", components=[])
-        await interaction.respond(content="You clicked a button!")
-    else:
-        m = await c.send(f"This is an example dropdown menu! ({ctx.author})", components=[Select(placeholder="Select an option...", options=[SelectOption(label="Apple",value="apple"),SelectOption(label="Pear",value="pear"),SelectOption(label="Cucumber",value="cucumber")])])
-        while True:
-            interaction = await client.wait_for("select_option")
-            if interaction.user.id != ctx.author.id:
-                mem = await ctx.guild.fetch_member(interaction.user.id)
-                await ctx.send(f"{mem.mention}, this isn't your menu!")
-                continue
-            break
-        await m.edit(content=f"Expired menu - {ctx.author.name} selected {interaction.component[0].label}",components=[])
-        await interaction.respond(context="You selected an item!")
-
-@slash.subcommand(base='bt', name='hyprofiles')
-async def _bt_hyprofiles(ctx, user):
-    await commandListener.btesting.profiles(client, ctx, user)
+    await commandListener.btesting.btInteraction(client, ctx, type)
+    
+########################################################################
 
 # Events
 @client.event
 async def on_button_click(interaction):
-    try:
-        if interaction.component.label == "Delete":
-            await interaction.message.delete()
-        if str(interaction.user.id) != interaction.message.embeds[0].to_dict()['footer']['text'].replace('ID: ',''): return
-        if interaction.component.label == 'Exit (Keep msg)':
-            await interaction.message.edit(components=[])
-        elif interaction.component.label == 'Delete (Delete msg)':
-            await interaction.message.delete()
-    except:
-        pass
+    await commandListener.listener.onButtonClick(interaction)
 
 @client.event
 async def on_message(message):
@@ -109,20 +77,16 @@ async def on_ready():
 async def on_command_error(ctx, error):
     await commandListener.listener.onCommandError(ctx, error)
 
-# Commands 
-
 ########################################################################
+
 # Applications
 @slash.slash(name='apply')
 async def _apply(ctx, ign, skycrypt):
     await commandListener.apply(client, ctx, ign, skycrypt)
 
 @client.group(name='app')
+@commands.has_role("Staff")
 async def accept(ctx):
-    role = ctx.guild.get_role(789592786287915010)
-    if ctx.author.id != 392502213341216769 and role not in ctx.author.roles:
-        await ctx.send('`CheckFailure:` You do not have permission to do this!')
-        return
     await ctx.message.delete()
     if ctx.invoked_subcommand is None: await ctx.send(f"(err: invalid command called) example: `{ctx.prefix}app accept 1234567890` accepts a guild application with the id of 1234567890\nto deny an application, run this: `{ctx.prefix}app deny 124567890` which denies that user from creating applications again\nrun this command to pardon them: `{ctx.prefix}app pardon 1234567890` which will allow them to create applications again")
 
@@ -137,9 +101,9 @@ async def denyGuild(ctx, appID, *, reason):
 @client.command()
 async def delapp(ctx, appID):
     await commandListener.delApp(ctx, appID)
-########################################################################
 
 ########################################################################
+
 # HYSTATS
 @slash.subcommand(base='hy', name='banstats')
 async def _banstats(ctx):
@@ -155,7 +119,8 @@ async def _status(ctx, username):
 
 @slash.subcommand(base='hy', name='profiles')
 async def _profiles(ctx, user, profile=None):
-    await commandListener.hystats.profiles(ctx, user, profile)
+    await commandListener.hystats.profiles.profiles(client, ctx, user)
+
 ########################################################################
 
 # Default member stuff
@@ -253,6 +218,25 @@ async def purge(ctx, message):
     await ctx.message.delete()
     await ctx.channel.purge(limit=int(message))
 
+# btesting
+@client.group()
+@commands.is_owner()
+async def bt(ctx):
+    await ctx.message.delete()
+    if ctx.invoked_subcommand is None:
+        await ctx.send("Invalid sub")
+
+@bt.command(name='enable')
+async def bt_enable(ctx, roleid):
+    slashrequest.sc.post(store('config.json', 'bt', True))
+    e = slashrequest.sc.get('bt')['id']
+    slashrequest.sc.perm(e, [roleid], [True])
+    await ctx.send("Added bot testing commands")
+
+@bt.command(name='disable')
+async def bt_disable(ctx):
+    slashrequest.sc.rem('bt')
+    await ctx.send("Removed bot testing commands")
 
 # Reaction roles (owner-only)
 @client.command()
@@ -277,6 +261,7 @@ async def rrdel(ctx, messageid):
 	x["rrolesrole"].pop(messageid)
 	store('rroles.json', x)
 	await ctx.send("Reaction role removed", delete_after=1)
+    
 ########################################################################
 
 # Unused

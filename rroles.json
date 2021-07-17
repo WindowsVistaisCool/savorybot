@@ -1,12 +1,10 @@
 {
     "rroles": {
         "none": null,
-        "865621941170864128": "React for DJ role (to be able to use music commands like !fs)",
-	"865679956537114631": "React to gain the Bot Testing Role"
+        "865621941170864128": "React for DJ role (to be able to use music commands like !fs)"
     },
     "rrolesrole": {
         "none": null,
-        "865621941170864128": "865611335807008788",
-	"865679956537114631": "865679482357940234"
+        "865621941170864128": "865611335807008788"
     }
 }
