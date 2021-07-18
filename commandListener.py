@@ -264,15 +264,15 @@ class hystats:
             ctx = client.get_channel(ct.channel.id)
             uuid = hystats.util.toUUID(name)
             if uuid is False:
-                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()), components=[Button(label="Remove",style=4)])
                 return
             d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
             if d.status_code == 429 or d.status_code == 521:
-                await ctx.send(embed=discord.Embed(title="API Error", description=hystats.util.handleRequest(d.status_code), color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                await ctx.send(embed=discord.Embed(title="API Error", description=hystats.util.handleRequest(d.status_code), color=discord.Color.red()), components=[Button(label="Remove",style=4)])
                 return
             f = d.json()
             if f['profiles'] is None:
-                await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red()), components=[Button(label="Delete",style=4)])
+                await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red()), components=[Button(label="Remove",style=4)])
                 return
             def get_coop(pf):
                 coopm = []
@@ -321,7 +321,7 @@ class hystats:
                 except:
                     pass
                 e.add_field(name=title, value=msg, inline=False)
-            de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels), Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
+            de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels), Button(label="Exit"), Button(label="Delete",style=4)])
             while True:
                 try:
                     interaction = await client.wait_for("select_option", timeout=90.0)
@@ -336,41 +336,41 @@ class hystats:
             await interaction.respond(type=6)
             await de.edit(content="Loading data...", embeds=[], components=[])
             id = interaction.component[0].label
-            if id != None:
-                pf = ''
-                for pfl in f['profiles']:
-                    try:
-                        if pfl['cute_name'] == id:
-                            pf = pfl
-                            break
-                    except:
-                        continue
-                if pf == '':
-                    await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile! (Internal error, not your fault)",color=discord.Color.red()), components=[Button(label="Delete",style=4)])
-                    return
-                def try_pass(val, bold=True, sub=None, coop=False):
-                    try:
-                        if bold and not sub:
-                            return f"**{pf['members'][uuid][val]}**"
-                        elif sub:
-                            return f"{pf['members'][uuid][val][sub]}"
-                        elif coop:
-                            return f"{pf[val][sub]}"
-                        return f"{pf['members'][uuid][val]}"
-                    except:
-                        return "Error getting value (Incomplete?)"
-                def convert_dec(inp):
-                    try:
-                        return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
-                    except:
-                        return f"Failure getting value"
-                # store('req.json', pf)
-                e = discord.Embed(title=f"{hystats.util.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
-                e.set_footer(text=f"ID: {ct.author.id}")
-                e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
-                e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
-                e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
-                await de.edit(content='', embed=e, components=[Button(label="Exit (Keep msg)"), Button(label="Delete (Delete msg)",style=4)])
+            pf = ''
+            for pfl in f['profiles']:
+                try:
+                    if pfl['cute_name'] == id:
+                        pf = pfl
+                        break
+                except:
+                    continue
+            if pf == '':
+                await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile! (Internal error, not your fault)",color=discord.Color.red()), components=[Button(label="Remove",style=4)])
+                return
+            def try_pass(val, bold=True, sub=None, coop=False):
+                try:
+                    if bold and not sub:
+                        return f"**{pf['members'][uuid][val]}**"
+                    elif sub:
+                        return f"{pf['members'][uuid][val][sub]}"
+                    elif coop:
+                        return f"{pf[val][sub]}"
+                    return f"{pf['members'][uuid][val]}"
+                except:
+                    return "Error getting value (Incomplete?)"
+            def convert_dec(inp):
+                try:
+                    # used to convert floats to human readable numbers
+                    return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
+                except:
+                    return f"Failure getting value"
+            # store('req.json', pf)
+            e = discord.Embed(title=f"{hystats.util.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
+            e.set_footer(text=f"ID: {ct.author.id}")
+            e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
+            e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
+            e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
+            await de.edit(content='', embed=e, components=[Button(label="Exit"), Button(label="Delete",style=4)])
                 
 
     # add modes later
@@ -563,17 +563,7 @@ class listener:
             # m = client.get_channel(payload.channel_id)
             # d = await m.fetch_message(payload.message_id)
             # await d.remove_reaction(payload.emoji, client.user)
-        x = store('config.json', 'verify', True)
         y = store('rroles.json', None, True)
-        if payload.message_id == int(x):
-            if payload.emoji.name == "✅":
-                guild = client.get_guild(payload.guild_id)
-                role = guild.get_role(788914323485491232)
-                mrole = guild.get_role(788890991028469792)
-                await payload.member.add_roles(role)
-                await payload.member.remove_roles(mrole)
-            return
-
         if str(payload.message_id) in y['rroles']:
             for msg in y['rroles']:
                 if str(payload.message_id) == msg:
@@ -595,12 +585,30 @@ class listener:
 
     async def onButtonClick(interaction):
         try:
-            if interaction.component.label == "Delete":
+                label = interaction.component.label
+        except:
+            pass
+        try:
+            if label == "Verify":
+                role = interaction.message.guild.get_role(788914323485491232)
+                mrole = interaction.message.guild.get_role(788890991028469792)
+                member = await interaction.message.guild.fetch_member(interaction.user.id)
+                await member.add_roles(role)
+                await member.remove_roles(mrole)
+                await interaction.respond(type=6)
+            elif interaction.component.id == "deverify":
+                role = interaction.message.guild.get_role(788914323485491232)
+                mrole = interaction.message.guild.get_role(788890991028469792)
+                member = await interaction.message.guild.fetch_member(interaction.user.id)
+                await member.add_roles(mrole)
+                await member.remove_roles(role)
+                await interaction.respond(type=6)
+            elif label == "Remove":
                 await interaction.message.delete()
             if str(interaction.user.id) != interaction.message.embeds[0].to_dict()['footer']['text'].replace('ID: ',''): return
-            if interaction.component.label == 'Exit (Keep msg)':
+            if label == 'Exit':
                 await interaction.message.edit(components=[])
-            elif interaction.component.label == 'Delete (Delete msg)':
+            elif label == 'Delete':
                 await interaction.message.delete()
         except:
             pass
@@ -643,14 +651,13 @@ class listener:
                 if message.content == 'embed':
                     await message.delete()
                     e = discord.Embed(title="Verification", color=discord.Color.blurple())
-                    e.add_field(name="Verify", value="To verify, react to this message with :white_check_mark:.", inline=False)
+                    e.add_field(name="Verify", value="To verify, click the button below. If you do not see the button or get a `This interaction failed` message, please update your discord app or talk to `ruffmann#2668`.", inline=False)
                     e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
                     e.set_footer(text="Thank you for joining!")
-                    msg = await ctx.send(embed=e)
-                    await msg.add_reaction('✅')
-                    store('config.json', 'verify', False, str(msg.id))
+                    d = await ctx.send(embed=e, components=[Button(label='Verify', style=1)])
+                    store('config.json', 'verifyV2', val=f'{d.id}')
         if message.channel.id == 788886124159828012:
-            if message.content.startswith('.n') or message.content.startswith('.d') or message.content.startswith('.skills') or 'sbs guild' in message.content or message.content.startswith('.sk') or message.content.startswith('.stats'):
+            if message.content.startswith('.n') or message.content.startswith('.d') or 'sbs guild' in message.content or message.content.startswith('.sk') or message.content.startswith('.stats'):
                 await message.reply(content='Please use this command in the bot commands channel!')
         # if "@someone" in message.content and message.author.bot == False:
             # g = await message.guild.fetch_members(limit=150).flatten()
@@ -661,7 +668,7 @@ class listener:
                 # for member in g:
                     # e.append(str(member.id))
                 # d = random.choice(e)
-                # m = await message.guild.fetch_member(int(d))
+            # m = await message.guild.fetch_member(int(d))
                 # if m.bot is False: break
             # await message.channel.send(f"{message.author.mention}, you pinged {m.mention}!")
     
@@ -922,6 +929,3 @@ async def suggest(client, ctx, type, request):
 # 			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
 # 			await ctx.send(f"Added 2nd word to index (`{str}`)",hidden=True)
 # 			return
-
-async def githubVer(ctx):
-	await ctx.send(content="Sorry, but this command is not functional at the moment!",hidden=True)

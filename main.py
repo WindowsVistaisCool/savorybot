@@ -218,6 +218,12 @@ async def purge(ctx, message):
     await ctx.message.delete()
     await ctx.channel.purge(limit=int(message))
 
+@client.command()
+@commands.is_owner()
+async def deverify(ctx):
+    await ctx.message.delete()
+    await ctx.send("lmfao click the button below to get clowned on", components=[Button(emoji=client.get_emoji(815818057359687691), id="deverify"),Button(label="Remove", style=4)])
+
 # btesting
 @client.group()
 @commands.is_owner()
