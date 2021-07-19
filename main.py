@@ -81,24 +81,24 @@ async def on_command_error(ctx, error):
 
 # Applications
 @slash.slash(name='apply')
-async def _apply(ctx, ign, skycrypt):
-    await commandListener.apply(client, ctx, ign, skycrypt)
+async def _apply(ctx, ign):
+    await commandListener.apply(client, ctx, ign)
 
 @client.group(name='app')
 @commands.has_role("Staff")
 async def accept(ctx):
     await ctx.message.delete()
-    if ctx.invoked_subcommand is None: await ctx.send(f"(err: invalid command called) example: `{ctx.prefix}app accept 1234567890` accepts a guild application with the id of 1234567890\nto deny an application, run this: `{ctx.prefix}app deny 124567890` which denies that user from creating applications again\nrun this command to pardon them: `{ctx.prefix}app pardon 1234567890` which will allow them to create applications again")
+    if ctx.invoked_subcommand is None: await ctx.send(f"(err: invalid command called) example: `{ctx.prefix}app accept 1234567890` accepts a guild application with the id of 1234567890\nrun this command to delete an application: `{ctx.prefix}app del 1234567890` which will allow the user to create another application\n use the buttons on the application message to deny")
 
 @accept.command(name='accept')
 async def acceptGuild(ctx, appID):
     await commandListener.acceptGuild(ctx, appID)
 
-@accept.command(name='deny')
-async def denyGuild(ctx, appID, *, reason):
-    await commandListener.denyGuild(ctx, appID, reason)
+# @accept.command(name='deny')
+# async def denyGuild(ctx, appID, *, reason):
+    # await commandListener.denyGuild(ctx, appID, reason)
 
-@client.command()
+@accept.command(name='del')
 async def delapp(ctx, appID):
     await commandListener.delApp(ctx, appID)
 
@@ -128,10 +128,6 @@ async def _profiles(ctx, user, profile=None):
 async def _about(ctx):
     await commandListener.about(ctx)
 
-@slash.slash(name="suggest")
-async def _suggest(ctx, type, request):
-    await commandListener.suggest(client, ctx, type, request)
-
 # add accept/deny stuff
 @slash.slash(name='giveaway')
 async def _giveaway(ctx, winners, time, prize):
@@ -141,7 +137,7 @@ async def _giveaway(ctx, winners, time, prize):
     e.add_field(name="Winners", value=f"```{winners}```", inline=False)
     e.add_field(name="Time", value=f"```{time}```", inline=False)
     e.add_field(name="Prize", value=prize, inline=False)
-    await d.send("<@&840038424332337202>", embed=e)
+    await d.send("<@&840038424332337202>", embed=e, components=[Button(label="Deny",disabled=True,style=4,id="giveaway_deny")])
     await ctx.send("Your request has been sent", hidden=True)
 
 ########################################################################
@@ -220,9 +216,19 @@ async def purge(ctx, message):
 
 @client.command()
 @commands.is_owner()
-async def deverify(ctx):
+async def clown(ctx):
     await ctx.message.delete()
-    await ctx.send("lmfao click the button below to get clowned on", components=[Button(emoji=client.get_emoji(815818057359687691), id="deverify"),Button(label="Remove", style=4)])
+    await ctx.send("lmfao click the button below to get clowned on", components=[Button(emoji=client.get_emoji(815818057359687691), id="deverify")])
+
+@client.command()
+@commands.is_owner()
+async def genbutton(ctx, label="Click me", id=None, message="Generated button"):
+    await ctx.message.delete()
+    if id:
+        await ctx.send(message, components=[Button(label=label, id=id)])
+    else:
+        await ctx.send(message, components=[Button(label=label, id=id)])
+
 
 # btesting
 @client.group()

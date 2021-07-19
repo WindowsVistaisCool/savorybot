@@ -10,69 +10,69 @@ from asyncio import sleep, TimeoutError
 
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False, specKey=None, specBin=None, n=False):
-	ke = specKey
-	bi = specBin
-	if specKey is None:
-		ke = "$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu"
-	if specBin is None:
-		bi = "6084ce3c5210f622be390873"
-	rheaders = {
-		'X-Master-Key': ke
-	}
-	uheaders = {
-		'Content-Type': 'application/json',
-		'X-Master-Key': ke
-	}
-	rurl = f"https://api.jsonbin.io/v3/b/{bi}/latest"
-	url = f"https://api.jsonbin.io/v3/b/{bi}"
-	def get_read():
-			x = requests.get(rurl, headers=rheaders, json=None).json()
-			return x
-	x = None
-	if app or n:
-		x = get_read()['record']
-		# print(x)
-	else:
-		with open(file, 'r') as v:
-			x = json.load(v)
-	if x is None: return
-	if read is not False:
-		if key is None:
-			return x
-		else:
-			return x[key]
-	elif pop is True:
-		if app is True:
-			x[key].pop(appKey)
-			e = requests.put(url, json=x, headers=uheaders)
-			# print(e.text)
-			return
-		elif n is True:
-			x.pop(key)
-			e = requests.put(url, json=x, headers=uheaders)
-			return e
-		else:
-			return
-	else:
-		if val is None:
-			with open(file, 'w') as v:
-				json.dump(key, v, indent=4)
-			return
-		if app is True:
-			x[key][appKey] = val
-			# print(x)
-			e = requests.put(url, json=x, headers=uheaders)
-			# print(e.text)
-			# print(get_read())
-			return
-		elif n is True:
-			x[key] = val
-			e = requests.put(url, json=x, headers=uheaders)
-			return e
-		else:
-			x[key] = val
-			with open(file, 'w') as v:
-				json.dump(x, v, indent=4)
+    ke = specKey
+    bi = specBin
+    if specKey is None:
+        ke = "$2b$10$H7xSlAq9QTHZmA3sgSfCK.kAMAk98k5uxSG1GlAPUj/rv5Yl2jZYu"
+    if specBin is None:
+        bi = "6084ce3c5210f622be390873"
+    rheaders = {
+        'X-Master-Key': ke
+    }
+    uheaders = {
+        'Content-Type': 'application/json',
+        'X-Master-Key': ke
+    }
+    rurl = f"https://api.jsonbin.io/v3/b/{bi}/latest"
+    url = f"https://api.jsonbin.io/v3/b/{bi}"
+    def get_read():
+            x = requests.get(rurl, headers=rheaders, json=None).json()
+            return x
+    x = None
+    if app or n:
+        x = get_read()['record']
+        # print(x)
+    else:
+        with open(file, 'r') as v:
+            x = json.load(v)
+    if x is None: return
+    if read is not False:
+        if key is None:
+            return x
+        else:
+            return x[key]
+    elif pop is True:
+        if app is True:
+            x[key].pop(appKey)
+            e = requests.put(url, json=x, headers=uheaders)
+            # print(e.text)
+            return
+        elif n is True:
+            x.pop(key)
+            e = requests.put(url, json=x, headers=uheaders)
+            return e
+        else:
+            return
+    else:
+        if val is None:
+            with open(file, 'w') as v:
+                json.dump(key, v, indent=4)
+            return
+        if app is True:
+            x[key][appKey] = val
+            # print(x)
+            e = requests.put(url, json=x, headers=uheaders)
+            # print(e.text)
+            # print(get_read())
+            return
+        elif n is True:
+            x[key] = val
+            e = requests.put(url, json=x, headers=uheaders)
+            return e
+        else:
+            x[key] = val
+            with open(file, 'w') as v:
+                json.dump(x, v, indent=4)
 
 tmode = store('config.json', 'testMode', True)
 
@@ -143,7 +143,6 @@ class hystats:
             else:
                 try:
                     time = datetime.fromtimestamp(int(sus["player"]["lastLogout"])/1000)
-                    print(time)
                     return [False, time, res]
                 except:
                     return [False, "Invalid Timestamp", res]
@@ -214,7 +213,6 @@ class hystats:
             else: pfls = f"{plen} profiles were"
             labels = []
             e = discord.Embed(title=f"Profiles for user {hystats.util.toName(uuid)}", description=f"{pfls} detected for {hystats.util.toName(uuid)}\n\nGet more information about a profile by selecting the name below!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
-            e.set_footer(text=f"ID: {ct.author.id}")
             for pf in f['profiles']:
                 # `ID`: {pf['profile_id']}
                 msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
@@ -226,7 +224,7 @@ class hystats:
                 except:
                     pass
                 e.add_field(name=title, value=msg, inline=False)
-            de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels), [Button(label="Exit"), Button(label="Delete",style=4)]])
+            de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels)])
             while True:
                 try:
                     interaction = await client.wait_for("select_option", timeout=90.0)
@@ -271,11 +269,10 @@ class hystats:
                     return f"Failure getting value"
             # store('req.json', pf)
             e = discord.Embed(title=f"{hystats.util.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
-            e.set_footer(text=f"ID: {ct.author.id}")
             e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
             e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
             e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
-            await de.edit(content='', embed=e, components=[[Button(label="Exit"), Button(label="Delete",style=4)]])
+            await de.edit(content='', embed=e, components=[[Button(label="Exit", id=f"{ct.author.id}"), Button(label="Delete",style=4, id=f"{ct.author.id}")]])
                 
 
     # add modes later
@@ -491,29 +488,90 @@ class listener:
     async def onButtonClick(interaction):
         try:
                 label = interaction.component.label
+                ide = interaction.component.id
         except:
-            pass
+            print("error setting id")
+            ide = None
         try:
-            if label == "Verify":
+            if label == "Verify" or ide == "verify":
                 role = interaction.message.guild.get_role(788914323485491232)
                 mrole = interaction.message.guild.get_role(788890991028469792)
                 member = await interaction.message.guild.fetch_member(interaction.user.id)
                 await member.add_roles(role)
                 await member.remove_roles(mrole)
                 await interaction.respond(type=6)
-            elif interaction.component.id == "deverify":
-                role = interaction.message.guild.get_role(788914323485491232)
-                mrole = interaction.message.guild.get_role(788890991028469792)
-                member = await interaction.message.guild.fetch_member(interaction.user.id)
-                await member.add_roles(mrole)
-                await member.remove_roles(role)
+            elif label == "Accept App":
+                ctx = interaction.message.guild.get_channel(831579949415530527)
                 await interaction.respond(type=6)
-            elif label == "Remove":
+                f = await ctx.send("Fetching data from api...")
+                e = store('apps.json', 'guildApps', True, app=True)
+                if ide not in e:
+                    await f.edit(content="Could not find that application!")
+                    return
+                r = ctx.guild.get_role(789590790669205536)
+                b = ctx.guild.get_role(831614870256353330)
+                try:
+                    m = await ctx.guild.fetch_member(int(ide))
+                    await m.add_roles(r)
+                    await m.remove_roles(b)
+                except:
+                    await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
+                    await interaction.message.delete()
+                    store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+                    return
+                await f.edit(content="Sending data to API...")
+                store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+                store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=ide)
+                e = await ctx.guild.fetch_member(ide)
+                try:
+                    await e.send("Your application for `Red Gladiators` has been accepted! Head over to the server to check it out!")
+                except:
+                    await f.edit(content='Application accepted but could not send messages to user')
+                    return
+                await f.edit(content="Application accepted")
+            elif label == "Deny App":
+                ctx = interaction.message.guild.get_channel(831579949415530527)
+                await interaction.respond(type=6)
+                f = await ctx.send("Fetching data from api...")
+                e = store('apps.json', 'guildApps', True, app=True)
+                if ide not in e:
+                    await f.edit(content='Could not find that application!')
+                    return
+                b = ctx.guild.get_role(831614870256353330)
+                try:
+                    m = await ctx.guild.fetch_member(int(ide))
+                    await m.remove_roles(b)
+                except:
+                    await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
+                    await interaction.message.delete()
+                    store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+                    return
+                await f.edit(content='Sending data to API...')
+                store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+                store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=ide)
+                e = await ctx.guild.fetch_member(ide)
+                try:
+                    await e.send(f"Your application to `Red Gladiators` has been denied (by {interaction.user}). You cannot apply again. Talk to a staff member if you have any issues.")
+                except:
+                    await f.edit(content="Data sent successfully but user has private messages turned off")
+                    return
+                await f.edit(content="Application denied")
+            if label == "Remove" or ide == "remove":
                 await interaction.message.delete()
-            if str(interaction.user.id) != interaction.message.embeds[0].to_dict()['footer']['text'].replace('ID: ',''): return
-            if label == 'Exit':
+            try:
+                if ide == "deverify":
+                    role = interaction.message.guild.get_role(788914323485491232)
+                    mrole = interaction.message.guild.get_role(788890991028469792)
+                    member = await interaction.message.guild.fetch_member(interaction.user.id)
+                    await member.add_roles(mrole)
+                    await member.remove_roles(role)
+                    await interaction.respond(type=7, content=f"LMFAOOOOOO L L L L {member.name} JUST GOT CLWOON'd ON L L L L L L L GET L KID")
+            except:
+                pass
+            if str(interaction.user.id) != interaction.component.id: return
+            if label == 'Exit' or ide == "exit":
                 await interaction.message.edit(components=[])
-            elif label == 'Delete':
+            elif label == 'Delete' or ide == "delete":
                 await interaction.message.delete()
         except:
             pass
@@ -617,223 +675,225 @@ class btesting:
             await interaction.respond(context="You selected an item!")
 
 async def getitem(ctx, item, time, *, username=None, rocks=False):
-	# add item list or something
-	def genuser():
-		rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
-		randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
-		username = ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
-		return username
-	def getname():
-		if username is None:
-			e = genuser()
-			return e
-		else:
-			return username
-	locations = ['Graveyard', 'Castle', 'Wizard Tower', 'Barn', 'Dark Auction', 'Auction House', 'Lumber Merchant', 'Plumber Joe\'s House', 'Community Center', 'Jacob\'s House', 'Catacombs Entrance', 'Coal Mines', 'Bank', 'Builder\'s House', 'Maddox the Slayer', 'Tia the Fairy']
-	location = random.choice(locations)
-	e = discord.Embed(title="Dropped item(s) were found!", color=discord.Color.green(), description=f"Hurry to pick it up at the `{location}` in `Hub {random.randint(1, 40)}` before it dissapears!", timestamp=datetime.utcnow())
-	if rocks is True:
-		for x in range(8):
-			e.add_field(name=f"`{item}` ({x + 1})", value=f"Dropped by `{getname()}`", inline=False)
-	else:
-		e.add_field(name=f"`{item}`", value=f"Dropped by `{getname()}`")
-	e.set_footer(text=f"{time} seconds!")
-	d = await ctx.send(embeds=[e])
-	await sleep(time)
-	g = discord.Embed(title="The item disappeared!", color=discord.Color.red())
-	e.set_footer(text="Rip item")
-	await d.edit(embed=g)
-	await sleep(10)
-	await d.delete()
+    # add item list or something
+    def genuser():
+        rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
+        randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
+        username = ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
+        return username
+    def getname():
+        if username is None:
+            e = genuser()
+            return e
+        else:
+            return username
+    locations = ['Graveyard', 'Castle', 'Wizard Tower', 'Barn', 'Dark Auction', 'Auction House', 'Lumber Merchant', 'Plumber Joe\'s House', 'Community Center', 'Jacob\'s House', 'Catacombs Entrance', 'Coal Mines', 'Bank', 'Builder\'s House', 'Maddox the Slayer', 'Tia the Fairy']
+    location = random.choice(locations)
+    e = discord.Embed(title="Dropped item(s) were found!", color=discord.Color.green(), description=f"Hurry to pick it up at the `{location}` in `Hub {random.randint(1, 40)}` before it dissapears!", timestamp=datetime.utcnow())
+    if rocks is True:
+        for x in range(8):
+            e.add_field(name=f"`{item}` ({x + 1})", value=f"Dropped by `{getname()}`", inline=False)
+    else:
+        e.add_field(name=f"`{item}`", value=f"Dropped by `{getname()}`")
+    e.set_footer(text=f"{time} seconds!")
+    d = await ctx.send(embeds=[e])
+    await sleep(time)
+    g = discord.Embed(title="The item disappeared!", color=discord.Color.red())
+    e.set_footer(text="Rip item")
+    await d.edit(embed=g)
+    await sleep(10)
+    await d.delete()
 
 
-async def apply(client, ctx, ign, skycrypt):
-	if store('config.json', 'testMode', True):
-		await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later", hidden=True)
-		return
-	appType = None
-	e = store('apps.json', 'guildApps', True, app=True)
-	if str(ctx.author.id) in e:
-		await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]}`)", hidden=True)
-		return
-	l = store('apps.json', 'deniedGuildApps', True, app=True)
-	if str(ctx.author.id) in l:
-		await ctx.send("Sorry, your application has already been denied. Talk to a staff member if you need to re-apply.")
-		return
-	b = store('apps.json', 'acceptedGuildApps', True, app=True)
-	if str(ctx.author.id) in b:
-		await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
-		return
-	d = skycrypt.find("https://sky.shiiyu.moe/stats/")
-	if d == -1:
-		await ctx.send(content="Your SkyCrypt URL is invalid! Please use this format: `https://sky.shiiyu.moe/stats/Savory/Apple`", hidden=True)
-		return
-	appType = "guildApps"
-	r = ctx.guild.get_role(831614870256353330)
-	await ctx.author.add_roles(r)
-	await ctx.send(content="Thank you for submitting your application! Our mod team will review it soon.", hidden=True)
-	c = client.get_channel(831579949415530527)
-	e = discord.Embed(title="New Application", timestamp=datetime.utcnow(), color=discord.Color.green())
-	e.set_footer(text="Application submitted")
-	e.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
-	e.add_field(name="Application ID", value=f"{ctx.author.id}", inline=False)
-	e.add_field(name="User", value=f"{ctx.author.mention}")
-	e.add_field(name="IGN", value=ign, inline=False)
-	e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
-	a = await c.send("||<@&789593786287915010>||", embed=e)
-	store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
+async def apply(client, ctx, ign):
+    await ctx.defer(hidden=True)
+    if store('config.json', 'testMode', True):
+        await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later", hidden=True)
+        return
+    appType = None
+    e = store('apps.json', 'guildApps', True, app=True)
+    if str(ctx.author.id) in e:
+        await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(ctx.author.id)]}`)", hidden=True)
+        return
+    l = store('apps.json', 'deniedGuildApps', True, app=True)
+    if str(ctx.author.id) in l:
+        await ctx.send("Sorry, your application has already been denied. Talk to a staff member if you need to re-apply.", hidden=True)
+        return
+    b = store('apps.json', 'acceptedGuildApps', True, app=True)
+    if str(ctx.author.id) in b:
+        await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
+        return
+    if hystats.util.toUUID(ign) == False:
+        await ctx.send("Your application IGN is invalid, please resubmit it.", hidden=True)
+        return
+    skycrypt = f"https://sky.shiiyu.moe/stats/{ign}"
+    appType = "guildApps"
+    r = ctx.guild.get_role(831614870256353330)
+    await ctx.author.add_roles(r)
+    await ctx.send(content="Thank you for submitting your application! Our mod team will review it soon.", hidden=True)
+    c = client.get_channel(831579949415530527)
+    e = discord.Embed(title="New Application", timestamp=datetime.utcnow(), color=discord.Color.green())
+    e.set_footer(text="Application submitted")
+    e.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+    e.add_field(name="Application ID", value=f"{ctx.author.id}", inline=False)
+    e.add_field(name="User", value=f"{ctx.author.mention}")
+    e.add_field(name="IGN", value=ign, inline=False)
+    e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
+    a = await c.send("||<789593786287915010>||", embed=e, components=[[Button(label="Accept App",style=3,id=f"{ctx.author.id}",disabled=True), Button(label="Deny App", style=4, id=f"{ctx.author.id}")]])
+    store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
 
 async def acceptGuild(ctx, appID):
-	if store('config.json', 'testMode', True):
-		await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
-		return
-	f = await ctx.send("Fetching data from api...")
-	e = store('apps.json', 'guildApps', True, app=True)
-	if appID not in e:
-		await f.edit(content="Could not find that application!")
-		return
-	r = ctx.guild.get_role(789590790669205536)
-	b = ctx.guild.get_role(831614870256353330)
-	try:
-		m = await ctx.guild.fetch_member(int(appID))
-		await m.add_roles(r)
-		await m.remove_roles(b)
-	except:
-		await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
-		store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-		return
-	await f.edit(content="Sending data to API...")
-	store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-	store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
-	e = await ctx.guild.fetch_member(appID)
-	try:
-		await e.send("Your application for `Red Gladiators` has been accepted! Head over to the server to check it out!")
-	except:
-		await f.edit(content='Application accepted but could not send messages to user')
-		return
-	await f.edit(content="Application accepted")
+    if store('config.json', 'testMode', True):
+        await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
+        return
+    f = await ctx.send("Fetching data from api...")
+    e = store('apps.json', 'guildApps', True, app=True)
+    if appID not in e:
+        await f.edit(content="Could not find that application!")
+        return
+    r = ctx.guild.get_role(789590790669205536)
+    b = ctx.guild.get_role(831614870256353330)
+    try:
+        m = await ctx.guild.fetch_member(int(appID))
+        await m.add_roles(r)
+        await m.remove_roles(b)
+    except:
+        await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
+        store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+        return
+    await f.edit(content="Sending data to API...")
+    store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+    store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
+    e = await ctx.guild.fetch_member(appID)
+    try:
+        await e.send("Your application for `Red Gladiators` has been accepted! Head over to the server to check it out!")
+    except:
+        await f.edit(content='Application accepted but could not send messages to user')
+        return
+    await f.edit(content="Application accepted")
 
 async def denyGuild(ctx, appID, reason):
-	f = await ctx.send("Fetching data from api...")
-	e = store('apps.json', 'guildApps', True, app=True)
-	if appID not in e:
-		await f.edit(content='Could not find that application!')
-		return
-	b = ctx.guild.get_role(831614870256353330)
-	try:
-		m = await ctx.guild.fetch_member(int(appID))
-		await m.remove_roles(b)
-	except:
-		await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
-		store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-		return
-	await f.edit(content='Sending data to API...')
-	store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-	store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
-	e = await ctx.guild.fetch_member(appID)
-	try:
-		e.send(f"Your application to `Red Gladiators` has been denied (by {ctx.author}). You cannot apply again. Talk to a staff member if you have any issues. Reason: {reason}")
-	except:
-		await f.edit(content="Data sent successfully but user has private messages turned off")
-		return
-	await f.edit(content="Application denied")
+    f = await ctx.send("Fetching data from api...")
+    e = store('apps.json', 'guildApps', True, app=True)
+    if appID not in e:
+        await f.edit(content='Could not find that application!')
+        return
+    b = ctx.guild.get_role(831614870256353330)
+    try:
+        m = await ctx.guild.fetch_member(int(appID))
+        await m.remove_roles(b)
+    except:
+        await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
+        store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+        return
+    await f.edit(content='Sending data to API...')
+    store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+    store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
+    e = await ctx.guild.fetch_member(appID)
+    try:
+        await e.send(f"Your application to `Red Gladiators` has been denied (by {ctx.author}). You cannot apply again. Talk to a staff member if you have any issues. Reason: {reason}")
+    except:
+        await f.edit(content="Data sent successfully but user has private messages turned off")
+        return
+    await f.edit(content="Application denied")
 
 async def delApp(ctx, appID):
-	if store('config.json', 'testMode', True):
-		await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
-		return
-	f = await ctx.send("Fetching data from api...")
-	e = store('apps.json', 'guildApps', True, app=True)
-	if appID not in e:
-		await f.edit(content="Could not find that application!")
-		return
-	await f.edit(content='Found application, deleting...')
-	store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-	await f.edit(content='Deleted. (You must remove roles)')
+    if store('config.json', 'testMode', True):
+        await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
+        return
+    f = await ctx.send("Fetching data from api...")
+    e = store('apps.json', 'guildApps', True, app=True)
+    a = store('apps.json', 'acceptedGuildApps', True, app=True)
+    d = store('apps.json', 'deniedGuildApps', True, app=True)
+    typee = 1
+    if appID not in e:
+        await f.edit(content="Could not find that application! Searching...")
+        typee = 2
+        if appID not in a:
+            await f.edit(content="Could not find that application! Searching...")
+            typee = 3
+            if appID not in d:
+                await f.edit(content="Could not find that application!")
+                return
+    await f.edit(content='Found application, deleting...')
+    if typee == 1:
+        store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+    elif typee == 2:
+        store('apps.json', 'acceptedGuildApps', app=True, appKey=appID, pop=True)
+    elif typee == 3:
+        store('apps.json', 'deniedGuildApps', app=True, appKey=appID, pop=True)
+    else:
+        await f.edit(content="Lookup failed")
+        return
+    await f.edit(content='Deleted. (You must remove roles)')
 
 async def about(ctx):
-	e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
-	e.add_field(name="Features",value="**-** Active Skyblock Guild\n\n**-** Dungeons\n\n**-** Skyblock advice\n\n**-** Trusted members\n\n**-** Good community")
-	await ctx.send(embed=e, hidden=True)
+    e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
+    e.add_field(name="Features",value="**-** Active Skyblock Guild\n\n**-** Dungeons\n\n**-** Skyblock advice\n\n**-** Trusted members\n\n**-** Good community")
+    await ctx.send(embed=e, hidden=True)
 
 async def genuser(ctx, setNick):
-	rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
-	randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
-	f = random.choice(rank)
-	if f != 'Non':
-		f = f"[{f}] "
-	else:
-		f = ''
-	def callName():
-		return f + ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
-	username = callName()
-	while True:
-		if len(username)-len(f) > 31:
-			username = callName()
-		else:
-			break
-	if setnick is False:
-		await ctx.send(f"`{username}`", hidden=True)
-		return
-	try:
-		await ctx.author.edit(nick=username)
-	except:
-		await ctx.send("Could not do this (you may be a higher rank than the bot)", hidden=True)
-		return
-	await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
-
-async def suggest(client, ctx, type, request):
-	if type == 'b':
-		e = await ctx.guild.fetch_member(392502213341216769)
-		f = discord.Embed(title="New Suggestion", description=f"{request}")
-		f.set_author(name=ctx.author)
-		await e.send(embed=f)
-		await ctx.send("Thank you for your suggestion! It really helps me make the bot better.", hidden=True)
-	elif type == 'g':
-		c = client.get_channel(818132089492733972)
-		d = ctx.author.nick
-		if d is None:
-			d = ctx.author.name
-		e = discord.Embed(title=f"Suggestion from {d}", description=request, timestamp=datetime.utcnow())
-		await c.send(embed=e)
-		await ctx.send("The request has been sent, thank you!", hidden=True)
+    rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
+    randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
+    f = random.choice(rank)
+    if f != 'Non':
+        f = f"[{f}] "
+    else:
+        f = ''
+    def callName():
+        return f + ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
+    username = callName()
+    while True:
+        if len(username)-len(f) > 31:
+            username = callName()
+        else:
+            break
+    if setnick is False:
+        await ctx.send(f"`{username}`", hidden=True)
+        return
+    try:
+        await ctx.author.edit(nick=username)
+    except:
+        await ctx.send("Could not do this (you may be a higher rank than the bot)", hidden=True)
+        return
+    await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
 
 # async def pinglist(ctx, action, str):
-# 	if action != 'list' and str is None:
-# 		await ctx.send("You cannot leave that field blank for that operation!",hidden=True)
-# 		return
-# 	x = store('apps.json', None, True, n=True, specBin="6093310865b36740b92ef100")
-# 	d = x[str(ctx.author.id)]
-# 	if action == 'list':
-# 		if str(ctx.author.id) not in x:
-# 			await ctx.send("You do not have any words stored! Add them with `/pinglist add {word}`",hidden=True)
-# 			return
-# 		s = []
-# 		s.append(f"`{d['1']}`")
-# 		if '2' not in d:
-# 			s.append("Unset")
-# 		else:
-# 			s.append(f"`{d['2']}`")
-		
-# 		await ctx.send(f"Your ping words are:\n{s[0]}\n{s[1]}",hidden=True)
-				 
-# 	# trusted role could have more?
-# 	elif action == 'add':
-# 		if '2' in d:
-# 			await ctx.send("You may not have more than 2 ping words! Use `/pinglist remove {index}`",hidden=True)
-# 			return
-# 		di = {}
-# 		if '1' not in d:
-# 			di['1'] = str
-# 			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
-# 			await ctx.send(f"Added 1st word to index (`{str}`)",hidden=True)
-# 			return
-# 		else:
-# 			di['1'] = d['1']
-# 			di['2'] = str
-# 			store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
-# 			await ctx.send(f"Added 2nd word to index (`{str}`)",hidden=True)
-# 			return
+#     if action != 'list' and str is None:
+#         await ctx.send("You cannot leave that field blank for that operation!",hidden=True)
+#         return
+#     x = store('apps.json', None, True, n=True, specBin="6093310865b36740b92ef100")
+#     d = x[str(ctx.author.id)]
+#     if action == 'list':
+#         if str(ctx.author.id) not in x:
+#             await ctx.send("You do not have any words stored! Add them with `/pinglist add {word}`",hidden=True)
+#             return
+#         s = []
+#         s.append(f"`{d['1']}`")
+#         if '2' not in d:
+#             s.append("Unset")
+#         else:
+#             s.append(f"`{d['2']}`")
+        
+#         await ctx.send(f"Your ping words are:\n{s[0]}\n{s[1]}",hidden=True)
+                 
+#     # trusted role could have more?
+#     elif action == 'add':
+#         if '2' in d:
+#             await ctx.send("You may not have more than 2 ping words! Use `/pinglist remove {index}`",hidden=True)
+#             return
+#         di = {}
+#         if '1' not in d:
+#             di['1'] = str
+#             store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
+#             await ctx.send(f"Added 1st word to index (`{str}`)",hidden=True)
+#             return
+#         else:
+#             di['1'] = d['1']
+#             di['2'] = str
+#             store('blah.json', str(ctx.author.id), val=di, n=True, specBin="6093310865b36740b92ef100")
+#             await ctx.send(f"Added 2nd word to index (`{str}`)",hidden=True)
+#             return
 
 # async def legacy(ctx, name, id):
 #             await ctx.defer()
