@@ -52,7 +52,7 @@ async def _bt_interaction(ctx, type):
 ########################################################################
 
 # Events
-@client.event
+@client.listen()
 async def on_button_click(interaction):
     await commandListener.listener.onButtonClick(interaction)
 
@@ -88,15 +88,7 @@ async def _apply(ctx, ign):
 @commands.has_role("Staff")
 async def accept(ctx):
     await ctx.message.delete()
-    if ctx.invoked_subcommand is None: await ctx.send(f"(err: invalid command called) example: `{ctx.prefix}app accept 1234567890` accepts a guild application with the id of 1234567890\nrun this command to delete an application: `{ctx.prefix}app del 1234567890` which will allow the user to create another application\n use the buttons on the application message to deny")
-
-@accept.command(name='accept')
-async def acceptGuild(ctx, appID):
-    await commandListener.acceptGuild(ctx, appID)
-
-# @accept.command(name='deny')
-# async def denyGuild(ctx, appID, *, reason):
-    # await commandListener.denyGuild(ctx, appID, reason)
+    if ctx.invoked_subcommand is None: await ctx.send("Where did all the commands go? You can now accept/deny applications with the buttons on the application! If you made a mistake, you can use `=app del 1234567890` to delete the application with ID 1234567890! This will check pending, accepted, and denied guild apps and delete it correspondingly.")
 
 @accept.command(name='del')
 async def delapp(ctx, appID):
@@ -128,6 +120,10 @@ async def _profiles(ctx, user, profile=None):
 async def _about(ctx):
     await commandListener.about(ctx)
 
+@slash.slash(name='bugreport')
+async def _bugreport(ctx):
+    await ctx.send("Coming soon", hidden=True)
+
 # add accept/deny stuff
 @slash.slash(name='giveaway')
 async def _giveaway(ctx, winners, time, prize):
@@ -152,6 +148,7 @@ async def poll(ctx, *, msg):
     await msg.add_reaction('👍')
     await msg.add_reaction('👎')
 
+# add ping last message from member
 @client.command()
 @commands.has_role("Trusted")
 async def pin(ctx, message=None):

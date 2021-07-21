@@ -492,89 +492,96 @@ class listener:
         except:
             print("error setting id")
             ide = None
+        # try:
+        if label == "Verify" or ide == "verify":
+            role = interaction.message.guild.get_role(788914323485491232)
+            mrole = interaction.message.guild.get_role(788890991028469792)
+            member = await interaction.message.guild.fetch_member(interaction.user.id)
+            await member.add_roles(role)
+            await member.remove_roles(mrole)
+            await interaction.respond(type=6)
+        elif label == "Accept App":
+            ide = ide.replace('-a', '')
+            await interaction.respond(type=6)
+            ctx = interaction.message.guild.get_channel(831579949415530527)
+            f = await ctx.send("Fetching data from api...")
+            e = store('apps.json', 'guildApps', True, app=True)
+            if ide not in e:
+                await f.edit(content="Could not find that application!")
+                return
+            r = ctx.guild.get_role(789590790669205536)
+            b = ctx.guild.get_role(831614870256353330)
+            try:
+                m = await ctx.guild.fetch_member(int(ide))
+                await m.add_roles(r)
+                await m.remove_roles(b)
+            except:
+                await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
+                await interaction.message.delete()
+                store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+                return
+            await f.edit(content="Sending data to API...")
+            store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+            store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=ide)
+            e = await ctx.guild.fetch_member(ide)
+            try:
+                await e.send(f"Your application for `Red Gladiators` has been accepted by `{interaction.user}`! Head over to the server to check it out!")
+            except:
+                await f.edit(content='Application accepted but user has private messages turned off')
+                await interaction.message.edit(components=[])
+                return
+            await f.edit(content="Application accepted")
+            await interaction.message.edit(components=[])
+        elif label == "Deny App":
+            ide = ide.replace('-d', '')
+            ctx = interaction.message.guild.get_channel(831579949415530527)
+            await interaction.respond(type=6)
+            f = await ctx.send("Fetching data from api...")
+            e = store('apps.json', 'guildApps', True, app=True)
+            if ide not in e:
+                await f.edit(content='Could not find that application!')
+                return
+            b = ctx.guild.get_role(831614870256353330)
+            try:
+                m = await ctx.guild.fetch_member(int(ide))
+                await m.remove_roles(b)
+            except:
+                await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
+                await interaction.message.delete()
+                store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+                return
+            await f.edit(content='Sending data to API...')
+            store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
+            store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=ide)
+            e = await ctx.guild.fetch_member(ide)
+            try:
+                await e.send(f"Your application to `Red Gladiators` has been denied by `{interaction.user}`. You cannot apply again. Talk to a staff member if you have any issues.")
+            except:
+                await f.edit(content="Application denied successfully but user has private messages turned off")
+                await interaction.message.edit(components=[])
+                return
+            await f.edit(content="Application denied")
+            # add feature to get embed and change it into
+            await interaction.message.edit(components=[])
+        if label == "Remove" or ide == "remove":
+            await interaction.message.delete()
         try:
-            if label == "Verify" or ide == "verify":
+            if ide == "deverify":
                 role = interaction.message.guild.get_role(788914323485491232)
                 mrole = interaction.message.guild.get_role(788890991028469792)
                 member = await interaction.message.guild.fetch_member(interaction.user.id)
-                await member.add_roles(role)
-                await member.remove_roles(mrole)
-                await interaction.respond(type=6)
-            elif label == "Accept App":
-                ctx = interaction.message.guild.get_channel(831579949415530527)
-                await interaction.respond(type=6)
-                f = await ctx.send("Fetching data from api...")
-                e = store('apps.json', 'guildApps', True, app=True)
-                if ide not in e:
-                    await f.edit(content="Could not find that application!")
-                    return
-                r = ctx.guild.get_role(789590790669205536)
-                b = ctx.guild.get_role(831614870256353330)
-                try:
-                    m = await ctx.guild.fetch_member(int(ide))
-                    await m.add_roles(r)
-                    await m.remove_roles(b)
-                except:
-                    await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
-                    await interaction.message.delete()
-                    store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
-                    return
-                await f.edit(content="Sending data to API...")
-                store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
-                store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=ide)
-                e = await ctx.guild.fetch_member(ide)
-                try:
-                    await e.send("Your application for `Red Gladiators` has been accepted! Head over to the server to check it out!")
-                except:
-                    await f.edit(content='Application accepted but could not send messages to user')
-                    return
-                await f.edit(content="Application accepted")
-            elif label == "Deny App":
-                ctx = interaction.message.guild.get_channel(831579949415530527)
-                await interaction.respond(type=6)
-                f = await ctx.send("Fetching data from api...")
-                e = store('apps.json', 'guildApps', True, app=True)
-                if ide not in e:
-                    await f.edit(content='Could not find that application!')
-                    return
-                b = ctx.guild.get_role(831614870256353330)
-                try:
-                    m = await ctx.guild.fetch_member(int(ide))
-                    await m.remove_roles(b)
-                except:
-                    await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
-                    await interaction.message.delete()
-                    store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
-                    return
-                await f.edit(content='Sending data to API...')
-                store('apps.json', 'guildApps', app=True, appKey=ide, pop=True)
-                store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=ide)
-                e = await ctx.guild.fetch_member(ide)
-                try:
-                    await e.send(f"Your application to `Red Gladiators` has been denied (by {interaction.user}). You cannot apply again. Talk to a staff member if you have any issues.")
-                except:
-                    await f.edit(content="Data sent successfully but user has private messages turned off")
-                    return
-                await f.edit(content="Application denied")
-            if label == "Remove" or ide == "remove":
-                await interaction.message.delete()
-            try:
-                if ide == "deverify":
-                    role = interaction.message.guild.get_role(788914323485491232)
-                    mrole = interaction.message.guild.get_role(788890991028469792)
-                    member = await interaction.message.guild.fetch_member(interaction.user.id)
-                    await member.add_roles(mrole)
-                    await member.remove_roles(role)
-                    await interaction.respond(type=7, content=f"LMFAOOOOOO L L L L {member.name} JUST GOT CLWOON'd ON L L L L L L L GET L KID")
-            except:
-                pass
-            if str(interaction.user.id) != interaction.component.id: return
-            if label == 'Exit' or ide == "exit":
-                await interaction.message.edit(components=[])
-            elif label == 'Delete' or ide == "delete":
-                await interaction.message.delete()
+                await member.add_roles(mrole)
+                await member.remove_roles(role)
+                await interaction.respond(type=7, content=f"LMFAOOOOOO L L L L {member.name} JUST GOT CLWOON'd ON L L L L L L L GET L KID")
         except:
             pass
+        if str(interaction.user.id) != interaction.component.id: return
+        if label == 'Exit' or ide == "exit":
+            await interaction.message.edit(components=[])
+        elif label == 'Delete' or ide == "delete":
+            await interaction.message.delete()
+        # except:
+            # pass
     async def onReady(client):
         x = store('config.json', 'atype', True)
         f = store('config.json', 'testMode', True)
@@ -599,7 +606,7 @@ class listener:
                 return discord.Status.dnd
             elif l == 'online':
                 return discord.Status.online
-            elif l == 'afk':
+            elif l == 'idle':
                 return discord.Status.idle
             else:
                 return discord.Status.invisible
@@ -723,10 +730,11 @@ async def apply(client, ctx, ign):
     if str(ctx.author.id) in b:
         await ctx.send(content="Your application has already been accepted, you may not apply for this position again",hidden=True)
         return
-    if hystats.util.toUUID(ign) == False:
+    igeen = hystats.util.toUUID(ign)
+    if igeen == False:
         await ctx.send("Your application IGN is invalid, please resubmit it.", hidden=True)
         return
-    skycrypt = f"https://sky.shiiyu.moe/stats/{ign}"
+    skycrypt = f"https://sky.shiiyu.moe/stats/{igeen}"
     appType = "guildApps"
     r = ctx.guild.get_role(831614870256353330)
     await ctx.author.add_roles(r)
@@ -737,66 +745,11 @@ async def apply(client, ctx, ign):
     e.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
     e.add_field(name="Application ID", value=f"{ctx.author.id}", inline=False)
     e.add_field(name="User", value=f"{ctx.author.mention}")
-    e.add_field(name="IGN", value=ign, inline=False)
+    e.add_field(name="IGN", value=hystats.util.toName(igeen), inline=False)
     e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
-    a = await c.send("||<789593786287915010>||", embed=e, components=[[Button(label="Accept App",style=3,id=f"{ctx.author.id}",disabled=True), Button(label="Deny App", style=4, id=f"{ctx.author.id}")]])
     store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
-
-async def acceptGuild(ctx, appID):
-    if store('config.json', 'testMode', True):
-        await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
-        return
-    f = await ctx.send("Fetching data from api...")
-    e = store('apps.json', 'guildApps', True, app=True)
-    if appID not in e:
-        await f.edit(content="Could not find that application!")
-        return
-    r = ctx.guild.get_role(789590790669205536)
-    b = ctx.guild.get_role(831614870256353330)
-    try:
-        m = await ctx.guild.fetch_member(int(appID))
-        await m.add_roles(r)
-        await m.remove_roles(b)
-    except:
-        await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
-        store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-        return
-    await f.edit(content="Sending data to API...")
-    store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-    store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
-    e = await ctx.guild.fetch_member(appID)
-    try:
-        await e.send("Your application for `Red Gladiators` has been accepted! Head over to the server to check it out!")
-    except:
-        await f.edit(content='Application accepted but could not send messages to user')
-        return
-    await f.edit(content="Application accepted")
-
-async def denyGuild(ctx, appID, reason):
-    f = await ctx.send("Fetching data from api...")
-    e = store('apps.json', 'guildApps', True, app=True)
-    if appID not in e:
-        await f.edit(content='Could not find that application!')
-        return
-    b = ctx.guild.get_role(831614870256353330)
-    try:
-        m = await ctx.guild.fetch_member(int(appID))
-        await m.remove_roles(b)
-    except:
-        await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
-        store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-        return
-    await f.edit(content='Sending data to API...')
-    store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
-    store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
-    e = await ctx.guild.fetch_member(appID)
-    try:
-        await e.send(f"Your application to `Red Gladiators` has been denied (by {ctx.author}). You cannot apply again. Talk to a staff member if you have any issues. Reason: {reason}")
-    except:
-        await f.edit(content="Data sent successfully but user has private messages turned off")
-        return
-    await f.edit(content="Application denied")
-
+    a = await c.send("||<@&789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
+    
 async def delApp(ctx, appID):
     if store('config.json', 'testMode', True):
         await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
@@ -826,6 +779,8 @@ async def delApp(ctx, appID):
         await f.edit(content="Lookup failed")
         return
     await f.edit(content='Deleted. (You must remove roles)')
+
+
 
 async def about(ctx):
     e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
@@ -857,6 +812,61 @@ async def genuser(ctx, setNick):
         await ctx.send("Could not do this (you may be a higher rank than the bot)", hidden=True)
         return
     await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
+
+# async def acceptGuild(ctx, appID):
+    # if store('config.json', 'testMode', True):
+        # await ctx.send("Sorry! The bot is in test mode and this command cannot be ran at this time. Please try again later")
+        # return
+    # f = await ctx.send("Fetching data from api...")
+    # e = store('apps.json', 'guildApps', True, app=True)
+    # if appID not in e:
+        # await f.edit(content="Could not find that application!")
+        # return
+    # r = ctx.guild.get_role(789590790669205536)
+    # b = ctx.guild.get_role(831614870256353330)
+    # try:
+        # m = await ctx.guild.fetch_member(int(appID))
+        # await m.add_roles(r)
+        # await m.remove_roles(b)
+    # except:
+        # await ctx.send("Member lookup failed, deleting application; ask applicant to apply again.")
+        # store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+        # return
+    # await f.edit(content="Sending data to API...")
+    # store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+    # store('apps.json', 'acceptedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
+    # e = await ctx.guild.fetch_member(appID)
+    # try:
+        # await e.send("Your application for `Red Gladiators` has been accepted! Head over to the server to check it out!")
+    # except:
+        # await f.edit(content='Application accepted but could not send messages to user')
+        # return
+    # await f.edit(content="Application accepted")
+
+# async def denyGuild(ctx, appID, reason):
+    # f = await ctx.send("Fetching data from api...")
+    # e = store('apps.json', 'guildApps', True, app=True)
+    # if appID not in e:
+        # await f.edit(content='Could not find that application!')
+        # return
+    # b = ctx.guild.get_role(831614870256353330)
+    # try:
+        # m = await ctx.guild.fetch_member(int(appID))
+        # await m.remove_roles(b)
+    # except:
+        # await f.edit("Member lookup failed, deleting application; ask applicant to apply again.")
+        # store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+        # return
+    # await f.edit(content='Sending data to API...')
+    # store('apps.json', 'guildApps', app=True, appKey=appID, pop=True)
+    # store('apps.json', 'deniedGuildApps', val=f"{datetime.utcnow()}", app=True, appKey=appID)
+    # e = await ctx.guild.fetch_member(appID)
+    # try:
+        # await e.send(f"Your application to `Red Gladiators` has been denied (by {ctx.author}). You cannot apply again. Talk to a staff member if you have any issues. Reason: {reason}")
+    # except:
+        # await f.edit(content="Data sent successfully but user has private messages turned off")
+        # return
+    # await f.edit(content="Application denied")
 
 # async def pinglist(ctx, action, str):
 #     if action != 'list' and str is None:
