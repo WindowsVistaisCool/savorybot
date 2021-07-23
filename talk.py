@@ -11,18 +11,22 @@ async def commandcheck(message, ctx, lms):
             return "Close"
     elif message.startswith('/channel'):
         new = message.replace('/channel ', '')
-        if new != ' ':
+        if new != '':
             try:
                 d = discord.utils.get(ctx.guild.text_channels, name=new)
             except:
                 print("Could not find channel")
                 return "Fail"
             print(f"Switched to channel {new}")
-            return f"Sw {d.id}"
+            try:
+	            return f"Sw {d.id}"
+            except:
+                    print("Please add a space after /channel!")
+                    return "Fail"
         print("GUILD TEXT CHANNELS:") 
         for channel in ctx.guild.text_channels:
-            print(f"NAME: {channel.name} ID: {channel.id}")
-        chn = input("Channel ID: ")
+            print(f"NAME: #{channel.name} ID: {channel.id}")
+        chn = input("Channel Name: ")
         if chn is None:
             chn = ctx.guild.get_channel(788886124159828012)
         else:
@@ -35,8 +39,10 @@ async def commandcheck(message, ctx, lms):
                 return "Cont"
         print(f"Switched to channel {chn}")
         return f"Sw {cn}"
+    elif message.startswith('/history'):
+        return "History"
     elif message.startswith('/lms'):
-        return f"LMS {ctx.last_message_id}"
+        return f"LMS"
     # elif message.startswith('/callback'):
         # await comcallback(ctx)
     elif message.startswith('/del'):
@@ -183,13 +189,36 @@ async def on_ready():
                 command = command.replace("Sw ", '')
                 c = client.get_channel(int(command))
                 continue
+            elif "History" in command:
+                print("------HISTORY (200 msg limit)----------")
+                def trypass(embed, field, sub=None):
+                    try:
+                        if not sub:
+                            return embed[field]
+                        return embed[field][sub]
+                    except:
+                        return "Invalid Field"
+                msgs = await c.history(limit=200).flatten()
+                msgss = reversed(msgs)
+                for m in msgss:
+                    print(f"<AUTHOR> \033[92m{m.author}\033[0m <CONTENT> {m.content}\n")
+                    if len(m.embeds) != 0:
+                        for embed in m.embeds:
+                            e = embed.to_dict()
+                            ps = f"    \033[93mEMBED\033[0m \033[91m[title]\033[0m > (\033[94m{trypass(e,'title')}\033[0m) -- \033[91m[description]\033[0m > (\033[94m{trypass(e,'description')}\033[0m) -- \033[91m[author]\033[0m > (\033[94m{trypass(e,'author','name')}\033[0m) -- \033[91m[footer]\033[0m > (\033[94m{trypass(e,'footer','text')}\033[0m)"
+                            print(ps)
+                            try:
+                                field = "        \033[93mFIELDS\033[0m "
+                                for ffield in e['fields']:
+                                    field = field + f'\033[96m[NF]\033[0m > (\033[91m<NAME>\033[0m \033[94m{ffield["name"]}\033[0m \033[91m<VALUE>\033[m \033[94m{ffield["value"]}\033[0m) '
+                                print(f"{field}\n")
+                            except:
+                                pass
+                print("---------------------------------------")
             elif "LMS" in command:
-                new = command.replace("LMS ", '')
-                print(new)
-                try:
-                    lms = await c.fetch_message(int(new))
-                except:
-                    print("Fail")
+                async for m in c.history(limit=1):
+                    lms = m
+                    print(m)
         elif command == "Fail":
             continue
         else:
