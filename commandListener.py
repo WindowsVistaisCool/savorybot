@@ -563,7 +563,39 @@ class listener:
             await f.edit(content="Application denied")
             # add feature to get embed and change it into
             await interaction.message.edit(components=[])
-        if label == "Remove" or ide == "remove":
+        elif label == "Vote Yes":
+            ide = ide.replace('POLLYES', '')
+            x = store('polls.json', None, True)
+            try:
+                if interaction.user.id in x[ide]['users']:
+                    await interaction.respond(content="You have already responded to this poll!")
+                    return
+                x[ide]['yes'] += 1
+                x[ide]['users'].append(interaction.user.id)
+                store('polls.json', x)
+                e = interaction.message.embeds[0]
+                e.set_field_at(0, name='Yes', value=x[ide]['yes'])
+                await interaction.message.edit(embed=e)
+                await interaction.respond(type=6)
+            except:
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact ruffmann.")
+        elif label == "Vote No":
+            ide = ide.replace("POLLNO", '')
+            x = store('polls.json', None, True)
+            try:
+                if interaction.user.id in x[ide]['users']:
+                    await interaction.respond(content="You have already responded to this poll!")
+                    return
+                x[ide]['no'] += 1
+                x[ide]['users'].append(interaction.user.id)
+                store('polls.json', x)
+                e = interaction.message.embeds[0]
+                e.set_field_at(1, name='No', value=x[ide]['no'])
+                await interaction.message.edit(embed=e)
+                await interaction.respond(type=6)
+            except:
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact ruffmann.")
+        elif label == "Remove" or ide == "remove":
             await interaction.message.delete()
         try:
             if ide == "deverify":
@@ -580,8 +612,32 @@ class listener:
             await interaction.message.edit(components=[])
         elif label == 'Delete' or ide == "delete":
             await interaction.message.delete()
-        # except:
-            # pass
+    
+    async def onSelectOption(interaction):
+        try:
+            label = interaction.component[0].to_dict()['label']
+            val = interaction.component[0].to_dict()['value']
+        except:
+            print("error setting id")
+            val = None
+        if val.startswith("SelectPoll"):
+            val = val.split('-')
+            mid = val[1]
+            x = store('polls.json', None, True)
+            try:
+                if interaction.user.id in x[mid]['users']:
+                    await interaction.respond(content="You have already responed to this poll!")
+                    return
+                x[mid]['users'].append(interaction.user.id)
+                x[mid]['fields'][label] += 1
+                store('polls.json', x)
+                e = interaction.message.embeds[0]
+                e.set_field_at(x[mid]['fieldpos'][label], name=label, value=x[mid]['fields'][label], inline=False)
+                await interaction.message.edit(embed=e)
+                await interaction.respond(type=6)
+            except:
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact ruffmann.")
+
     async def onReady(client):
         x = store('config.json', 'atype', True)
         f = store('config.json', 'testMode', True)
@@ -629,30 +685,86 @@ class listener:
         if message.channel.id == 788886124159828012:
             if message.content.startswith('.n') or message.content.startswith('.d') or 'sbs guild' in message.content or message.content.startswith('.sk') or message.content.startswith('.stats'):
                 await message.reply(content='Please use this command in the bot commands channel!')
-        # if "@someone" in message.content and message.author.bot == False:
-            # g = await message.guild.fetch_members(limit=150).flatten()
-            # e = []
-            # d = None
-            # m = None
-            # while True:
-                # for member in g:
-                    # e.append(str(member.id))
-                # d = random.choice(e)
-            # m = await message.guild.fetch_member(int(d))
-                # if m.bot is False: break
-            # await message.channel.send(f"{message.author.mention}, you pinged {m.mention}!")
     
     async def onCommandError(ctx, error):
         if isinstance(error, commands.CheckFailure):
             e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
             await ctx.send(embed=e, delete_after=3)
         elif isinstance(error, commands.CommandNotFound):
-            await ctx.message.delete()
             e = discord.Embed(title="Command not found!", color=discord.Color.red())
             await ctx.send(embed=e, delete_after=3)
         else:
             e = discord.Embed(title="An exception occurred", description=f"{error}")
             await ctx.send(embed=e, delete_after=10)
+
+class polls:
+    async def create(ctx, msg, polltype, listoptions):
+        if polltype == 'list' and listoptions is None:
+            await ctx.send("You must fill out the `listoptions` parameters when using the `list` type!",hidden=True)
+            return
+        if polltype == 'default' or polltype == None:
+            await ctx.send("Created poll", hidden=True)
+            e = discord.Embed(title=msg, color=discord.Color.blurple(), timestamp=datetime.utcnow())
+            e.set_footer(text="Poll started")
+            msg = await ctx.channel.send(embed=e)
+            await msg.add_reaction('👍')
+            await msg.add_reaction('👎')
+        elif polltype == 'buttons':
+            await ctx.send("Created poll", hidden=True)
+            e = discord.Embed(title=msg, color=discord.Color.blurple(), timestamp=datetime.utcnow())
+            e.add_field(name="Yes", value="0")
+            e.add_field(name="No", value="0")
+            m = await ctx.channel.send("Building...")
+            e.set_footer(text=f"ID: {m.id}")
+            store('polls.json', f"{m.id}", val={"title": msg, "type": "button","yes": 0, "no": 0, "users": []})
+            await m.edit(content="", embed=e, components=[[Button(label="Vote Yes",style=3,id=f"{m.id}POLLYES"), Button(label="Vote No",style=4,id=f"{m.id}POLLNO")]])
+        elif polltype == 'list':
+            await ctx.send("Created poll", hidden=True)
+            opts = listoptions.split(';')
+            if len(opts) >= 25:
+                await ctx.send("You cannot have this many options!", hidden=True)
+                return
+            m = await ctx.channel.send("Building...")
+            selectopts = []
+            fields = {}
+            fieldpos = {}
+            e = discord.Embed(title=msg,color=discord.Color.blurple(), timestamp=datetime.utcnow())
+            e.set_footer(text=f"ID: {m.id}")
+            count = 0
+            for opt in opts:
+                fields[opt] = 0
+                fieldpos[opt] = count
+                e.add_field(name=opt, value="0", inline=False)
+                selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-{count}"))
+                count += 1
+            store('polls.json', f"{m.id}", val={"title": msg,"type": "list", "fields": fields, "fieldpos": fieldpos, "users": []})
+            await m.edit(content="", embed=e, components=[Select(placeholder="Choose a response...",options=selectopts)])
+
+    async def conclude(ctx, pollid):
+        x = store('polls.json', None, True)
+        if pollid not in x:
+            await ctx.send("Could not find that poll!",hidden=True)
+            return
+        await ctx.send("Concluded poll", hidden=True)
+        msg = await ctx.channel.fetch_message(int(pollid))
+        e = msg.embeds[0]
+        e.clear_fields()
+        e.add_field(name="POLL ENDED", value="Thank you, participants!", inline=False)
+        res = ""
+        if x[pollid]['type'] == 'button':
+            res = res + f"**Yes**: {x[pollid]['yes']}\n**No**: {x[pollid]['no']}"
+        else:
+            for opt in x[pollid]['fields']:
+                res = res + f"**{opt}**: {x[pollid]['fields'][opt]}\n"
+        e.add_field(name="Results", value=res, inline=False)
+        usrs = ""
+        for user in x[pollid]['users']:
+            usrs = usrs + f"<@!{user}>\n"
+        if usrs == "": usrs = "(None)"
+        e.add_field(name="Participants",value=usrs, inline=False)
+        x.pop(pollid)
+        store('polls.json', x)
+        await msg.edit(embed=e, components=[])
 
 class btesting:
     async def btInteraction(client, ctx, type):
@@ -680,36 +792,6 @@ class btesting:
                 break
             await m.edit(content=f"Expired menu - {ctx.author.name} selected {interaction.component[0].label}",components=[])
             await interaction.respond(context="You selected an item!")
-
-async def getitem(ctx, item, time, *, username=None, rocks=False):
-    # add item list or something
-    def genuser():
-        rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
-        randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
-        username = ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
-        return username
-    def getname():
-        if username is None:
-            e = genuser()
-            return e
-        else:
-            return username
-    locations = ['Graveyard', 'Castle', 'Wizard Tower', 'Barn', 'Dark Auction', 'Auction House', 'Lumber Merchant', 'Plumber Joe\'s House', 'Community Center', 'Jacob\'s House', 'Catacombs Entrance', 'Coal Mines', 'Bank', 'Builder\'s House', 'Maddox the Slayer', 'Tia the Fairy']
-    location = random.choice(locations)
-    e = discord.Embed(title="Dropped item(s) were found!", color=discord.Color.green(), description=f"Hurry to pick it up at the `{location}` in `Hub {random.randint(1, 40)}` before it dissapears!", timestamp=datetime.utcnow())
-    if rocks is True:
-        for x in range(8):
-            e.add_field(name=f"`{item}` ({x + 1})", value=f"Dropped by `{getname()}`", inline=False)
-    else:
-        e.add_field(name=f"`{item}`", value=f"Dropped by `{getname()}`")
-    e.set_footer(text=f"{time} seconds!")
-    d = await ctx.send(embeds=[e])
-    await sleep(time)
-    g = discord.Embed(title="The item disappeared!", color=discord.Color.red())
-    e.set_footer(text="Rip item")
-    await d.edit(embed=g)
-    await sleep(10)
-    await d.delete()
 
 
 async def apply(client, ctx, ign):
@@ -780,8 +862,6 @@ async def delApp(ctx, appID):
         return
     await f.edit(content='Deleted. (You must remove roles)')
 
-
-
 async def about(ctx):
     e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
     e.add_field(name="Features",value="**-** Active Skyblock Guild\n\n**-** Dungeons\n\n**-** Skyblock advice\n\n**-** Trusted members\n\n**-** Good community")
@@ -812,6 +892,36 @@ async def genuser(ctx, setNick):
         await ctx.send("Could not do this (you may be a higher rank than the bot)", hidden=True)
         return
     await ctx.send(f"Your new nickname is: `{username}`", hidden=True)
+
+async def getitem(ctx, item, time, *, username=None, rocks=False):
+    # add item list or something
+    def genuser():
+        rank = ['Non', 'Non', 'Non', 'Non', 'Non', 'VIP', 'VIP', 'VIP', 'VIP', 'VIP+', 'VIP+', 'VIP+', 'MVP', 'MVP', 'MVP+', 'MVP+', 'MVP+', 'MVP+', 'MVP++']
+        randnames = ['Ender', 'Pro', 'Itz', 'YT', 'Chill', 'Mom', 'Playz', 'Games', 'Fortnite', 'Prokid', 'Monkey', 'Gamer', 'GirlGamer', 'Lowping', 'Ihave', 'Getgud', 'Istupid', '123', 'Minecraft', 'LMAO', 'non']
+        username = ''.join(random.choice(randnames) for i in range(random.randint(1, 8)))
+        return username
+    def getname():
+        if username is None:
+            e = genuser()
+            return e
+        else:
+            return username
+    locations = ['Graveyard', 'Castle', 'Wizard Tower', 'Barn', 'Dark Auction', 'Auction House', 'Lumber Merchant', 'Plumber Joe\'s House', 'Community Center', 'Jacob\'s House', 'Catacombs Entrance', 'Coal Mines', 'Bank', 'Builder\'s House', 'Maddox the Slayer', 'Tia the Fairy']
+    location = random.choice(locations)
+    e = discord.Embed(title="Dropped item(s) were found!", color=discord.Color.green(), description=f"Hurry to pick it up at the `{location}` in `Hub {random.randint(1, 40)}` before it dissapears!", timestamp=datetime.utcnow())
+    if rocks is True:
+        for x in range(8):
+            e.add_field(name=f"`{item}` ({x + 1})", value=f"Dropped by `{getname()}`", inline=False)
+    else:
+        e.add_field(name=f"`{item}`", value=f"Dropped by `{getname()}`")
+    e.set_footer(text=f"{time} seconds!")
+    d = await ctx.send(embeds=[e])
+    await sleep(time)
+    g = discord.Embed(title="The item disappeared!", color=discord.Color.red())
+    e.set_footer(text="Rip item")
+    await d.edit(embed=g)
+    await sleep(10)
+    await d.delete()
 
 # async def acceptGuild(ctx, appID):
     # if store('config.json', 'testMode', True):

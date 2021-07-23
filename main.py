@@ -56,6 +56,10 @@ async def _bt_interaction(ctx, type):
 async def on_button_click(interaction):
     await commandListener.listener.onButtonClick(interaction)
 
+@client.listen()
+async def on_select_option(interaction):
+    await commandListener.listener.onSelectOption(interaction)
+
 @client.event
 async def on_message(message):
     e = await commandListener.listener.onMessage(message, client)
@@ -138,15 +142,13 @@ async def _giveaway(ctx, winners, time, prize):
 
 ########################################################################
 # Trusted Commands
-@client.command()
-@commands.has_role("Trusted")
-async def poll(ctx, *, msg):
-    await ctx.message.delete()
-    e = discord.Embed(title=msg, color=discord.Color.blurple(), timestamp=datetime.utcnow())
-    e.set_footer(text="Poll started")
-    msg = await ctx.send(embed=e)
-    await msg.add_reaction('👍')
-    await msg.add_reaction('👎')
+@slash.subcommand(base='poll', name='create')
+async def _create(ctx, msg, polltype=None, listoptions=None):
+    await commandListener.polls.create(ctx, msg, polltype, listoptions)
+
+@slash.subcommand(base='poll', name='conclude')
+async def _conclude(ctx, pollid):
+    await commandListener.polls.conclude(ctx, pollid)
 
 # add ping last message from member
 @client.command()
