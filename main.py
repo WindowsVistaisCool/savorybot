@@ -143,8 +143,9 @@ async def _giveaway(ctx, winners, time, prize):
 ########################################################################
 # Trusted Commands
 @slash.subcommand(base='poll', name='create')
-async def _create(ctx, msg, polltype=None, listoptions=None):
-    await commandListener.polls.create(ctx, msg, polltype, listoptions)
+async def _create(ctx, msg, polltype=None, listoptions=None, hideanswers=False):
+    print(hideanswers)
+    await commandListener.polls.create(ctx, msg, polltype, listoptions, hideanswers)
 
 @slash.subcommand(base='poll', name='conclude')
 async def _conclude(ctx, pollid):
@@ -221,12 +222,9 @@ async def clown(ctx):
 
 @client.command()
 @commands.is_owner()
-async def genbutton(ctx, label="Click me", id=None, message="Generated button"):
+async def genbutton(ctx, label="Click me", id=None, message="friendly button"):
     await ctx.message.delete()
-    if id:
-        await ctx.send(message, components=[Button(label=label, id=id)])
-    else:
-        await ctx.send(message, components=[Button(label=label, id=id)])
+    await ctx.send(message, components=[Button(label=label, id=id)])
 
 
 # btesting

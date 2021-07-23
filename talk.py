@@ -201,7 +201,7 @@ async def on_ready():
                 msgs = await c.history(limit=200).flatten()
                 msgss = reversed(msgs)
                 for m in msgss:
-                    print(f"<AUTHOR> \033[92m{m.author}\033[0m <CONTENT> {m.content}\n")
+                    print(f"<TIME> {m.created_at} <AUTHOR> \033[92m{m.author}\033[0m <CONTENT> {m.clean_content}\n")
                     if len(m.embeds) != 0:
                         for embed in m.embeds:
                             e = embed.to_dict()

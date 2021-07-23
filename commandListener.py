@@ -631,9 +631,10 @@ class listener:
                 x[mid]['users'].append(interaction.user.id)
                 x[mid]['fields'][label] += 1
                 store('polls.json', x)
-                e = interaction.message.embeds[0]
-                e.set_field_at(x[mid]['fieldpos'][label], name=label, value=x[mid]['fields'][label], inline=False)
-                await interaction.message.edit(embed=e)
+                if val[2] != 'T':
+                    e = interaction.message.embeds[0]
+                    e.set_field_at(x[mid]['fieldpos'][label], name=label, value=x[mid]['fields'][label], inline=False)
+                    await interaction.message.edit(embed=e)
                 await interaction.respond(type=6)
             except:
                 await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact ruffmann.")
@@ -698,7 +699,7 @@ class listener:
             await ctx.send(embed=e, delete_after=10)
 
 class polls:
-    async def create(ctx, msg, polltype, listoptions):
+    async def create(ctx, msg, polltype, listoptions, hide):
         if polltype == 'list' and listoptions is None:
             await ctx.send("You must fill out the `listoptions` parameters when using the `list` type!",hidden=True)
             return
@@ -721,7 +722,7 @@ class polls:
         elif polltype == 'list':
             await ctx.send("Created poll", hidden=True)
             opts = listoptions.split(';')
-            if len(opts) >= 25:
+            if len(opts) >= 15:
                 await ctx.send("You cannot have this many options!", hidden=True)
                 return
             m = await ctx.channel.send("Building...")
@@ -734,8 +735,11 @@ class polls:
             for opt in opts:
                 fields[opt] = 0
                 fieldpos[opt] = count
-                e.add_field(name=opt, value="0", inline=False)
-                selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-{count}"))
+                if hide:
+                    selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-T-{count}"))
+                else:
+                    e.add_field(name=opt, value="0", inline=False)
+                    selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-F-{count}"))
                 count += 1
             store('polls.json', f"{m.id}", val={"title": msg,"type": "list", "fields": fields, "fieldpos": fieldpos, "users": []})
             await m.edit(content="", embed=e, components=[Select(placeholder="Choose a response...",options=selectopts)])
