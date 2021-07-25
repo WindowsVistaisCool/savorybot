@@ -11,6 +11,7 @@ class Polls(commands.Cog):
     
     @scmd.cog_subcommand(base='poll', name='create')
     async def create(self, ctx, msg, polltype=None, listoptions=None, hideanswers=False):
+        hide = hideanswers
         if polltype == 'list' and listoptions is None:
             await ctx.send("You must fill out the `listoptions` parameters when using the `list` type!",hidden=True)
             return
