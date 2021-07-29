@@ -1,3 +1,4 @@
+
 import discord
 import asyncio
 from slashrequest import store
@@ -119,6 +120,180 @@ async def commandcheck(message, ctx, lms):
                 return "Fail"
             else:
                 return "Done"
+
+async def voice(ctx, com):
+	com = com.replace('/', '')
+	if com == 'join':
+		bird = await ctx.guild.fetch_member(392502213341216769)
+		chn = bird.voice.channel
+		try:
+			await chn.connect()
+		except:
+			print("error")
+			return "Cont"
+	elif com.startswith('leave'):
+		new = com.replace('leave ', '')
+		if new == '':
+			try:
+				await ctx.voice_client.disconnect()
+			except:
+				None
+			return "Cont"
+		try:
+			new = int(new)
+		except:
+			None
+		if type(new) is str:
+			member = discord.utils.get(ctx.guild.members, name=new)
+			if member is None:
+				member = ctx.guild.get_member_named(member)
+		elif type(new) is int:
+			member = await ctx.guild.fetch_member(new)
+		try:
+			await member.move_to(None)
+		except:
+			return "Cont"
+	
+	# elif com.startswith('annoy'):
+		# new = com.replace('annoy ', '')
+		# try:
+			# new = int(new)
+		# except:
+			# pass
+		# if type(new) is str:
+			# member = discord.utils.get(ctx.guild.members, name=new)
+			# if member is None:
+				# member = ctx.guild.get_member_named(member)
+		# else:
+			# member = await ctx.guild.fetch_member(int(new))
+		# while True:
+			# try:
+				# for chan in ctx.guild.voice_channels:
+					# await member.move_to(chan)
+					# await sleep(0.7)
+			# except:
+				# break
+		
+	elif com.startswith('move'):
+		new = com.replace('move ', '')
+		print("GUILD VOICE CHANNELS:") 
+		for channel in ctx.guild.voice_channels:
+			print(f"NAME: {channel.name} ID: {channel.id}")
+		chn = input("Channel ID: ")
+		if chn is None:
+			chn = ctx.guild.get_channel(778272911063646258)
+		else:
+			try:
+				if type(chn) is int:
+					chn = ctx.guild.get_channel(int(chn))
+				elif type(chn) is str:
+					chn = discord.utils.get(ctx.guild.voice_channels, name=chn)
+			except:
+				print("Error")
+				return "Cont"
+			
+		if new == '':
+			try:
+				await ctx.guild.me.move_to(chn)
+			except:
+				None
+			return "Cont"
+		try:
+			new = int(new)
+		except:
+			None
+		if type(new) is str:
+			member = discord.utils.get(ctx.guild.members, name=new)
+			if member is None:
+				member = ctx.guild.get_member_named(new)
+		elif type(new) is int:
+			member = await ctx.guild.fetch_member(new)
+		try:
+			await member.move_to(chn)
+		except:
+			return "Cont"
+			
+	elif com.startswith('mute'):
+		new = com.replace('mute ', '')
+		if new == '':
+			await ctx.guild.me.edit(mute=True)
+			return "Cont"
+		try:
+			new = int(new)
+		except:
+			None
+		if type(new) is str:
+			member = discord.utils.get(ctx.guild.members, name=new)
+			if member is None:
+				member = ctx.guild.get_member_named(new)
+		elif type(new) is int:
+			member = await ctx.guild.fetch_member(new)
+		try:
+			await member.edit(mute=True)
+		except:
+			return "Cont"
+			
+	elif com.startswith('unmute'):
+		new = com.replace('unmute ', '')
+		if new == '':
+			await ctx.guild.me.edit(mute=False)
+			return "Cont"
+		try:
+			new = int(new)
+		except:
+			None
+		if type(new) is str:
+			member = discord.utils.get(ctx.guild.members, name=new)
+			if member is None:
+				member = ctx.guild.get_member_named(new)
+		elif type(new) is int:
+			member = await ctx.guild.fetch_member(new)
+		try:
+			await member.edit(mute=False)
+		except:
+			return "Cont"
+			
+	elif com.startswith('deafen'):
+		new = com.replace('deafen ', '')
+		if new == '':
+			await ctx.guild.me.edit(deafen=True)
+			return "Cont"
+		try:
+			new = int(new)
+		except:
+			None
+		if type(new) is str:
+			member = discord.utils.get(ctx.guild.members, name=new)
+			if member is None:
+				member = ctx.guild.get_member_named(new)
+		elif type(new) is int:
+			member = await ctx.guild.fetch_member(new)
+		try:
+			await member.edit(deafen=True)
+		except:
+			return "Cont"
+			
+	elif com.startswith('undeafen'):
+		new = com.replace('undeafen ', '')
+		if new == '':
+			await ctx.guild.me.edit(deafen=False)
+			return "Cont"
+		try:
+			new = int(new)
+		except:
+			None
+		if type(new) is str:
+			member = discord.utils.get(ctx.guild.members, name=new)
+			if member is None:
+				member = ctx.guild.get_member_named(new)
+		elif type(new) is int:
+			member = await ctx.guild.fetch_member(new)
+		try:
+			await member.edit(deafen=False)
+		except:
+			return "Cont"
+			
+	# thanks to jackson for the annoy code
 
 async def embed(ctx):
     print("Embed setup starting...")
