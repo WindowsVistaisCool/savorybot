@@ -4,6 +4,7 @@ import requests
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
+from cogs.util import checks
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False, specKey=None, specBin=None, n=False):
     ke = specKey
@@ -114,7 +115,7 @@ class Applications(commands.Cog):
         a = await c.send("||<@&789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
     
     @commands.group()
-    @commands.has_role("Staff")
+    @commands.check(checks.owner_staff)
     async def app(self, ctx):
         await ctx.message.delete()
         if ctx.invoked_subcommand is None: await ctx.send("Where did all the commands go? You can now accept/deny applications with the buttons on the application! If you made a mistake, you can use `=app del 1234567890` to delete the application with ID 1234567890! This will check pending, accepted, and denied guild apps and delete it correspondingly.")

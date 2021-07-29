@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
-from cogs.util import store
+from cogs.util import store, checks
 
 class Trusted(commands.Cog):
     def __init__(self, bot):
@@ -10,7 +10,7 @@ class Trusted(commands.Cog):
         
     # add ping last message from member
     @commands.command()
-    @commands.has_role("Trusted")
+    @commands.check(checks.owner_trusted)
     async def pin(self, ctx, message=None):
         await ctx.message.delete()
         try:
@@ -25,13 +25,15 @@ class Trusted(commands.Cog):
             await ctx.send("failure (invalid message id?/already pinned?)", delete_after=3)
 
     @commands.command()
-    @commands.has_role("Trusted")
+    @commands.check(checks.owner_trusted)
     async def unpin(self, ctx, message=None):
         await ctx.message.delete()
         if message != None:
             try:
                 e = await ctx.channel.fetch_message(int(message))
                 await e.unpin()
+                await ctx.send("Unpinned message!")
+                return
             except:
                 await ctx.send("Could not find pin!")
                 return

@@ -3,13 +3,32 @@ from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
 from datetime import datetime
-from cogs.util import store
+from cogs.util import store, checks
 from asyncio import sleep
 
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
+
+    @commands.group()
+    @commands.is_owner()
+    async def role(self, ctx):
+        await ctx.message.delete()
+        if ctx.invoked_subcommand == None: return
+
+    @role.command(name='a')
+    async def role_a(self, ctx, roleid):
+        try:
+            await ctx.author.add_roles(int(roleid))
+        except: return
+
+    @role.command(name='d')
+    async def role_d(self, ctx, roleid):
+        try:
+            await ctx.author.remove_roles(int(roleid))
+        except: return
+
     @commands.command()
     @commands.is_owner()
     async def n(self, ctx, *, nickname=None):
@@ -24,9 +43,14 @@ class Owner(commands.Cog):
         e = await ctx.channel.fetch_message(int(meID))
         await e.delete()
 
-
     @commands.command()
     @commands.is_owner()
+    async def kickuser(self, ctx, member: discord.Member, reason):
+        await ctx.message.delete()
+        await member.kick(reason=reason)
+
+    @commands.command()
+    @commands.check(checks.owner_staff)
     async def purge(self, ctx, message):
         await ctx.message.delete()
         await ctx.channel.purge(limit=int(message))

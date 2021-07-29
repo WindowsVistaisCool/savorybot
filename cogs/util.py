@@ -22,6 +22,17 @@ def store(file, key=None, read=False, val=None, *, pop=False):
         with open(file, 'w') as v:
             json.dump(x, v, indent=4)
 
+class checks:
+    async def owner_staff(ctx):
+        if ctx.author.id == 392502213341216769: return True
+        if ctx.guild.get_role(789593786287915010) in ctx.author.roles: return True
+        return False
+
+    async def owner_trusted(ctx):
+        if ctx.author.id == 392502213341216769: return True
+        if ctx.guild.get_role(789592055600250910) in ctx.author.roles: return True
+        return False
+
 async def get_ready(bot):
     load_cogs(bot)
     await ready_status(bot, store('config.json', None, True))

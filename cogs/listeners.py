@@ -154,7 +154,11 @@ class Listeners(commands.Cog):
                 await interaction.respond(type=7, content=f"LMFAOOOOOO L L L L {member.name} JUST GOT CLWOON'd ON L L L L L L L GET L KID")
         except:
             pass
-        if str(interaction.user.id) != interaction.component.id: return
+        try:
+            userid = ide.split('-')[0]
+        except:
+            userid = ide
+        if str(interaction.user.id) != userid: return
         if label == 'Exit' or ide == "exit":
             await interaction.message.edit(components=[])
         elif label == 'Delete' or ide == "delete":

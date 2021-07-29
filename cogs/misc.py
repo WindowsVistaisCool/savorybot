@@ -26,7 +26,7 @@ class Misc(commands.Cog):
     # add accept/deny stuff
     @scmd.cog_slash(name='giveaway')
     async def giveaway(self, ctx, winners, time, prize):
-        d = client.get_channel(834960422004064266)
+        d = self.bot.get_channel(834960422004064266)
         e = discord.Embed(title="New giveaway request",timestamp=datetime.utcnow())
         e.add_field(name="Host", value=f"{ctx.author.mention}", inline=False)
         e.add_field(name="Winners", value=f"```{winners}```", inline=False)
