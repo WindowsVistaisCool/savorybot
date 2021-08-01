@@ -205,7 +205,7 @@ class Listeners(commands.Cog):
                     d = await ctx.send(embed=e, components=[Button(label='Verify', style=1)])
                     store('config.json', 'verifyV2', val=f'{d.id}')
         if message.channel.id == 788886124159828012:
-            if message.content.startswith('.n') or message.content.startswith('.d') or 'sbs guild' in message.content or message.content.startswith('.sk') or message.content.startswith('.stats'):
+            if message.content.startswith('.n ') or message.content.startswith('.d ') or 'sbs guild' in message.content or message.content.startswith('.sk ') or message.content.startswith('.s '):
                 await message.reply(content='Please use this command in the bot commands channel!')
     
     @commands.Cog.listener()

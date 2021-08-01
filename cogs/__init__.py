@@ -7,3 +7,5 @@ from .owner import *
 from .polls import *
 from .trusted import *
 from .util import *
+# TEMP:
+from .hytemp import *
