@@ -1,11 +1,12 @@
 import discord
 import json
 import requests
+from datetime import datetime
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
 from cogs.util import checks
-from cogs.hytemp import util as hystats.util
+from cogs import hystats
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False, specKey=None, specBin=None, n=False):
     ke = specKey
@@ -113,7 +114,7 @@ class Applications(commands.Cog):
         e.add_field(name="IGN", value=hystats.util.toName(igeen), inline=False)
         e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
         store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
-        a = await c.send("||<@&789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
+        a = await c.send("||<789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
 
     @commands.group()
     @commands.check(checks.owner_staff)
