@@ -9,7 +9,7 @@ from asyncio import sleep
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
 
     @commands.group()
     @commands.is_owner()
@@ -18,15 +18,21 @@ class Owner(commands.Cog):
         if ctx.invoked_subcommand == None: return
 
     @role.command(name='a')
-    async def role_a(self, ctx, roleid):
+    async def role_a(self, ctx, roleid, member:discord.Member=None):
         try:
-            await ctx.author.add_roles(int(roleid))
+            if member == None:
+                await ctx.author.add_roles(ctx.guild.get_role(int(roleid)))
+            else:
+                await member.add_roles(ctx.guild.get_role(int(roleid)))
         except: return
 
     @role.command(name='d')
-    async def role_d(self, ctx, roleid):
+    async def role_d(self, ctx, roleid, member:discord.Member=None):
         try:
-            await ctx.author.remove_roles(int(roleid))
+            if memeber == None:
+                await ctx.author.remove_roles(ctx.guild.get_role(int(roleid)))
+            else:
+                await member.remove_roles(ctx.guild.get_role(int(roleid)))
         except: return
 
     @commands.command()

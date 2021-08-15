@@ -2,6 +2,17 @@ import cogs
 import discord
 import json
 
+class checks:
+    async def owner_staff(ctx):
+        if ctx.author.id == 392502213341216769: return True
+        if ctx.guild.get_role(789593786287915010) in ctx.author.roles: return True
+        return False
+
+    async def owner_trusted(ctx):
+        if ctx.author.id == 392502213341216769: return True
+        if ctx.guild.get_role(789592055600250910) in ctx.author.roles: return True
+        return False
+
 def store(file, key=None, read=False, val=None, *, pop=False):
     with open(file, 'r') as v:
         x = json.load(v)
@@ -21,17 +32,6 @@ def store(file, key=None, read=False, val=None, *, pop=False):
         x[key] = val
         with open(file, 'w') as v:
             json.dump(x, v, indent=4)
-
-class checks:
-    async def owner_staff(ctx):
-        if ctx.author.id == 392502213341216769: return True
-        if ctx.guild.get_role(789593786287915010) in ctx.author.roles: return True
-        return False
-
-    async def owner_trusted(ctx):
-        if ctx.author.id == 392502213341216769: return True
-        if ctx.guild.get_role(789592055600250910) in ctx.author.roles: return True
-        return False
 
 async def get_ready(bot):
     load_cogs(bot)
@@ -162,9 +162,9 @@ async def ready_status(client, x):
 #             s.append("Unset")
 #         else:
 #             s.append(f"`{d['2']}`")
-        
+
 #         await ctx.send(f"Your ping words are:\n{s[0]}\n{s[1]}",hidden=True)
-                 
+
 #     # trusted role could have more?
 #     elif action == 'add':
 #         if '2' in d:
@@ -210,7 +210,7 @@ async def ready_status(client, x):
 #                         coopm.append({"name":hystats.util.toName(name), "title":"Coop Member"})
 #                     else:
 #                         if isCoop2: isCoop = True
-#                         coopm.append({"name":hystats.util.toName(name), "title":"Coop Owner",}) 
+#                         coopm.append({"name":hystats.util.toName(name), "title":"Coop Owner",})
 #                         isCoop2 = True
 #                 if isCoop == False:
 #                     coopm[0]["title"] = "Solo Profile"

@@ -1,4 +1,3 @@
-
 import discord
 import asyncio
 from slashrequest import store
@@ -10,6 +9,23 @@ async def commandcheck(message, ctx, lms):
     if message.startswith('/close'):
             print("Closing...")
             return "Close"
+    elif message.startswith('/role'):
+        try:
+            new = message.replace('/role', '')
+            if new == ' ' or new == '':
+                return "Fail"
+            if new.startswith(' a'):
+                nee = new.replace(' a', '')
+                if nee == '' or nee == ' ':
+                    return "Fail"
+                return f"MEMBERADD-{nee}"
+            newe = new.replace(' d', '')
+            if newe == ' ' or newe == '':
+                return "Fail"
+            return f"MEMBERDEL-{newe}"
+        except Exception as e:
+            print(f"{e}")
+            return "Fail"
     elif message.startswith('/channel'):
         new = message.replace('/channel ', '')
         if new != '':
@@ -24,7 +40,7 @@ async def commandcheck(message, ctx, lms):
             except:
                     print("Please add a space after /channel!")
                     return "Fail"
-        print("GUILD TEXT CHANNELS:") 
+        print("GUILD TEXT CHANNELS:")
         for channel in ctx.guild.text_channels:
             print(f"NAME: #{channel.name} ID: {channel.id}")
         chn = input("Channel Name: ")
@@ -43,7 +59,11 @@ async def commandcheck(message, ctx, lms):
     elif message.startswith('/history'):
         return "History"
     elif message.startswith('/lms'):
-        return f"LMS"
+        new = message.replace('/lms ', '')
+        print(new)
+        if new == '' or new == '/lms':
+            return f"LEMMS"
+        return f"LMSID-{new}"
     # elif message.startswith('/callback'):
         # await comcallback(ctx)
     elif message.startswith('/del'):
@@ -58,6 +78,20 @@ async def commandcheck(message, ctx, lms):
         return "Done"
     elif message.startswith('/r'):
         new = message.replace('/r ', '')
+        try:
+            for l in new:
+                eee = new.replace(l, region[l])
+            print(eee)
+            await lms.add_reaction(eee)
+        except Exception as e:
+            print(f"{e}")
+        try:
+            await lms.add_reaction(new)
+        except Exception as e:
+            print(f"Failure {e}")
+        return "Done"
+    elif message.startswith('/ea'):
+        new = message.replace('/ea ', '')
         if new == ' ':
             f = ctx.guild.emojis
             for emoji in f:
@@ -123,14 +157,23 @@ async def commandcheck(message, ctx, lms):
 
 async def voice(ctx, com):
 	com = com.replace('/', '')
-	if com == 'join':
-		bird = await ctx.guild.fetch_member(392502213341216769)
-		chn = bird.voice.channel
-		try:
-			await chn.connect()
-		except:
-			print("error")
-			return "Cont"
+	if com.startswith('join'):
+		com = com.replace('join', '')
+		if com == '':
+			bird = await ctx.guild.fetch_member(392502213341216769)
+			chn = bird.voice.channel
+			try:
+				await chn.connect()
+			except:
+				print("error")
+				return "Cont"
+		else:
+			try:
+				voice = client.get_channel(int(com))
+				await voice.connect()
+			except Exception as e:
+				print(f"errorr {e}")
+				return "Cont"
 	elif com.startswith('leave'):
 		new = com.replace('leave ', '')
 		if new == '':
@@ -191,7 +234,6 @@ async def voice(ctx, com):
 			except:
 				print("Error")
 				return "Cont"
-			
 		if new == '':
 			try:
 				await ctx.guild.me.move_to(chn)
@@ -212,7 +254,7 @@ async def voice(ctx, com):
 			await member.move_to(chn)
 		except:
 			return "Cont"
-			
+
 	elif com.startswith('mute'):
 		new = com.replace('mute ', '')
 		if new == '':
@@ -343,6 +385,8 @@ async def embed(ctx):
 @client.event
 async def on_ready():
     c = client.get_channel(788886124159828012)
+    global region
+    region = store('react.json', None, True)
     global lms
     lms = None
     while True:
@@ -390,10 +434,36 @@ async def on_ready():
                             except:
                                 pass
                 print("---------------------------------------")
-            elif "LMS" in command:
+                continue
+            elif "LEMMS" in command:
                 async for m in c.history(limit=1):
                     lms = m
                     print(m)
+                continue
+            elif "LMSID" in command:
+                try:
+                    e = await c.fetch_message(int(command.split('-')[1]))
+                    lms = e
+                    print(e)
+                except Exception as e:
+                    print(f"fail {e}")
+                continue
+            elif "MEMBERADD" in command:
+                com = command.split('-')
+                try:
+                    m = await c.guild.fetch_member(int(com[1]))
+                    await m.add_roles(c.guild.get_role(int(com[2])))
+                except Exception as e:
+                    print(f"fail {e}")
+                continue
+            elif "MEMBERDEL" in command:
+                com = command.split('-')
+                try:
+                    m = await c.guild.fetch_member(int(com[1]))
+                    await m.remove_roles(c.guild.get_role(int(com[2])))
+                except Exception as e:
+                    print(f"fail {e}")
+                continue
         elif command == "Fail":
             continue
         else:
