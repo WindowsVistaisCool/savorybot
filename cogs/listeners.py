@@ -1,4 +1,5 @@
 import cogs
+import json
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
@@ -113,36 +114,70 @@ class Listeners(commands.Cog):
             await interaction.message.edit(components=[])
         elif label == "Vote Yes":
             ide = ide.replace('POLLYES', '')
-            x = store('polls.json', None, True)
+            cat = self.bot.get_channel(876182017400766544)
+            c = None
+            for channel in cat.channels:
+                if channel.name == ide:
+                    c = channel
+                    break
+            if c == None:
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact trngl.")
+                return
+            messages = await c.history(limit=4).flatten()
+            x = json.loads(messages[1].content)
+            users = []
+            if messages[0].content != "No user data":
+                users = messages[0].content.split('-')
             try:
-                if interaction.user.id in x[ide]['users']:
+                if str(interaction.user.id) in users:
                     await interaction.respond(content="You have already responded to this poll!")
                     return
-                x[ide]['yes'] += 1
-                x[ide]['users'].append(interaction.user.id)
-                store('polls.json', x)
+                x['yes'] = int(x['yes'])
+                x['yes'] += 1
                 e = interaction.message.embeds[0]
-                e.set_field_at(0, name='Yes', value=x[ide]['yes'])
+                e.set_field_at(0, name='Yes', value=x['yes'])
                 await interaction.message.edit(embed=e)
+                if messages[0].content != "No user data":
+                    await messages[0].edit(content=f"{messages[0].content}-{interaction.user.id}")
+                else:
+                    await messages[0].edit(content=f"{interaction.user.id}")
+                await messages[1].edit(content=f"{json.dumps(x)}")
                 await interaction.respond(type=6)
             except:
-                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact ruffmann.")
+                await interaction.respond(content="There was an error executing this!")
         elif label == "Vote No":
-            ide = ide.replace("POLLNO", '')
-            x = store('polls.json', None, True)
+            ide = ide.replace('POLLNO', '')
+            cat = self.bot.get_channel(876182017400766544)
+            c = None
+            for channel in cat.channels:
+                if channel.name == ide:
+                    c = channel
+                    break
+            if c == None:
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact trngl.")
+                return
+            messages = await c.history(limit=4).flatten()
+            x = json.loads(messages[1].content)
+            users = []
+            if messages[0].content != "No user data":
+                users = messages[0].content.split('-')
             try:
-                if interaction.user.id in x[ide]['users']:
+                if str(interaction.user.id) in users:
                     await interaction.respond(content="You have already responded to this poll!")
                     return
-                x[ide]['no'] += 1
-                x[ide]['users'].append(interaction.user.id)
-                store('polls.json', x)
+                x['no'] = int(x['no'])
+                x['no'] += 1
                 e = interaction.message.embeds[0]
-                e.set_field_at(1, name='No', value=x[ide]['no'])
+                e.set_field_at(1, name='No', value=x['no'])
                 await interaction.message.edit(embed=e)
+                if messages[0].content != "No user data":
+                    await messages[0].edit(content=f"{messages[0].content}-{interaction.user.id}")
+                else:
+                    await messages[0].edit(content=f"{interaction.user.id}")
+                await messages[1].edit(content=f"{json.dumps(x)}")
                 await interaction.respond(type=6)
             except:
-                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact ruffmann.")
+                await interaction.respond(content="There was an error executing this!")
         elif label == "Remove" or ide == "remove":
             await interaction.message.delete()
         try:
@@ -176,21 +211,38 @@ class Listeners(commands.Cog):
         if val.startswith("SelectPoll"):
             val = val.split('-')
             mid = val[1]
-            x = store('polls.json', None, True)
+            cat = self.bot.get_channel(876182017400766544)
+            c = None
+            for channel in cat.channels:
+                if channel.name == mid:
+                    c = channel
+                    break
+            if c == None:
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact trngl.")
+                return
+            messages = await c.history(limit=4).flatten()
+            x = json.loads(messages[1].content)
+            users = []
+            if messages[0].content != "No user data":
+                users = messages[0].content.split('-')
             try:
-                if interaction.user.id in x[mid]['users']:
+                if str(interaction.user.id) in users:
                     await interaction.respond(content="You have already responed to this poll!")
                     return
-                x[mid]['users'].append(interaction.user.id)
-                x[mid]['fields'][label] += 1
-                store('polls.json', x)
+                if messages[0].content != "No user data":
+                    await messages[0].edit(content=f"{messages[0].content}-{interaction.user.id}")
+                else:
+                    await messages[0].edit(content=f"{interaction.user.id}")
+                x['fields'][label] = int(x['fields'][label])
+                x['fields'][label] += 1
+                await messages[1].edit(content=f"{json.dumps(x)}")
                 if val[2] != 'T':
                     e = interaction.message.embeds[0]
-                    e.set_field_at(x[mid]['fieldpos'][label], name=label, value=x[mid]['fields'][label], inline=False)
+                    e.set_field_at(x['fieldpos'][label], name=label, value=x['fields'][label], inline=False)
                     await interaction.message.edit(embed=e)
                 await interaction.respond(type=6)
             except:
-                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact ruffmann.")
+                await interaction.respond(content="There was an error executing this!")
 
     @commands.Cog.listener()
     async def on_message(self, message):

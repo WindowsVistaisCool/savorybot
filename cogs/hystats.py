@@ -48,17 +48,17 @@ class util:
         else:
             return
 
-    def getOnline(self, name):
+    def getOnline(name):
         key = store("config.json", "key", True)
-        uuid = self.toUUID(name)
+        uuid = util.toUUID(name)
         if uuid == False:
             return ['err', 'Could not find that username!']
         ruf = requests.get(f'https://api.hypixel.net/status?key={key}&uuid={uuid}')
         sus = requests.get(f"https://api.hypixel.net/player?key={key}&name={name}")
         res = sus
         # print(res.json())
-        if res.status_code == 429 or res.status_code == 521:
-            return ['err', handleRequest(res.status_code)]
+        if res.status_code == 429:
+            return ['err', util.handleRequest(res.status_code)]
         ruff = ruf.json()
         sus = sus.json()
         if sus["success"] is False:
@@ -101,15 +101,15 @@ class HyStats(commands.Cog):
         await ctx.send("Getting data...",delete_after=3)
         uuid = util.toUUID(name)
         if uuid is False:
-            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red()), components=[Button(label="Remove",style=4)])
+            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
             return
         d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('../config.json', 'key', True)}&uuid={uuid}")
         if d.status_code == 429 or d.status_code == 521:
-            await ctx.send(embed=discord.Embed(title="API Error", description=util.handleRequest(d.status_code), color=discord.Color.red()), components=[Button(label="Remove",style=4)])
+            await ctx.send(embed=discord.Embed(title="API Error", description=util.handleRequest(d.status_code), color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
             return
         f = d.json()
         if f['profiles'] is None:
-            await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red()), components=[Button(label="Remove",style=4)])
+            await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
             return
         def get_coop(pf):
             coopm = []
@@ -157,11 +157,13 @@ class HyStats(commands.Cog):
             except:
                 pass
             e.add_field(name=title, value=msg, inline=False)
-        try:
-            de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels)])
-        except Exception as e:
-            await ctx.send(f"An error occurred while executing this command! ({e})")
-            return
+        # temp return here becuase selects aren't slash friendly
+        await ctx.channel.send(embed=e)
+        return
+        # de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels)])
+        # except Exception as e:
+        #     await ctx.send(f"An error occurred while executing this command! ({e})")
+        #     return
         while True:
             try:
                 interaction = await self.bot.wait_for("select_option", timeout=90.0)
@@ -251,7 +253,7 @@ class HyStats(commands.Cog):
             e.add_field(name="Game", value=o[1])
             game = o[2]
             if o[1] == 'SKYBLOCK':
-                game = sbmode(o[2])
+                game = self.sbmode(o[2])
             e.add_field(name="Mode", value=game)
         await a.edit(embed=e)
 

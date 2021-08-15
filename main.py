@@ -36,7 +36,7 @@ def load_cogs(bot):
     cogs.hystats.load(bot)
     cogs.listeners.load(bot)
     cogs.misc.load(bot)
-    cogs.owner.load(bot)
+    # cogs.owner.load(bot)
     cogs.polls.load(bot)
     cogs.trusted.load(bot)
 
