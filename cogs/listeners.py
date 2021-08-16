@@ -1,5 +1,6 @@
 import cogs
 import json
+import re
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
@@ -247,19 +248,27 @@ class Listeners(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
+        if message.author.bot: return
         if message.author.id != 713461668667195553:
             if message.author.id == 392502213341216769:
                 if message.content == 'embed':
                     await message.delete()
                     e = discord.Embed(title="Verification", color=discord.Color.blurple())
-                    e.add_field(name="Verify", value="To verify, click the button below. If you do not see the button or get a `This interaction failed` message, please update your discord app or talk to `ruffmann#2668`.", inline=False)
+                    e.add_field(name="Verify", value="To verify, click the button below. If you do not see the button or get a `This interaction failed` message, please update your discord app or talk to `trngl#2668`.", inline=False)
                     e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
                     e.set_footer(text="Thank you for joining!")
                     d = await ctx.send(embed=e, components=[Button(label='Verify', style=1)])
-                    store('config.json', 'verifyV2', val=f'{d.id}')
-        if message.channel.id == 788886124159828012:
-            if message.content.startswith('.n ') or message.content.startswith('.d ') or 'sbs guild' in message.content or message.content.startswith('.sk ') or message.content.startswith('.s '):
-                await message.reply(content='Please use this command in the bot commands channel!')
+                    store('../config.json', 'verifyV2', val=f'{d.id}')
+        if message.channel.id == 788889735157907487:
+            if message.author.id == 392502213341216769 or message.author.id == 159985870458322944:
+                splitted = message.content.split(' ')
+                if int(splitted[7][:-1])%10 != 0:
+                    return
+                userid = re.sub("[^0-9]", "", splitted[1])
+                user = await message.guild.fetch_member(int(userid))
+                roleid = {"40!": 865832933028528158, "30!": 865832837948244009, "20!": 864125893660508161, "10!": 841066567151910932}
+                role = message.guild.get_role(roleid[splitted[7]])
+                await user.add_roles(role)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

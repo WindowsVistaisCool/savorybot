@@ -114,7 +114,7 @@ class Applications(commands.Cog):
         e.add_field(name="IGN", value=hystats.util.toName(igeen), inline=False)
         e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
         store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
-        a = await c.send("||<789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
+        a = await c.send("||<@&789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
 
     @commands.group()
     @commands.check(checks.owner_staff)
