@@ -15,6 +15,40 @@ class Listeners(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         y = store('rroles.json', None, True)
+        if payload.emoji.id == 815831189696413698:
+            if payload.channel_id == 871491040224378940: return
+            check = self.bot.get_channel(877944770545188944)
+            checkHistory = await check.history(limit=500).flatten()
+            # needs to be squished, 10 starboards per messsage or something like that
+            for message in checkHistory:
+                if str(payload.message_id) == message.content:
+                    return
+            cat = self.bot.get_channel(877932265798246450)
+            ch = None
+            for channel in cat.channels:
+                if channel.name == str(payload.message_id):
+                    ch = channel
+                    break
+            if ch == None:
+                c = await cat.create_text_channel(str(payload.message_id), reason="New starboard")
+                await c.send(f"{payload.user_id}")
+                return
+            history = await ch.history(limit=1).flatten()
+            newhistory = f"{history[0].content}-{payload.user_id}"
+            await history[0].edit(newhistory)
+            members = newhistory.split('-')
+            if len(members) >= 3:
+                starboard = self.bot.get_channel(871491040224378940)
+                # add support for attachements later
+                messageChannel = self.bot.get_channel(payload.channel_id)
+                message = await messageChannel.fetch_message(payload.message_id)
+                embed = discord.Embed(description=message.content, color=discord.Color.blue())
+                embed.set_author(name=message.author, icon_url=message.author.avatar_url)
+                await starboard.send(embed=embed)
+                await ch.delete(reason="Starboard has 3 reactions")
+                await check.send(f"{payload.message_id}")
+                return
+
         if str(payload.message_id) in y['rroles']:
             for msg in y['rroles']:
                 if str(payload.message_id) == msg:
@@ -269,6 +303,11 @@ class Listeners(commands.Cog):
                 roleid = {"40!": 865832933028528158, "30!": 865832837948244009, "20!": 864125893660508161, "10!": 841066567151910932}
                 role = message.guild.get_role(roleid[splitted[7]])
                 await user.add_roles(role)
+        # elif message.channel.id == 788886124159828012:
+
+    @commands.Cog.listener()
+    async def on_slash_command(self, ctx):
+        print(f"{ctx.data}")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
