@@ -3,7 +3,8 @@ from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
 from datetime import datetime
-from cogs.util import store, checks
+from cogs.util import store
+from cogs import checks
 from asyncio import sleep
 
 class Owner(commands.Cog):
@@ -97,5 +98,5 @@ class Owner(commands.Cog):
         store('rroles.json', x)
         await ctx.send("Reaction role removed", delete_after=1)
 
-def load(bot):
+def setup(bot):
     bot.add_cog(Owner(bot))

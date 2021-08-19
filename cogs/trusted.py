@@ -2,12 +2,13 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
-from cogs.util import store, checks
+from cogs.util import store
+from cogs import checks
 
 class Trusted(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
     # add ping last message from member
     @commands.command()
     @commands.check(checks.owner_trusted)
@@ -15,7 +16,7 @@ class Trusted(commands.Cog):
         await ctx.message.delete()
         try:
             if message != None:
-                e = await ctx.channel.fetch_message(int(message)) 
+                e = await ctx.channel.fetch_message(int(message))
             else:
                 e = None
                 async for msg in ctx.channel.history(limit=1):
@@ -47,6 +48,6 @@ class Trusted(commands.Cog):
             await ctx.send("Unpinned message!")
         except:
             await ctx.send("Error retrieving pin (pins cannot be unpinned via this command if it is more than 200 messages ago")
-            
-def load(bot):
+
+def setup(bot):
     bot.add_cog(Trusted(bot))

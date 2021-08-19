@@ -5,8 +5,7 @@ from datetime import datetime
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
-from cogs.util import checks
-from cogs import hystats
+from cogs import hystats, checks
 
 def store(file, key=None, read=False, val=None, *, app=False, appKey=None, pop=False, specKey=None, specBin=None, n=False):
     ke = specKey
@@ -153,5 +152,5 @@ class Applications(commands.Cog):
             return
         await f.edit(content='Deleted. (You must remove roles)')
 
-def load(bot):
+def setup(bot):
     bot.add_cog(Applications(bot))

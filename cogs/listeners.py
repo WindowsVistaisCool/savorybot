@@ -282,5 +282,5 @@ class Listeners(commands.Cog):
             e = discord.Embed(title="An exception occurred", description=f"{error}")
             await ctx.send(embed=e, delete_after=10)
 
-def load(bot):
+def setup(bot):
     bot.add_cog(Listeners(bot))

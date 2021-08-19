@@ -7,7 +7,7 @@ from discord_components import Button, Select, SelectOption
 class bTesting(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     # enable/disable
     @commands.group()
     @commands.is_owner()
@@ -31,7 +31,7 @@ class bTesting(commands.Cog):
     @scmd.cog_subcommand(base='bt', name='info')
     async def _bt_info(ctx):
         await ctx.send("You're here because you signed up to help me improve this bot! As of this first testing session, there are a few commands, and you will be pinged when a new one arrives. **DO NOT USE THESE COMMANDS OUTSIDE OF THE #bot-testing CHANNEL. YOU WILL RECIEVE A WARNING** If you recieve a message saying \"This interaction failed\", **please let me know as soon as possible**. Thank you for signing up and helping me iron out any bugs!", hidden=True)
-    
+
     # testing commands
     @scmd.cog_subcommand(base='bt', name='interaction')
     async def btInteraction(self, ctx, type):
@@ -60,5 +60,5 @@ class bTesting(commands.Cog):
             await m.edit(content=f"Expired menu - {ctx.author.name} selected {interaction.component[0].label}",components=[])
             await interaction.respond(content="You selected an item!")
 
-def load(bot):
+def setup(bot):
     bot.add_cog(bTesting(bot))

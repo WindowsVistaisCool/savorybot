@@ -1,5 +1,6 @@
 from .applications import *
 from .btesting import *
+from .checks import *
 from .hystats import *
 from .listeners import *
 from .misc import *

@@ -5,10 +5,11 @@ from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
 from datetime import datetime
 from asyncio import sleep
-from cogs.util import store
+from cogs.util import store, bugReport
 
-class util:
+class hyutil:
     def handleRequest(status_code, err=True):
+        # add success codes too
         if err == True:
             # Client errors
             if status_code == 400:
@@ -26,7 +27,7 @@ class util:
             elif status_code == 418:
                 return '**418** I\'m a teapot! I can\'t brew coffee!'
             elif status_code == 429:
-                return '**429** Too many requests!'
+                return '**429** Too many requests (or API name looked up recently)!'
             # Server errors
             elif status_code == 500:
                 return '***500*** Internal Server Error'
@@ -48,9 +49,16 @@ class util:
         else:
             return
 
+    def testAPIKey(key):
+        responsejson = key.json()
+        if responsejson['success'] == False:
+            return [False, responsejson['cause']]
+        else:
+            return [True, None]
+
     def getOnline(name):
         key = store("config.json", "key", True)
-        uuid = util.toUUID(name)
+        uuid = hyutil.toUUID(name)
         if uuid == False:
             return ['err', 'Could not find that username!']
         ruf = requests.get(f'https://api.hypixel.net/status?key={key}&uuid={uuid}')
@@ -58,7 +66,7 @@ class util:
         res = sus
         # print(res.json())
         if res.status_code == 429:
-            return ['err', util.handleRequest(res.status_code)]
+            return ['err', hyutil.handleRequest(res.status_code)]
         ruff = ruf.json()
         sus = sus.json()
         if sus["success"] is False:
@@ -98,18 +106,23 @@ class HyStats(commands.Cog):
     async def profiles(self, ctx, user):
         name = user
         # placeholder so slash interaction doesn't fail
-        await ctx.send("Getting data...",delete_after=3)
-        uuid = util.toUUID(name)
+        await ctx.send("Retrieving data...",delete_after=3)
+        uuid = hyutil.toUUID(name)
         if uuid is False:
-            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
+            await ctx.channel.send(embed=discord.Embed(title="API Error",description="Could not find that username!",color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
             return
-        d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('../config.json', 'key', True)}&uuid={uuid}")
+        d = requests.get(f"https://api.hypixel.net/skyblock/profiles?key={store('config.json', 'key', True)}&uuid={uuid}")
         if d.status_code == 429 or d.status_code == 521:
-            await ctx.send(embed=discord.Embed(title="API Error", description=util.handleRequest(d.status_code), color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
+            await ctx.channel.send(embed=discord.Embed(title="API Error", description=hyutil.handleRequest(d.status_code), color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
+            return
+        testAPI = hyutil.testAPIKey(d)
+        if testAPI[0] == False:
+            await ctx.channel.send(embed=discord.Embed(title="Unknown API error", description=testAPI[1], color=discord.Color.red()))
+            await bugReport(self.bot, f'`/hy profiles user:{user}` Unknown API error', testAPI[1])
             return
         f = d.json()
         if f['profiles'] is None:
-            await ctx.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
+            await ctx.channel.send(embed=discord.Embed(title="API Error", description="That user has not played skyblock!", color=discord.Color.red())) #, components=[Button(label="Remove",style=4)])
             return
         def get_coop(pf):
             coopm = []
@@ -118,13 +131,13 @@ class HyStats(commands.Cog):
             for name, member in pf['members'].items():
                 if "coop_invitation" in member:
                     if member["coop_invitation"]["confirmed"] == False:
-                        coopm.append({"name":util.toName(name), "title":"Invited Coop Member"})
+                        coopm.append({"name":hyutil.toName(name), "title":"Invited Coop Member"})
                         continue
                     isCoop = True
-                    coopm.append({"name":util.toName(name), "title":"Coop Member"})
+                    coopm.append({"name":hyutil.toName(name), "title":"Coop Member"})
                 else:
                     if isCoop2: isCoop = True
-                    coopm.append({"name":util.toName(name), "title":"Coop Owner",})
+                    coopm.append({"name":hyutil.toName(name), "title":"Coop Owner",})
                     isCoop2 = True
             if isCoop == False:
                 coopm[0]["title"] = "Solo Profile"
@@ -145,7 +158,7 @@ class HyStats(commands.Cog):
         if plen == 1: pfls = "1 profile was"
         else: pfls = f"{plen} profiles were"
         labels = []
-        e = discord.Embed(title=f"Profiles for user {util.toName(uuid)}", description=f"{pfls} detected for {util.toName(uuid)}\n\nGet more information about a profile by selecting the name below!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
+        e = discord.Embed(title=f"Profiles for user {hyutil.toName(uuid)}", description=f"{pfls} detected for {hyutil.toName(uuid)}\n\nGet more information about a profile by selecting the name below!\n\nNOTE: Kicked coop members show up as normal, as there is no function to see if they are kicked.", color=discord.Color.green())
         for pf in f['profiles']:
             # `ID`: {pf['profile_id']}
             msg = f"`Coop members`: {get_coop(pf)}\n`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>"
@@ -160,9 +173,10 @@ class HyStats(commands.Cog):
         # temp return here becuase selects aren't slash friendly
         await ctx.channel.send(embed=e)
         return
-        # de = await ctx.send(embed=e, components=[Select(placeholder="Select profile",options=labels)])
+        # try:
+        #     de = await ctx.channel.send(embed=e, components=[Select(placeholder="Select profile",options=labels)])
         # except Exception as e:
-        #     await ctx.send(f"An error occurred while executing this command! ({e})")
+        #     await ctx.channel.send(f"An error occurred while executing this command! ({e})")
         #     return
         while True:
             try:
@@ -206,7 +220,7 @@ class HyStats(commands.Cog):
                 return f"{'{:,.2f}'.format(float(inp.partition('.')[0]))[:-3]}"
             except:
                 return f"Failure getting value"
-        e = discord.Embed(title=f"{util.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
+        e = discord.Embed(title=f"{hyutil.toName(uuid)} on {pf['cute_name']}", color=discord.Color.green())
         e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
         e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
         e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
@@ -222,17 +236,17 @@ class HyStats(commands.Cog):
         user = username
         e = discord.Embed(title="Fetching data from api...", color=discord.Color.blurple())
         a = await ctx.send(embeds=[e])
-        o = util.getOnline(user)
+        o = hyutil.getOnline(user)
         color = 0x000000
         description = "Error"
         on = False
         if o[0] is True:
             color = discord.Color.green()
-            description = f"{user} is currently ONLINE"
+            description = f"{user} is currently **ONLINE**"
             on = True
         elif o[0] is False:
             color = discord.Color.red()
-            description = f"{user} is currently OFFLINE"
+            description = f"{user} is currently **OFFLINE**"
         elif o[0] == 'err':
             e = discord.Embed(title="API Error", color=discord.Color.red(), description=o[1])
             await a.edit(embed=e)
@@ -246,7 +260,7 @@ class HyStats(commands.Cog):
             if o[0]:
                 return "Lookup at"
             else:
-                return "[UTC] Offline since"
+                return "Offline since"
         e = discord.Embed(title=f"Status of {user}", color=color, description=description, timestamp=timeC())
         e.set_footer(text=fC())
         if on is True:
@@ -278,13 +292,15 @@ class HyStats(commands.Cog):
             gmname = 'Legacy Games'
         elif type == 'etc':
             gmname = 'SMP/Replay/Housing/Pit/Tournament/Prototype'
-        counts = requests.get('https://api.hypixel.net/counts?key=1663194c-20d2-4255-b85b-82fa68236d4e')
+        counts = requests.get(f'https://api.hypixel.net/counts?key={store("config.json", "key", True)}')
         if counts.status_code == 521:
             await ctx.send(embed=discord.Embed(title="API Error", description=handleRequest(counts.status_code), color=discord.Color.red()))
             return
         count = counts.json()
-        if count['success'] is False:
-            await ctx.send(f"Error getting player counts, please report this! ({count['cause']})")
+        testAPI = hyutil.testAPIKey(counts)
+        if testAPI[0] == False:
+            await ctx.send(embed=discord.Embed(title="Unknown API Error", description=testAPI[1], color=discord.Color.red()))
+            await bugReport(self.bot, f'`/hy counts gamemode:{gamemode}`', testAPI[1])
             return
         e = discord.Embed(title=f"Player counts for {gmname}", description=f"**Network-wide player count**\n```yaml\n{count['playerCount']}```", color=discord.Color.blurple(), timestamp=datetime.utcnow())
         e.set_footer(text='Counts recieved')
@@ -385,5 +401,5 @@ class HyStats(commands.Cog):
             e.add_field(name='TOWERWARS', value=f'Tower wars (solo): `{ptp["modes"]["TOWERWARS_SOLO"]}`\nTower wars (doubles): `{ptp["modes"]["TOWERWARS_TEAM_OF_TWO"]}`')
         await ctx.send(embed=e, delete_after=40)
 
-def load(bot):
+def setup(bot):
     bot.add_cog(HyStats(bot))

@@ -107,5 +107,5 @@ class Polls(commands.Cog):
         await msg.edit(embed=e, components=[])
         await c.delete(reason="Poll concluded")
 
-def load(bot):
+def setup(bot):
     bot.add_cog(Polls(bot))
