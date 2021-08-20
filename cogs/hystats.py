@@ -85,6 +85,10 @@ class hyutil:
             except:
                 return [False, "Invalid Timestamp", res]
 
+    # add modes later
+    def sbmode(g):
+        return g
+
     def toUUID(name):
         d = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{name}")
         if d.status_code == 204:
@@ -226,11 +230,6 @@ class HyStats(commands.Cog):
         e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
         await de.edit(content='', embed=e, components=[[Button(label="Exit", id=f"{ct.author.id}"), Button(label="Delete",style=4, id=f"{ct.author.id}")]])
 
-
-    # add modes later
-    def sbmode(g):
-        return g
-
     @scmd.cog_subcommand(base='hy', name='status')
     async def status(self, ctx, username):
         user = username
@@ -252,7 +251,7 @@ class HyStats(commands.Cog):
             await a.edit(embed=e)
             return
         def timeC():
-            if o[0]:
+            if o[0] == True:
                 return datetime.utcnow()
             else:
                 return o[1]
@@ -261,13 +260,16 @@ class HyStats(commands.Cog):
                 return "Lookup at"
             else:
                 return "Offline since"
-        e = discord.Embed(title=f"Status of {user}", color=color, description=description, timestamp=timeC())
+        try:
+            e = discord.Embed(title=f"Status of {user}", color=color, description=description, timestamp=timeC())
+        except:
+            e = discord.Embed(title=f"Status of {user} (invalid timestamp passed)", color=color, description=description)
         e.set_footer(text=fC())
         if on is True:
             e.add_field(name="Game", value=o[1])
             game = o[2]
             if o[1] == 'SKYBLOCK':
-                game = self.sbmode(o[2])
+                game = util.sbmode(o[2])
             e.add_field(name="Mode", value=game)
         await a.edit(embed=e)
 

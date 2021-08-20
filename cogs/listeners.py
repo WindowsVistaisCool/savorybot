@@ -16,13 +16,15 @@ class Listeners(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         y = store('rroles.json', None, True)
         if payload.emoji.id == 815831189696413698:
-            if payload.channel_id == 871491040224378940: return
+            blacklistChannel = self.bot.get_channel(878076142521831465)
+            blacklist = await blacklistChannel.history(limit=100).flatten()
+            for blacklistitem in blacklist:
+                if str(payload.channel_id) == blacklistitem: return
             check = self.bot.get_channel(877944770545188944)
             checkHistory = await check.history(limit=500).flatten()
             # needs to be squished, 10 starboards per messsage or something like that
             for message in checkHistory:
-                if str(payload.message_id) == message.content:
-                    return
+                if str(payload.message_id) == message.content: return
             cat = self.bot.get_channel(877932265798246450)
             ch = None
             for channel in cat.channels:
@@ -303,11 +305,6 @@ class Listeners(commands.Cog):
                 roleid = {"40!": 865832933028528158, "30!": 865832837948244009, "20!": 864125893660508161, "10!": 841066567151910932}
                 role = message.guild.get_role(roleid[splitted[7]])
                 await user.add_roles(role)
-        # elif message.channel.id == 788886124159828012:
-
-    @commands.Cog.listener()
-    async def on_slash_command(self, ctx):
-        print(f"{ctx.data}")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -319,6 +316,7 @@ class Listeners(commands.Cog):
             await ctx.send(embed=e, delete_after=3)
         else:
             e = discord.Embed(title="An exception occurred", description=f"{error}")
+            await util.bugReport(self.bot, f'`Command Error` {ctx.message.content}', f"{error}")
             await ctx.send(embed=e, delete_after=10)
 
 def setup(bot):
