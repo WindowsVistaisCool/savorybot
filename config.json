@@ -1,5 +1,5 @@
 {
-    "token": "NzEzNDYxNjY4NjY3MTk1NTUz.Xsgc9Q.-LW9sfp5sxIWlfPSToGUcnhPT54",
+    "token": "ODc4Njk0MjE5Mzk5NzEyODE4.YSE5ww.pYmoO1mkGE2retw1tq6lFca5r8o",
     "apiAuth": "mfaiuya4o57lhfdaajsdkfhall-A",
     "key": "f15daee9-904b-417e-b867-e51ef9a38697",
     "oldkey": "1663194c-20d2-4255-b85b-82fa68236d4e",
@@ -13,19 +13,19 @@
       "cogs.trusted"
     ],
     "pfx": "=",
-    "atype": "w",
+    "atype": "g",
     "status": "dnd",
-    "activity": "trngl suffer",
+    "activity": "URGENT",
     "surl": null,
     "testMode": false,
     "verifyV2": "866047135831949343",
     "slashConfig": {
         "auth": {
-            "Authorization": "Bot NzEzNDYxNjY4NjY3MTk1NTUz.Xsgc9Q.-LW9sfp5sxIWlfPSToGUcnhPT54"
+            "Authorization": "Bot ODc4Njk0MjE5Mzk5NzEyODE4.YSE5ww.pYmoO1mkGE2retw1tq6lFca5r8o"
         },
-        "appID": "713461668667195553",
+        "appID": "878694219399712818",
         "guildID": "788886124159828009",
-        "selfID": "392502213341216769",
+        "selfID": "406629388059410434",
         "staff": "789593786287915010",
         "tempID": null,
         "tips": false
