@@ -16,16 +16,16 @@ class Listeners(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         y = store('rroles.json', None, True)
         if payload.emoji.id == 815831189696413698:
-            blacklistChannel = self.bot.get_channel(878076142521831465)
+            blacklistChannel = self.bot.get_channel(880550264564748368)
             blacklist = await blacklistChannel.history(limit=100).flatten()
             for blacklistitem in blacklist:
                 if str(payload.channel_id) == blacklistitem: return
-            check = self.bot.get_channel(877944770545188944)
+            check = self.bot.get_channel(880550772021010433)
             checkHistory = await check.history(limit=500).flatten()
             # needs to be squished, 10 starboards per messsage or something like that
             for message in checkHistory:
                 if str(payload.message_id) == message.content: return
-            cat = self.bot.get_channel(877932265798246450)
+            cat = self.bot.get_channel(880550245841403904)
             ch = None
             for channel in cat.channels:
                 if channel.name == str(payload.message_id):
@@ -40,7 +40,7 @@ class Listeners(commands.Cog):
             await history[0].edit(newhistory)
             members = newhistory.split('-')
             if len(members) >= 3:
-                starboard = self.bot.get_channel(871491040224378940)
+                starboard = self.bot.get_channel(880550772021010433)
                 # add support for attachements later
                 messageChannel = self.bot.get_channel(payload.channel_id)
                 message = await messageChannel.fetch_message(payload.message_id)
