@@ -37,15 +37,16 @@ class Listeners(commands.Cog):
                 return
             history = await ch.history(limit=1).flatten()
             newhistory = f"{history[0].content}-{payload.user_id}"
-            await history[0].edit(newhistory)
+            await history[0].edit(content=newhistory)
             members = newhistory.split('-')
             if len(members) >= 3:
-                starboard = self.bot.get_channel(880550772021010433)
-                # add support for attachements later
+                starboard = self.bot.get_channel(871491040224378940)
                 messageChannel = self.bot.get_channel(payload.channel_id)
                 message = await messageChannel.fetch_message(payload.message_id)
                 embed = discord.Embed(description=message.content, color=discord.Color.blue())
                 embed.set_author(name=message.author, icon_url=message.author.avatar_url)
+                if len(message.attachments) != 0:
+                    embed.set_image(url=message.attachments[0].url)
                 await starboard.send(embed=embed)
                 await ch.delete(reason="Starboard has 3 reactions")
                 await check.send(f"{payload.message_id}")
@@ -286,15 +287,17 @@ class Listeners(commands.Cog):
         ctx = await self.bot.get_context(message)
         if message.author.bot: return
         if message.author.id != 713461668667195553:
-            if message.author.id == 392502213341216769:
+            if message.author.id == 406629388059410434:
                 if message.content == 'embed':
                     await message.delete()
                     e = discord.Embed(title="Verification", color=discord.Color.blurple())
-                    e.add_field(name="Verify", value="To verify, click the button below. If you do not see the button or get a `This interaction failed` message, please update your discord app or talk to `trngl#2668`.", inline=False)
-                    e.add_field(name="Join Guild",value="To join the Guild, you first must verify, then see the `#guild-applications` channel.", inline=False)
+                    e.add_field(name="Verify", value="To verify, click the button below. If you get a `This interaction failed` message, please talk to <@!406629388059410434>.", inline=False)
+                    e.add_field(name="Read the rules", value="Make sure to read our <#788887107544285244>!")
+                    e.add_field(name="Join the guild!",value="To join the Guild, you first must verify, then check out the <#822915132153135144> channel.", inline=False)
+                    e.add_field(name='Need support?', value="If you ever need support, you can create a ticket in <#866426260573650966>.", inline=False)
                     e.set_footer(text="Thank you for joining!")
                     d = await ctx.send(embed=e, components=[Button(label='Verify', style=1)])
-                    store('../config.json', 'verifyV2', val=f'{d.id}')
+                    store('config.json', 'verifyV2', val=f'{d.id}')
         if message.channel.id == 788889735157907487:
             if message.author.id == 392502213341216769 or message.author.id == 159985870458322944:
                 splitted = message.content.split(' ')

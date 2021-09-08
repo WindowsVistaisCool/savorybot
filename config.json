@@ -4,13 +4,13 @@
     "key": "f15daee9-904b-417e-b867-e51ef9a38697",
     "oldkey": "1663194c-20d2-4255-b85b-82fa68236d4e",
     "cogs": [
-      "cogs.applications",
-      "cogs.hystats",
-      "cogs.listeners",
-      "cogs.misc",
-      "cogs.owner",
-      "cogs.polls",
-      "cogs.trusted"
+        "cogs.applications",
+        "cogs.hystats",
+        "cogs.listeners",
+        "cogs.misc",
+        "cogs.owner",
+        "cogs.polls",
+        "cogs.trusted"
     ],
     "pfx": "=",
     "atype": "g",
@@ -18,7 +18,7 @@
     "activity": "with 281ms's toys",
     "surl": null,
     "testMode": false,
-    "verifyV2": "866047135831949343",
+    "verifyV2": "884968962591445013",
     "slashConfig": {
         "auth": {
             "Authorization": "Bot ODc4Njk0MjE5Mzk5NzEyODE4.YSE5ww.pYmoO1mkGE2retw1tq6lFca5r8o"
