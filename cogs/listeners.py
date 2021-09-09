@@ -310,6 +310,21 @@ class Listeners(commands.Cog):
                 await user.add_roles(role)
 
     @commands.Cog.listener()
+    async def on_message_delete(self, message):
+        d = store('expose.json', None, True)
+        files = []
+        if message.attachments != []:
+            for file in message.attachments:
+                files.append(file.url)
+        d[str(message.channel.id)] = {
+            "content": message.content,
+            "author": f"{message.author}",
+            "author_icon": f"{message.author.avatar_url}",
+            "files": files
+        }
+        store('expose.json', d)
+
+    @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
@@ -319,7 +334,7 @@ class Listeners(commands.Cog):
             await ctx.send(embed=e, delete_after=3)
         else:
             e = discord.Embed(title="An exception occurred", description=f"{error}")
-            await util.bugReport(self.bot, f'`Command Error` {ctx.message.content}', f"{error}")
+            await cogs.util.bugReport(self.bot, f'`Command Error` {ctx.message.content}', f"{error}")
             await ctx.send(embed=e, delete_after=10)
 
 def setup(bot):

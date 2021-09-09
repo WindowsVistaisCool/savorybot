@@ -2,12 +2,31 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
-from cogs.util import store
+from datetime import datetime
+from cogs.util import store, bugReport
 from cogs import checks
 
 class Trusted(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(aliases=['e'])
+    @commands.check(checks.owner_trusted)
+    async def expose(self, ctx):
+        try:
+            d = store('expose.json', None, True)
+            x = d[str(ctx.channel.id)]
+        except:
+            await ctx.send("nothing to expose!")
+            return
+        embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.utcnow(), description=x['content'])
+        embed.set_author(name=x['author'], icon_url=x['author_icon'])
+        embed.set_footer(text='Exposed at')
+        if x['files'] != []:
+            embed.set_image(url=x['files'][0])
+        await ctx.send(embed=embed)
+        d.pop(str(ctx.channel.id))
+        store('expose.json', d)
 
     # add ping last message from member
     @commands.command()
