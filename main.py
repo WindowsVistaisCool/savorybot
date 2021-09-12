@@ -7,7 +7,7 @@ import json
 from discord.ext import commands
 from discord_components import DiscordComponents, Button, Select, SelectOption
 from discord_slash import SlashCommand
-from datetime import datetime
+import datetime, time
 
 client = commands.Bot(command_prefix=cogs.util.store('config.json', 'pfx', True), owner_ids=[406629388059410434])
 client.remove_command('help')
@@ -19,5 +19,11 @@ slash = SlashCommand(client)
 @client.event
 async def on_ready():
     await cogs.util.get_ready(client)
+    global starttime
+    starttime = time.time()
+
+@client.command()
+async def uptime(ctx):
+    await ctx.send(f"The current uptime is: {str(datetime.timedelta(seconds=int(round(time.time()-starttime))))}")
 
 client.run(cogs.util.store('config.json', 'token', True))
