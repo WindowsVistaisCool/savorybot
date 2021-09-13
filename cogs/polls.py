@@ -13,7 +13,7 @@ class Polls(commands.Cog):
 
     @scmd.cog_subcommand(base='poll', name='create')
     async def create(self, ctx, msg, polltype=None, listoptions=None, hideanswers=False):
-        cat = self.bot.get_channel(876182017400766544)
+        cat = self.bot.get_channel(886767483342696490)
         hide = hideanswers
         if polltype == 'list' and listoptions is None:
             await ctx.send("You must fill out the `listoptions` parameters when using the `list` type!",hidden=True)
@@ -73,7 +73,7 @@ class Polls(commands.Cog):
 
     @scmd.cog_subcommand(base='poll', name='conclude')
     async def conclude(self, ctx, pollid):
-        cat = self.bot.get_channel(876182017400766544)
+        cat = self.bot.get_channel(886767483342696490)
         c = None
         for channel in cat.channels:
             if pollid == channel.name:
