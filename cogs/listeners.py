@@ -90,8 +90,8 @@ class Listeners(commands.Cog):
         elif label == "Accept App":
             ide = ide.replace('-a', '')
             m = await interaction.message.guild.fetch_member(interaction.user.id)
-            if m.top_role.id != 792875711676940321 or m.top_role.id != 792875711676940321 or m.top_role.id != 788911513129058304:
-                await interaction.respond(content="You do not have permission to use this!")
+            # if 792875711676940321 not in m.roles or 792875711676940321 not in m.roles or 788911513129058304 not in m.roles or m.id != 406629388059410434:
+            #     await interaction.respond(content="You do not have permission to use this!")
             await interaction.respond(type=6)
             ctx = interaction.message.guild.get_channel(831579949415530527)
             f = await ctx.send("Fetching data from api...")
