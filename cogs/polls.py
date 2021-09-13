@@ -37,13 +37,13 @@ class Polls(commands.Cog):
             await c.send(data)
             await sleep(1.5)
             await c.send("No user data")
-            await m.edit(content="", embed=e, components=[[Button(label="Vote Yes",style=3,id=f"{m.id}POLLYES"), Button(label="Vote No",style=4,id=f"{m.id}POLLNO")]])
+            await m.edit(content="", embed=e, components=[[Button(label="Vote Yes",style=3,custom_id=f"{m.id}POLLYES"), Button(label="Vote No",style=4,custom_id=f"{m.id}POLLNO")]])
         elif polltype == 'list':
             await ctx.send("Created poll", hidden=True)
             opts = listoptions.split(';')
             for option in opts:
                 if len(option) >= 25:
-                    await ctx.send("One or more of your options has greater than 24 characters!", hidden=True)
+                    await ctx.send("One or more of your options has greater than 25 characters!", hidden=True)
                     return
             if len(opts) >= 15:
                 await ctx.send("You cannot have this many options!", hidden=True)
@@ -63,7 +63,7 @@ class Polls(commands.Cog):
                     selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-T-{count}"))
                 else:
                     e.add_field(name=opt, value="0", inline=False)
-                    selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-F-{count}"))
+                    selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-F-{count}-{opt}"))
                 count += 1
             data = json.dumps({"title": msg,"type": "list", "fields": fields, "fieldpos": fieldpos})
             await c.send(data)

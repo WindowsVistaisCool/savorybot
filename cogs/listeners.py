@@ -155,7 +155,7 @@ class Listeners(commands.Cog):
             await interaction.message.edit(components=[])
         elif label == "Vote Yes":
             ide = ide.replace('POLLYES', '')
-            cat = self.bot.get_channel(876182017400766544)
+            cat = self.bot.get_channel(886767483342696490)
             c = None
             for channel in cat.channels:
                 if channel.name == ide:
@@ -188,7 +188,7 @@ class Listeners(commands.Cog):
                 await interaction.respond(content="There was an error executing this!")
         elif label == "Vote No":
             ide = ide.replace('POLLNO', '')
-            cat = self.bot.get_channel(876182017400766544)
+            cat = self.bot.get_channel(886767483342696490)
             c = None
             for channel in cat.channels:
                 if channel.name == ide:
@@ -243,23 +243,24 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_select_option(self, interaction):
+        val = ''
         try:
-            label = interaction.component[0].to_dict()['label']
-            val = interaction.component[0].to_dict()['value']
-        except:
-            print("error setting id")
-            val = None
+            val = interaction.values[0]
+            label = val.split('-')[4]
+            # label = interaction.label
+        except Exception as e:
+            print(f"error setting id {e}")
         if val.startswith("SelectPoll"):
             val = val.split('-')
             mid = val[1]
-            cat = self.bot.get_channel(876182017400766544)
+            cat = self.bot.get_channel(886767483342696490)
             c = None
             for channel in cat.channels:
                 if channel.name == mid:
                     c = channel
                     break
             if c == None:
-                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact trngl.")
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact rctngl.")
                 return
             messages = await c.history(limit=4).flatten()
             x = json.loads(messages[1].content)
@@ -282,8 +283,9 @@ class Listeners(commands.Cog):
                     e.set_field_at(x['fieldpos'][label], name=label, value=x['fields'][label], inline=False)
                     await interaction.message.edit(embed=e)
                 await interaction.respond(type=6)
-            except:
+            except Exception as e:
                 await interaction.respond(content="There was an error executing this!")
+                print(f"{e}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
