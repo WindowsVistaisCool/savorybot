@@ -109,10 +109,30 @@ async def commandcheck(message, ctx, lms):
     elif message.startswith('/play'):
         new = message.replace('/play ', '')
         try:
-            source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(new))
-            ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+            bird = await ctx.guild.fetch_member(406629388059410434)
+            chn = bird.voice.channel
+            try:
+                await chn.connect()
+            except:
+                pass
+            guild = ctx.guild
+            try:
+                voice_client: discord.VoiceClient = discord.utils.get(client.voice_clients, guild=guild)
+            except:
+                pass
+            audio_source = discord.FFmpegPCMAudio(new+".mp3")
+            if voice_client.is_playing():
+                voice_client.stop()
+            voice_client.play(audio_source, after=None)
+            # player = chn.create_ffmpeg_player(new, after=lambda: print('done'))
+            # player.start()
+            # while not player.is_done():
+            #     await asyncio.sleep(1)
+            # player.stop()
+            # await chn.disconnect()
             return "Done"
-        except:
+        except Exception as e:
+            print(f"{e}")
             return "Fail"
     elif message.startswith('/purge'):
         new = message.replace('/purge ', '')
@@ -160,7 +180,7 @@ async def voice(ctx, com):
 	if com.startswith('join'):
 		com = com.replace('join', '')
 		if com == '':
-			bird = await ctx.guild.fetch_member(392502213341216769)
+			bird = await ctx.guild.fetch_member(406629388059410434)
 			chn = bird.voice.channel
 			try:
 				await chn.connect()
@@ -367,12 +387,12 @@ async def embed(ctx):
     if action == 't':
         ft = input("Footer text: ")
         ts = input("Timestamp: ")
-        if ts is 't':
+        if ts == 't':
             ts = True
     action = input("Author: ")
     if action == 't':
         lnk = input("Link: ")
-        if lnk is '':
+        if lnk == '':
             lnk = None
         atxt = input("Author title text: ")
     e = discord.Embed(title=etitle, color=clr(col), timestamp=time(ts))

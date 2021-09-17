@@ -19,6 +19,10 @@ class Misc(commands.Cog):
         e.add_field(name="Features",value="**-** Active Skyblock Guild\n\n**-** Dungeons\n\n**-** Skyblock advice\n\n**-** Trusted members\n\n**-** Good community")
         await ctx.send(embed=e, hidden=True)
 
+    @scmd.cog_slash(name='senither')
+    async def senither(self, ctx):
+        await ctx.send("https://hypixel-leaderboard.senither.com/", hidden=True)
+
     @scmd.cog_slash(name='bugreport')
     async def bugreport(self, ctx):
         await ctx.send("Coming soon", hidden=True)
