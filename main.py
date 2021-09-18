@@ -24,6 +24,7 @@ async def on_ready():
 
 @client.command()
 async def uptime(ctx):
-    await ctx.send(f"The current uptime is: {str(datetime.timedelta(seconds=int(round(time.time()-starttime))))}")
+    e = discord.Embed(title="Current uptime", description=f"The current uptime is: {str(datetime.timedelta(seconds=int(round(time.time()-starttime))))}", color=0x23272A)
+    await ctx.send(embed=e)
 
 client.run(cogs.util.store('config.json', 'token', True))
