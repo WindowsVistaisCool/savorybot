@@ -5,6 +5,7 @@
     "oldkey": "1663194c-20d2-4255-b85b-82fa68236d4e",
     "cogs": [
         "cogs.applications",
+        "cogs.btesting",
         "cogs.hystats",
         "cogs.listeners",
         "cogs.misc",
@@ -12,10 +13,11 @@
         "cogs.polls",
         "cogs.trusted"
     ],
+    "channel": 889169342997069825,
     "pfx": "=",
-    "atype": "g",
-    "status": "idle",
-    "activity": "with 281ms's toys",
+    "atype": "p",
+    "status": "online",
+    "activity": "join the event!",
     "surl": null,
     "testMode": false,
     "verifyV2": "884968962591445013",
@@ -62,6 +64,53 @@
                         ]
                     }
                 ]
+            },
+            {
+                "type": 1,
+                "name": "group",
+                "description": "Group testing for secret santa event"
+            },
+            {
+                "type": 1,
+                "name": "queueevent",
+                "description": "Queue for this event",
+                "options": [
+                    {
+                        "type": 3,
+                        "required": "true",
+                        "name": "networth",
+                        "description": "Enter your networth (ex. 1.5b or 446m)"
+                    },
+                    {
+                        "type": 3,
+                        "required": "true",
+                        "name": "timezone",
+                        "description": "Select your time zone",
+                        "choices": [
+                            {
+                                "name": "US East",
+                                "value": "us-east"
+                            },
+                            {
+                                "name": "US West/Central",
+                                "value": "us-west"
+                            },
+                            {
+                                "name": "Europe",
+                                "value": "eu"
+                            },
+                            {
+                                "name": "Other",
+                                "value": "other"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": 1,
+                "name": "roll",
+                "description": "roll based on timezone"
             }
         ]
     }

@@ -60,7 +60,7 @@ class Polls(commands.Cog):
                 fields[opt] = 0
                 fieldpos[opt] = count
                 if hide:
-                    selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-T-{count}"))
+                    selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-T-{count}-{opt}"))
                 else:
                     e.add_field(name=opt, value="0", inline=False)
                     selectopts.append(SelectOption(label=opt, value=f"SelectPoll-{m.id}-F-{count}-{opt}"))

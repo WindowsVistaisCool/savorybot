@@ -23,8 +23,8 @@ def store(file, key=None, read=False, val=None, *, pop=False):
             json.dump(x, v, indent=4)
 
 async def bugReport(client, command, data):
-    c = client.get_channel(877757837542047764)
-    await c.send(f"***BUG REPORT*** ||<@!392502213341216769>||\n**Command:** {command}\n**Cause:** {data}")
+    c = client.get_channel(889165938983845930)
+    await c.send(f"***BUG REPORT*** ||<@!406629388059410434>||\n**Command:** {command}\n**Cause:** {data}")
 
 ################################################################################
 

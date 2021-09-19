@@ -9,7 +9,13 @@ from discord_components import DiscordComponents, Button, Select, SelectOption
 from discord_slash import SlashCommand
 import datetime, time
 
-client = commands.Bot(command_prefix=cogs.util.store('config.json', 'pfx', True), owner_ids=[406629388059410434])
+intents = discord.Intents.default()
+intents.typing = False
+intents.integrations = False
+intents.webhooks = False
+intents.invites = False
+intents.presences = False
+client = commands.Bot(command_prefix=cogs.util.store('config.json', 'pfx', True), owner_ids=[406629388059410434], intents=intents)
 client.remove_command('help')
 #app = Flask(__name__)
 #auth = cogs.util.store('config.json', 'apiAuth', True)

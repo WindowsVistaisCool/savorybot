@@ -46,6 +46,7 @@ async def commandcheck(message, ctx, lms):
         chn = input("Channel Name: ")
         if chn is None:
             chn = ctx.guild.get_channel(788886124159828012)
+
         else:
             try:
                 if type(chn) is str:
@@ -106,8 +107,37 @@ async def commandcheck(message, ctx, lms):
     elif message.startswith('/embed'):
         await embed(ctx)
         return "Done"
-    elif message.startswith('/play'):
-        new = message.replace('/play ', '')
+    elif message.startswith('/loop'):
+        new = message.replace('/loop ', '')
+        try:
+            bird = await ctx.guild.fetch_member(406629388059410434)
+            chn = bird.voice.channel
+            try:
+                await chn.connect()
+            except:
+                pass
+            while True:
+                voice_client: discord.VoiceClient = discord.utils.get(client.voice_clients, guild=ctx.guild)
+                if voice_client.is_playing(): continue
+                audio_source = discord.FFmpegPCMAudio(new+'.mp3')
+                voice_client.play(audio_source, after=None)
+                # convert this to an argument in the command
+                if new == 'boom' or new == 'y':
+                    await asyncio.sleep(1.25)
+                elif new == 'bounce':
+                    await asyncio.sleep(7.5)
+                else:
+                    await asyncio.sleep(10)
+                if voice_client.is_playing(): continue
+                audio_source = discord.FFmpegPCMAudio(new+'.mp3')
+                voice_client.play(audio_source, after=None)
+            # never gets called but just for sake of my eyes:
+            return "Done"
+        except Exception as e:
+            print(f"{e}")
+            return "Fail"
+    elif message.startswith('/p'):
+        new = message.replace('/p ', '')
         try:
             bird = await ctx.guild.fetch_member(406629388059410434)
             chn = bird.voice.channel
@@ -184,8 +214,8 @@ async def voice(ctx, com):
 			chn = bird.voice.channel
 			try:
 				await chn.connect()
-			except:
-				print("error")
+			except Exception as e:
+				print(f"error {e}")
 				return "Cont"
 		else:
 			try:
@@ -198,9 +228,9 @@ async def voice(ctx, com):
 		new = com.replace('leave ', '')
 		if new == '':
 			try:
-				await ctx.voice_client.disconnect()
-			except:
-				None
+				await client.voice_clients[0].disconnect()
+			except Exception as e:
+				print(f"{e}")
 			return "Cont"
 		try:
 			new = int(new)
@@ -404,7 +434,7 @@ async def embed(ctx):
 
 @client.event
 async def on_ready():
-    c = client.get_channel(788886124159828012)
+    c = client.get_channel(store('config.json', 'channel', True))
     global region
     region = store('react.json', None, True)
     global lms
