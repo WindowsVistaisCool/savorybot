@@ -1,4 +1,5 @@
 {
+    "channel": 788886124159828012,
     "token": "ODc4Njk0MjE5Mzk5NzEyODE4.YSE5ww.pYmoO1mkGE2retw1tq6lFca5r8o",
     "apiAuth": "mfaiuya4o57lhfdaajsdkfhall-A",
     "key": "f15daee9-904b-417e-b867-e51ef9a38697",
@@ -13,7 +14,6 @@
         "cogs.polls",
         "cogs.trusted"
     ],
-    "channel": 889169342997069825,
     "pfx": "=",
     "atype": "p",
     "status": "online",

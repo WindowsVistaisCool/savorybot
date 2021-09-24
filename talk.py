@@ -5,7 +5,7 @@ from slashrequest import store
 client = discord.Client()
 
 async def commandcheck(message, ctx, lms):
-    voicecom = ['/join', '/leave', '/annoy', '/move', '/mute', '/unmute', '/deafen', '/undeafen']
+    voicecom = ['/join', '/leave', '/annoy', '/move', '/mute', '/unsup', '/unmute', '/deafen', '/undeafen']
     if message.startswith('/close'):
             print("Closing...")
             return "Close"
@@ -124,10 +124,12 @@ async def commandcheck(message, ctx, lms):
                 # convert this to an argument in the command
                 if new == 'boom' or new == 'y':
                     await asyncio.sleep(1.25)
+                elif new == 'fart':
+                    await asyncio.sleep(3.75)
                 elif new == 'bounce':
                     await asyncio.sleep(7.5)
                 else:
-                    await asyncio.sleep(10)
+                    await asyncio.sleep(6)
                 if voice_client.is_playing(): continue
                 audio_source = discord.FFmpegPCMAudio(new+'.mp3')
                 voice_client.play(audio_source, after=None)
@@ -325,6 +327,26 @@ async def voice(ctx, com):
 		except:
 			return "Cont"
 			
+	elif com.startswith('unsup'):
+		new = com.replace('unsup ', '')
+		if new == '':
+			await ctx.guild.me.edit(suppress=False)
+			return "Cont"
+		try:
+			new = int(new)
+		except:
+			pass
+		if type(new) is str:
+			member = discord.utils.get(ctx.guild.members, name=new)
+			if member is None:
+				member = ctx.guild.get_member_named(new)
+		elif type(new) is int:
+			member = await ctx.guild.fetch_member(new)
+		try:
+			await member.edit(suppress=False)
+		except Exception as e:
+		    print(f"{e}")
+		    return "Cont"		
 	elif com.startswith('unmute'):
 		new = com.replace('unmute ', '')
 		if new == '':

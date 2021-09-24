@@ -319,6 +319,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
+        if message.author.bot: return
         d = store('expose.json', None, True)
         files = []
         if message.attachments != []:
