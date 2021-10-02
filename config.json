@@ -15,7 +15,7 @@
         "cogs.trusted"
     ],
     "pfx": "=",
-    "atype": "p",
+    "atype": "n",
     "status": "online",
     "activity": "join the event!",
     "surl": null,
