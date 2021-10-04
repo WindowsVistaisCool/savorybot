@@ -77,6 +77,11 @@ class Applications(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command()
+    @commands.is_owner()
+    async def forceapply(self, ctx, memberid, ign="Seggs"):
+        pass
+
     @scmd.cog_slash(name='apply')
     async def apply(self, ctx, ign):
         await ctx.defer(hidden=True)
@@ -114,7 +119,7 @@ class Applications(commands.Cog):
         e.add_field(name="IGN", value=hyutil.toName(igeen), inline=False)
         e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
         store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(ctx.author.id))
-        a = await c.send("||<@&789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
+        a = await c.send("||<@789593786287915010>||", embed=e, components=[[Button(label="Accept App",id=f"{ctx.author.id}-a",style=3), Button(label="Deny App",id=f"{ctx.author.id}-d",style=4)]])
 
     @commands.group()
     @commands.check(checks.owner_staff)
@@ -152,6 +157,42 @@ class Applications(commands.Cog):
             await f.edit(content="Lookup failed")
             return
         await f.edit(content='Deleted. (You must remove roles)')
+
+    @app.command(name='force')
+    async def forceApp(self, ctx, memberid=None, ign="Placeholder"):
+        if memberid is None: memberid = ctx.author.id
+        appType = None
+        e = store('apps.json', 'guildApps', True, app=True)
+        if str(memberid) in e:
+            await ctx.send(content=f"You have already submitted an application, the application may have been denied or unanswered. Ask a mod for more help. (Submitted at `{e[str(memberid)]}`)")
+            return
+        l = store('apps.json', 'deniedGuildApps', True, app=True)
+        if str(memberid) in l:
+            await ctx.send("Sorry, your application has already been denied. Talk to a staff member if you need to re-apply.")
+            return
+        b = store('apps.json', 'acceptedGuildApps', True, app=True)
+        if str(memberid) in b:
+            await ctx.send(content="Your application has already been accepted, you may not apply for this position again")
+            return
+        igeen = hyutil.toUUID(ign)
+        if igeen == False:
+            await ctx.send("Your application IGN is invalid, please resubmit it.")
+            return
+        skycrypt = f"https://sky.shiiyu.moe/stats/{igeen}"
+        appType = "guildApps"
+        member = await ctx.guild.fetch_member(int(memberid))
+        r = ctx.guild.get_role(831614870256353330)
+        await member.add_roles(r)
+        c = self.bot.get_channel(831579949415530527)
+        e = discord.Embed(title="New Application", timestamp=datetime.utcnow(), color=discord.Color.green())
+        e.set_footer(text="Application submitted")
+        e.set_author(name=member, icon_url=member.avatar_url)
+        e.add_field(name="Application ID", value=f"{memberid}", inline=False)
+        e.add_field(name="User", value=f"{member.mention}")
+        e.add_field(name="IGN", value=hyutil.toName(igeen), inline=False)
+        e.add_field(name="Skyblock Stats", value=f"{skycrypt}", inline=False)
+        store('apps.json', appType, val=str(datetime.utcnow()), app=True, appKey=str(memberid))
+        a = await c.send("||Test Application||", embed=e, components=[[Button(label="Accept App",id=f"{memberid}-a",style=3), Button(label="Deny App",id=f"{memberid}-d",style=4)]])
 
 def setup(bot):
     bot.add_cog(Applications(bot))
