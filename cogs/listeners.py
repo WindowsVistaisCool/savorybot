@@ -257,6 +257,7 @@ class Listeners(commands.Cog):
         val = ''
         try:
             val = interaction.values[0]
+            if interaction.component.id == "nolistener": return
             label = val.split('-')[4]
             # label = interaction.label
         except Exception as e:

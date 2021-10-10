@@ -177,15 +177,15 @@ class HyStats(commands.Cog):
         # temp return here becuase selects aren't slash friendly
         await ctx.channel.send(embed=e)
         return
-        # try:
-        #     de = await ctx.channel.send(embed=e, components=[Select(placeholder="Select profile",options=labels)])
-        # except Exception as e:
-        #     await ctx.channel.send(f"An error occurred while executing this command! ({e})")
-        #     return
+        try:
+            de = await ctx.channel.send(embed=e, components=[Select(placeholder="Select profile",options=labels, id='nolistener')])
+        except Exception as e:
+            await ctx.channel.send(f"An error occurred while executing this command! ({e})")
+            return
         while True:
             try:
                 interaction = await self.bot.wait_for("select_option", timeout=90.0)
-                if interaction.user.id != ct.author.id: continue
+                if interaction.user.id != ctx.author.id: continue
                 break
             except:
                 try:
@@ -194,18 +194,20 @@ class HyStats(commands.Cog):
                     pass
                 return
         await interaction.respond(type=6)
+        id = interaction.values[0]
+        await ctx.send(id)
         await de.edit(content="Loading data...", embeds=[], components=[])
-        id = interaction.component[0].label
         pf = ''
         for pfl in f['profiles']:
             try:
-                if pfl['cute_name'] == id:
+                if pfl['cute_name'].lower() == id:
                     pf = pfl
                     break
-            except:
+            except Exception as e:
+                print(e)
                 continue
         if pf == '':
-            await ctx.send(embed=discord.Embed(title="API Error",description="Could not find that profile! (Internal error, not your fault)",color=discord.Color.red()), components=[Button(label="Remove",style=4)])
+            await ctx.channel.send(embed=discord.Embed(title="API Error",description="Could not find that profile! (Internal error, not your fault)",color=discord.Color.red()), components=[Button(label="Remove",style=4)])
             return
         def try_pass(val, bold=True, sub=None, coop=False):
             try:
@@ -228,7 +230,7 @@ class HyStats(commands.Cog):
         e.add_field(name='Coop Members', value=get_coop(pf), inline=False)
         e.add_field(name='Creation/Last seen', value=f"`First Join`: <t:{str(pf['members'][uuid]['first_join'])[:-3]}:D>\n`Last Seen`: <t:{str(pf['members'][uuid]['last_save'])[:-3]}:R>", inline=False)
         e.add_field(name='Basic info', value=f"`Skill Average`: Coming soon\n`Highest Critical Damage`: **{convert_dec(try_pass('stats', bold=False, sub='highest_critical_damage'))}**\n`Purse`: **{convert_dec(try_pass('coin_purse', False))}**\n`Bank Balance`: **{convert_dec(try_pass('banking', False, 'balance', True))}**\n`Fairy Souls`: **{try_pass('fairy_souls_collected',bold=False)} / 227**\n`Deaths`: {try_pass('death_count')}", inline=False)
-        await de.edit(content='', embed=e, components=[[Button(label="Exit", id=f"{ct.author.id}"), Button(label="Delete",style=4, id=f"{ct.author.id}")]])
+        await de.edit(content='', embed=e, components=[[Button(label="Exit", id=f"{ctx.author.id}"), Button(label="Delete",style=4, id=f"{ctx.author.id}")]])
 
     @scmd.cog_subcommand(base='hy', name='status')
     async def status(self, ctx, username):
