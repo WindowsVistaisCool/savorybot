@@ -14,6 +14,14 @@ class Trusted(commands.Cog):
     @commands.check(checks.owner_trusted)
     async def expose(self, ctx):
         try:
+            e = store('blacklist.json', str(ctx.author.id), True)
+            print(e)
+            for command in e['blacklistedCommands']:
+                if command == 'expose':
+                    await ctx.send("Sorry! You have been blacklisted from using this command.")
+                    return
+        except Exception as e: pass
+        try:
             d = store('expose.json', None, True)
             x = d[str(ctx.channel.id)]
         except:
@@ -24,6 +32,11 @@ class Trusted(commands.Cog):
         embed.set_footer(text='Exposed at')
         if x['files'] != []:
             embed.set_image(url=x['files'][0])
+        if x['ghostping'] is not False:
+            gField = ""
+            for ghostMention in x['ghostping']:
+                gField = gField + f'<@!{ghostMention}> '
+            embed.add_field(name="**GHOST PING/REPLY!** Users affected:",value=gField)
         await ctx.send(embed=embed)
         d.pop(str(ctx.channel.id))
         store('expose.json', d)
@@ -32,6 +45,14 @@ class Trusted(commands.Cog):
     @commands.command()
     @commands.check(checks.owner_trusted)
     async def pin(self, ctx, message=None):
+        try:
+            e = store('blacklist.json', str(ctx.author.id), True)
+            print(e)
+            for command in e['blacklistedCommands']:
+                if command == 'pin':
+                    await ctx.send("Sorry! You have been blacklisted from using this command.")
+                    return
+        except Exception as e: pass
         await ctx.message.delete()
         try:
             if message != None:
@@ -47,6 +68,14 @@ class Trusted(commands.Cog):
     @commands.command()
     @commands.check(checks.owner_trusted)
     async def unpin(self, ctx, message=None):
+        try:
+            e = store('blacklist.json', str(ctx.author.id), True)
+            print(e)
+            for command in e['blacklistedCommands']:
+                if command == 'pin':
+                    await ctx.send("Sorry! You have been blacklisted from using this command.")
+                    return
+        except Exception as e: pass
         await ctx.message.delete()
         if message != None:
             try:

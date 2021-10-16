@@ -30,11 +30,50 @@ class Owner(commands.Cog):
     @role.command(name='d')
     async def role_d(self, ctx, roleid, member:discord.Member=None):
         try:
-            if memeber == None:
+            if member == None:
                 await ctx.author.remove_roles(ctx.guild.get_role(int(roleid)))
             else:
                 await member.remove_roles(ctx.guild.get_role(int(roleid)))
         except: return
+
+    @commands.group(aliases=['bl'])
+    # Only using is_owner because duration is not functional at the moment
+    # @commands.check(checks.owner_staff)
+    @commands.is_owner()
+    async def blacklist(self, ctx):
+        if ctx.invoked_subcommand == None: return
+    
+    @blacklist.command(name='set', aliases=['s', 'a', 'add'])
+    async def bl_set(self, ctx, member, command, dur='1h'):
+        await ctx.message.delete()
+        seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+        try:
+            duration = int(dur[:-1]) * seconds_per_unit[dur[-1]]
+        except:
+            await ctx.send("invalid duration proivded")
+            return
+        e = store('blacklist.json', None, True)
+        for i in e:
+            if member == i:
+                e[member]["blacklistedCommands"].append(command)
+                break
+        else:
+            e[member] = {"duration": duration, "blacklistedCommands": [command]}
+        store('blacklist.json', e)
+        
+    @blacklist.command(name='rem', aliases=['d', 'r', 'del', 'remove', 'delete'])
+    async def bl_rem(self, ctx, member, command):
+        await ctx.message.delete()
+        e = store('blacklist.json', None, True)
+        mem = None
+        for blacklisted in e:
+            if blacklisted == member:
+                mem = e[blacklisted]
+                break
+        e[member] = mem['blacklistedCommands'].remove(command)
+        if e[member] == None:
+            e.pop(member)
+        store('blacklist.json', e)
 
     @commands.command()
     @commands.is_owner()

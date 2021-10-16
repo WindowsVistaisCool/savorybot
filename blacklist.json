@@ -1,0 +1,8 @@
+{
+    "406629388059410434": {
+        "duration": 3600,
+        "blacklistedCommands": [
+            "expose"
+        ]
+    }
+}

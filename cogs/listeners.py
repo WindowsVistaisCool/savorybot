@@ -325,6 +325,13 @@ class Listeners(commands.Cog):
                 roleid = {"40!": 865832933028528158, "30!": 865832837948244009, "20!": 864125893660508161, "10!": 841066567151910932}
                 role = message.guild.get_role(roleid[splitted[7]])
                 await user.add_roles(role)
+        try:
+            bl = store('blacklist.json', message.author.id, True)
+            for command in bl['blacklistedCommands']:
+                if command == ctx.command:
+                    return
+        except: pass
+        
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -334,26 +341,32 @@ class Listeners(commands.Cog):
         if message.attachments != []:
             for file in message.attachments:
                 files.append(file.url)
+        if message.mentions == []: ghost = False
+        else:
+            ghost = []
+            for person in message.mentions:
+                ghost.append(person.id)
         d[str(message.channel.id)] = {
             "content": message.content,
             "author": f"{message.author}",
             "author_icon": f"{message.author.avatar_url}",
+            "ghostping": ghost,
             "files": files
         }
         store('expose.json', d)
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
-            await ctx.send(embed=e, delete_after=3)
-        elif isinstance(error, commands.CommandNotFound):
-            e = discord.Embed(title="Command not found!", color=discord.Color.red())
-            await ctx.send(embed=e, delete_after=3)
-        else:
-            e = discord.Embed(title="An exception occurred", description=f"{error}")
-            await cogs.util.bugReport(self.bot, f'`Command Error` {ctx.message.content}', f"{error}")
-            await ctx.send(embed=e, delete_after=10)
+    # @commands.Cog.listener()
+    # async def on_command_error(self, ctx, error):
+    #     if isinstance(error, commands.CheckFailure):
+    #         e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
+    #         await ctx.send(embed=e, delete_after=3)
+    #     elif isinstance(error, commands.CommandNotFound):
+    #         e = discord.Embed(title="Command not found!", color=discord.Color.red())
+    #         await ctx.send(embed=e, delete_after=3)
+    #     else:
+    #         e = discord.Embed(title="An exception occurred", description=f"{error}")
+    #         await cogs.util.bugReport(self.bot, f'`Command Error` {ctx.message.content}', f"{error}")
+    #         await ctx.send(embed=e, delete_after=10)
 
 def setup(bot):
     bot.add_cog(Listeners(bot))
