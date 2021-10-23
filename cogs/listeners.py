@@ -357,18 +357,18 @@ class Listeners(commands.Cog):
         }
         store('expose.json', d)
 
-    # @commands.Cog.listener()
-    # async def on_command_error(self, ctx, error):
-    #     if isinstance(error, commands.CheckFailure):
-    #         e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
-    #         await ctx.send(embed=e, delete_after=3)
-    #     elif isinstance(error, commands.CommandNotFound):
-    #         e = discord.Embed(title="Command not found!", color=discord.Color.red())
-    #         await ctx.send(embed=e, delete_after=3)
-    #     else:
-    #         e = discord.Embed(title="An exception occurred", description=f"{error}")
-    #         await cogs.util.bugReport(self.bot, f'`Command Error` {ctx.message.content}', f"{error}")
-    #         await ctx.send(embed=e, delete_after=10)
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
+            await ctx.send(embed=e, delete_after=3)
+        elif isinstance(error, commands.CommandNotFound):
+            e = discord.Embed(title="Command not found!", color=discord.Color.red())
+            await ctx.send(embed=e, delete_after=3)
+        else:
+            e = discord.Embed(title="An exception occurred", description=f"{error}")
+            await cogs.util.bugReport(self.bot, f'`Command Error` {ctx.message.content}', f"{error}")
+            await ctx.send(embed=e, delete_after=10)
 
 def setup(bot):
     bot.add_cog(Listeners(bot))
