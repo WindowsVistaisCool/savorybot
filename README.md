@@ -37,4 +37,4 @@ Handles all application related commands:
 =app force - Forces an application to be sent to #app-handling
 =app del - Deletes an application based on a user's ID
 #### How it works
-Coming soon
+This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests for applications. (more info coming soon)
