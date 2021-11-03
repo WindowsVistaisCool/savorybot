@@ -81,6 +81,9 @@ class Listeners(commands.Cog):
             print("error setting id")
             ide = None
         if label == "Verify" or ide == "verify":
+            if interaction.user.id == 512063606750183429:
+                await interaction.respond(content="Sorry, you do not have permission to verify!", ephemeral=True)
+                return
             role = interaction.message.guild.get_role(788914323485491232)
             mrole = interaction.message.guild.get_role(788890991028469792)
             member = await interaction.message.guild.fetch_member(interaction.user.id)
