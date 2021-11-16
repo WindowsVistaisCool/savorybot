@@ -27,7 +27,7 @@ cogs.util
 ```
 
 ## `cogs.applications`
-Handles all application related commands:
+###Handles all application related commands:
 - `/apply`
 - #app-handling Accept/Deny buttons
 - `=app` command group
@@ -38,7 +38,7 @@ Handles all application related commands:
 This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests for applications.
 
 ## `cogs.btesting`
-Handles beta testing:
+###Handles beta testing:
 - `/bt` group
 - `=bt` command group
 #### `=bt` command group
@@ -48,13 +48,13 @@ Handles beta testing:
 Beta testing for discord members to test 
 
 ## `cogs.hystats`
-Handles:
+###Handles:
 - `/hy` group
 #### How it works
 Grabs data from the hypixel API and formats the data in embeds
 
 ## `cogs.listeners`
-Handles all listeners and event actions:
+###Handles all listeners and event actions:
 - `on_raw_reaction_add`/`on_raw_reaction_remove`
 - `on_button_click`
 - `on_select_option`
