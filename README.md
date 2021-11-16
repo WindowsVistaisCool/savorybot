@@ -32,8 +32,8 @@ cogs.util
 - #app-handling Accept/Deny buttons
 - `=app` command group
 #### `=app` command group
-=app force - Forces an application to be sent to #app-handling
-=app del - Deletes an application based on a user's ID
+`=app force` - Forces an application to be sent to #app-handling
+`=app del` - Deletes an application based on a user's ID
 #### How it works
 This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests for applications.
 
@@ -41,6 +41,8 @@ This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests f
 ### Handles beta testing:
 - `/bt` group
 - `=bt` command group
+#### `/bt` group
+Various mainly on the application of the testing session.
 #### `=bt` command group
 =bt enable - Enables beta testing
 =bt disable - Disables beta testing
@@ -50,6 +52,9 @@ Beta testing for discord members to test
 ## `cogs.hystats`
 ### Handles:
 - `/hy` group
+#### `/hy` group
+`/hy profiles` - Displays all skyblock profiles with data for a user
+Other commands disabled temporarily
 #### How it works
 Grabs data from the hypixel API and formats the data in embeds
 
