@@ -23,19 +23,33 @@ class Misc(commands.Cog):
             await ctx.send("Hmm, that seems like a lot of times!", hidden=True)
         await ctx.channel.send(f"Ruffmann has been annoying to guild members {self.annoy} tim{'e' if self.annoy == 1 else 'es'} in the past 24 hours", components=[Button(label='Delete', style=4)])
 
-    @scmd.cog_slash(name='about')
-    async def about(self, ctx):
-        e = discord.Embed(title="Red Gladiators Guild Info", color=discord.Color.blurple())
-        e.add_field(name="Features",value="**-** Active Skyblock Guild\n\n**-** Dungeons\n\n**-** Skyblock advice\n\n**-** Trusted members\n\n**-** Good community")
-        await ctx.send(embed=e, hidden=True)
-
+    @scmd.cog_slash(name='version')
+    async def _version(self, ctx, version_type="latest"):
+        v = store('config.json', 'versions', True)
+        def convert_date(date):
+            d = date.split('-')
+            m = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Nobember', 'December']
+            if d[1].suffix == "1" and d[1].prefix != "1": daySuffix = 'st'
+            elif d[1].suffix == "2": daySuffix = 'nd'
+            elif d[1].suffix == "3": daySuffix = 'rd'
+            else: daySuffix = 'th'
+            return [m[int(d[0]) - 1], d[1] + daySuffix, "20" + d[2]]
+            
+        if version_type == 'latest' and v['latest'] == 'stable': version_type = 'stable'
+        date = convert_date(v['date'])
+        e = discord.Embed(title=f'Current version: {version_type}', color=discord.Color.green(), description=f"Date: {date[0]} {date[1]}, {date[2]}", timestamp=datetime.utcnow())
+        e.set_footer("Version data retrieved")
+        if version_type == 'dev':
+            await ctx.send(embed=e)
+            return
+        e.add_field(name='Version Number', value=v['num'], inline=False)
+        e.add_field(name='Full Version Name', value=v['full'], inline=False)
+        e.add_field(name='Codename', value=v['codename'], inline=False)
+        await ctx.send(embed=e)
+    
     @scmd.cog_slash(name='senither')
     async def senither(self, ctx):
         await ctx.send("https://hypixel-leaderboard.senither.com/", hidden=True)
-
-    @scmd.cog_slash(name='bugreport')
-    async def bugreport(self, ctx):
-        await ctx.send("Coming soon", hidden=True)
 
     # add accept/deny stuff
     @scmd.cog_slash(name='giveaway')
