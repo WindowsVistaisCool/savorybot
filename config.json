@@ -4,6 +4,24 @@
     "apiAuth": "mfaiuya4o57lhfdaajsdkfhall-A",
     "key": "f15daee9-904b-417e-b867-e51ef9a38697",
     "oldkey": "1663194c-20d2-4255-b85b-82fa68236d4e",
+    "versions": {
+        "latest": "stable",
+        "upcoming": {
+            "num": "v2.6-MSR",
+            "full": "v2.6 Major Stable Release - SavoryTurkey,
+            "codename": "SavoryTurkey",
+            "date": "11-25-21"
+        },
+        "stable": {
+            "num": "v2.5.2-SSP",
+            "full": "v2.5.2 Semi Stable Patch - Cogs patch 2",
+            "codename": "Cogs patch 2",
+            "date": "8-19-21"
+        },
+        "dev": {
+            "date": "11-16-21"
+        }
+    },
     "cogs": [
         "cogs.applications",
         "cogs.btesting",
