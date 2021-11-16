@@ -340,7 +340,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if message.author.bot or message.startswith('='): return
+        if message.author.bot or message.content.startswith('='): return
         d = store('expose.json', None, True)
         files = []
         if message.attachments != []:
@@ -359,7 +359,7 @@ class Listeners(commands.Cog):
         store('expose.json', d)
 
     @commands.Cog.listener()
-    async def on_message_edit(before, after):
+    async def on_message_edit(self, before, after):
         d = store('expose.json', None, True)
         if before.mentions != after.mentions: ghost = True
         else: ghost = [person.id for person in before.mentions]
@@ -371,7 +371,7 @@ class Listeners(commands.Cog):
         }
         store('expose.json', d)
 
-    @commands.Cog.listener()
+    #@commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())

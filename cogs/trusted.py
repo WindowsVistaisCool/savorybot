@@ -27,14 +27,14 @@ class Trusted(commands.Cog):
         except:
             await ctx.send("Nothing found to expose!")
             return
-        embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.utcnow(), description=x['content'])
+        embed = discord.Embed(title='EDIT SNIPE' if x['type'] == 'edit' else discord.Embed.Empty, color=discord.Color.red(), timestamp=datetime.utcnow(), description=x['content'])
         try:
             embed.set_author(name=x['author'], icon_url=x['author_icon'])
         except: pass
         embed.set_footer(text='Exposed at')
         if x['files'] != []:
             embed.set_image(url=x['files'][0])
-        if x['ghostping'] is not False:
+        if x['ghostping']:
             gField = ""
             for ghostMention in x['ghostping']:
                 gField = gField + f'<@!{ghostMention}> '
