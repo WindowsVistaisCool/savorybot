@@ -9,7 +9,6 @@ Discord bot made for the red gladiators server
 
 # Cogs and cog functions
 
-## All cogs
 #### Functional cogs (commands)
 ```
 cogs.applications
@@ -67,7 +66,7 @@ Handles all listeners and event actions:
 Used for the starboard feature (#funny-quotes channel)
 #### Component events
 Used for handling applications, deleting messages, and polls
-#### On nessage event
+#### On message event
 Used for MEE6 level messages and verification embed
 #### Message delete/edit events
 Used for `=expose` command
