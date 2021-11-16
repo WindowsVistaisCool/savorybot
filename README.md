@@ -27,8 +27,7 @@ cogs.checks
 cogs.util
 ```
 
-## Cog descriptions/commands
-### `cogs.applications`
+## `cogs.applications`
 Handles all application related commands:
 - `/apply`
 - #app-handling Accept/Deny buttons
@@ -37,4 +36,14 @@ Handles all application related commands:
 =app force - Forces an application to be sent to #app-handling
 =app del - Deletes an application based on a user's ID
 #### How it works
-This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests for applications. (more info coming soon)
+This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests for applications.
+
+## `cogs.btesting`
+Handles beta testing:
+- `/bt` group
+- `=bt`command group
+#### =bt command group
+=bt enable - Enables beta testing
+=bt disable - Disables beta testing
+#### How it works
+Beta testing for discord members to test 
