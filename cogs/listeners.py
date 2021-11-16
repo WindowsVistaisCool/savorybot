@@ -252,7 +252,7 @@ class Listeners(commands.Cog):
         if str(interaction.user.id) != userid: return
         if label == 'Exit' or ide == "exit":
             await interaction.message.edit(components=[])
-        elif label == 'Delete' or ide == "delete":
+        elif label == 'Delete' or ide == "delete" or interaction.user.id == 406629388059410434:
             await interaction.message.delete()
 
     @commands.Cog.listener()
@@ -340,23 +340,34 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if message.author.bot: return
+        if message.author.bot or message.startswith('='): return
         d = store('expose.json', None, True)
         files = []
         if message.attachments != []:
             for file in message.attachments:
                 files.append(file.url)
         if message.mentions == []: ghost = False
-        else:
-            ghost = []
-            for person in message.mentions:
-                ghost.append(person.id)
+        else: ghost = [person.id for person in message.mentions]
         d[str(message.channel.id)] = {
+            "type": "delete",
             "content": message.content,
             "author": f"{message.author}",
             "author_icon": f"{message.author.avatar_url}",
             "ghostping": ghost,
             "files": files
+        }
+        store('expose.json', d)
+
+    @commands.Cog.listener()
+    async def on_message_edit(before, after):
+        d = store('expose.json', None, True)
+        if before.mentions != after.mentions: ghost = True
+        else: ghost = [person.id for person in before.mentions]
+        d[str(after.channel.id)] = {
+            "type": "edit",
+            "content": before.content,
+            "ghostping": ghost,
+            "files": []
         }
         store('expose.json', d)
 

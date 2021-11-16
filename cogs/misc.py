@@ -21,7 +21,7 @@ class Misc(commands.Cog):
             await ctx.send("Oh no! Ruffmann is an idiot I guess", hidden=True)
         else:
             await ctx.send("Hmm, that seems like a lot of times!", hidden=True)
-        await ctx.channel.send(f"Ruffmann has been annoying to guild members {self.annoy} tim{'e' if self.annoy == 1 else 'es'} in the past 24 hours", components=[Button(label='Delete', id=f"{ctx.author.id}", style=4)])
+        await ctx.channel.send(f"Ruffmann has been annoying to guild members {self.annoy} tim{'e' if self.annoy == 1 else 'es'} in the past 24 hours", components=[Button(label='Delete', style=4)])
 
     @scmd.cog_slash(name='about')
     async def about(self, ctx):

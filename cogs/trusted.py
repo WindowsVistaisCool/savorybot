@@ -25,10 +25,12 @@ class Trusted(commands.Cog):
             d = store('expose.json', None, True)
             x = d[str(ctx.channel.id)]
         except:
-            await ctx.send("nothing to expose!")
+            await ctx.send("Nothing found to expose!")
             return
         embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.utcnow(), description=x['content'])
-        embed.set_author(name=x['author'], icon_url=x['author_icon'])
+        try:
+            embed.set_author(name=x['author'], icon_url=x['author_icon'])
+        except: pass
         embed.set_footer(text='Exposed at')
         if x['files'] != []:
             embed.set_image(url=x['files'][0])
