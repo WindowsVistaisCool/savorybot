@@ -12,6 +12,14 @@ from asyncio import sleep
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.annoy = 0
+
+    @scmd.cog_slash(name='annoy')
+    async def annoy(self, ctx, count=False):
+        if not count:
+            self.annoy += 1
+            await ctx.channel.send("Oh no! Ruffmann is an idiot I guess", delete_after=4)
+        await ctx.send(f"Ruffmann has been annoying to guild members {self.annoy} tim{'e' if self.annoy == 1 else 'es'} in the past 24 hours", delete_after=10)
 
     @scmd.cog_slash(name='about')
     async def about(self, ctx):
