@@ -371,7 +371,7 @@ class Listeners(commands.Cog):
         }
         store('expose.json', d)
 
-    #@commands.Cog.listener()
+    @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             e = discord.Embed(title="You do not have permission to do this!", color=discord.Color.red())
