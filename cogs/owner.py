@@ -21,6 +21,7 @@ class Owner(commands.Cog):
         silence = False
         if code.startswith('-s'):
             silence = True
+            code = code[3:]
             await ctx.message.delete()
         code = code[:-3]
         code = code[5:]
