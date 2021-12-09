@@ -18,6 +18,10 @@ class Owner(commands.Cog):
     @commands.is_owner()
     async def eval(self, ctx, *, code: str):
         out, err = io.StringIO(), io.StringIO()
+        silence = False
+        if code.startswith('-s'):
+            silence = True
+            await ctx.message.delete()
         code = code[:-3]
         code = code[5:]
         args = {
@@ -31,7 +35,8 @@ class Owner(commands.Cog):
         await aexec(code, args)
         results = out.getvalue()
         errors = err.getvalue()
-        await ctx.send(f"```py\n{results}``````Errors: {errors}```")
+        if not silence:
+            await ctx.send(f"```py\n{results}``````Errors: {errors}```")
 
     @commands.group()
     @commands.is_owner()
