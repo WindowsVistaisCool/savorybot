@@ -18,12 +18,14 @@ class Owner(commands.Cog):
     @commands.is_owner()
     async def eval(self, ctx, *, code: str):
         out, err = io.StringIO(), io.StringIO()
+        code = code[:-3]
+        code = code[5:]
         sys.stdout = out
         sys.stderr = err
         await aexec(code)
         results = out.getvalue()
         errors = err.getvalue()
-        await ctx.send(f"```py\n{results}``````{errors}```")
+        await ctx.send(f"```py\n{results}``````Errors: {errors}```")
 
     @commands.group()
     @commands.is_owner()
