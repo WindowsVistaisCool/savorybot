@@ -1,4 +1,7 @@
 import discord
+import sys
+import io
+from aioconsole import aexec
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
@@ -11,6 +14,16 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command()
+    @commands.is_owner()
+    async def eval(self, ctx, *, code: str):
+        out, err = io.StringIO(), io.StringIO()
+        sys.stdout = out
+        sys.stderr = err
+        await aexec(code)
+        results = out.getvalue()
+        errors = err.getvalue()
+        await ctx.send(f"```py\n{results}``````{errors}```")
 
     @commands.group()
     @commands.is_owner()
