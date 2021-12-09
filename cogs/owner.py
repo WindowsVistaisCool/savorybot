@@ -20,9 +20,15 @@ class Owner(commands.Cog):
         out, err = io.StringIO(), io.StringIO()
         code = code[:-3]
         code = code[5:]
+        args = {
+            "discord": discord,
+            "ctx": ctx,
+            "self": self,
+            "sleep": sleep
+        }
         sys.stdout = out
         sys.stderr = err
-        await aexec(code)
+        await aexec(code, args)
         results = out.getvalue()
         errors = err.getvalue()
         await ctx.send(f"```py\n{results}``````Errors: {errors}```")
