@@ -37,7 +37,7 @@ class Owner(commands.Cog):
         results = out.getvalue()
         errors = err.getvalue()
         if not silence:
-            await ctx.send(f"```py\n{results}``````Errors: {errors}```")
+            await ctx.send(f"```py\n{results}```{('```Errors: ' + errors + '```') if errors != '' else ''}")
 
     @commands.group()
     @commands.is_owner()
