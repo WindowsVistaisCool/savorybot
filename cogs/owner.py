@@ -1,7 +1,4 @@
 import discord
-import sys
-import io
-from aioconsole import aexec
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
@@ -9,6 +6,12 @@ from datetime import datetime
 from cogs.util import store
 from cogs import checks
 from asyncio import sleep
+
+# Eval command imports
+import sys
+import requests
+import io
+from aioconsole import aexec
 
 class Owner(commands.Cog):
     def __init__(self, bot):
@@ -29,7 +32,8 @@ class Owner(commands.Cog):
             "discord": discord,
             "ctx": ctx,
             "self": self,
-            "sleep": sleep
+            "sleep": sleep,
+            "requests": requests
         }
         sys.stdout = out
         sys.stderr = err
