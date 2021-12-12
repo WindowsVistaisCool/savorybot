@@ -3,15 +3,17 @@ from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
 from datetime import datetime
-from cogs.util import store
-from cogs import checks
 from asyncio import sleep
 
 # Eval command imports
 import sys
 import requests
 import io
+import cogs
 from aioconsole import aexec
+
+store = cogs.util.store
+checks = cogs.checks
 
 class Owner(commands.Cog):
     def __init__(self, bot):
@@ -32,6 +34,7 @@ class Owner(commands.Cog):
             "discord": discord,
             "ctx": ctx,
             "self": self,
+            "cogs": cogs,
             "sleep": sleep,
             "requests": requests
         }
