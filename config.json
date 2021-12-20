@@ -38,7 +38,7 @@
     "activity": "join the event!",
     "surl": null,
     "testMode": false,
-    "verifyV2": "900214475053998082",
+    "verifyV2": "922567002952966205",
     "slashConfig": {
         "auth": {
             "Authorization": "Bot ODc4Njk0MjE5Mzk5NzEyODE4.YSE5ww.pYmoO1mkGE2retw1tq6lFca5r8o"
@@ -51,6 +51,7 @@
         "tips": false
     },
     "bt": {
+        "type": 1,
         "name": "bt",
         "description": "z",
         "default_permission": "false",
@@ -85,50 +86,16 @@
             },
             {
                 "type": 1,
-                "name": "group",
-                "description": "Group testing for secret santa event"
-            },
-            {
-                "type": 1,
-                "name": "queueevent",
-                "description": "Queue for this event",
+                "name": "loadsuggestion",
+                "description": "enable/disable bt.suggestions cog",
                 "options": [
                     {
-                        "type": 3,
+                        "type": 5,
                         "required": "true",
-                        "name": "networth",
-                        "description": "Enter your networth (ex. 1.5b or 446m)"
-                    },
-                    {
-                        "type": 3,
-                        "required": "true",
-                        "name": "timezone",
-                        "description": "Select your time zone",
-                        "choices": [
-                            {
-                                "name": "US East",
-                                "value": "us-east"
-                            },
-                            {
-                                "name": "US West/Central",
-                                "value": "us-west"
-                            },
-                            {
-                                "name": "Europe",
-                                "value": "eu"
-                            },
-                            {
-                                "name": "Other",
-                                "value": "other"
-                            }
-                        ]
+                        "name": "type",
+                        "description": "enabled/disabled"
                     }
                 ]
-            },
-            {
-                "type": 1,
-                "name": "roll",
-                "description": "roll based on timezone"
             }
         ]
     }

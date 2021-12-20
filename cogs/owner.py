@@ -32,15 +32,20 @@ class Owner(commands.Cog):
         code = code[5:]
         args = {
             "discord": discord,
+            "Button": Button,
+            "Select": Select,
+            "SelectOption": SelectOption,
             "ctx": ctx,
             "self": self,
             "cogs": cogs,
             "sleep": sleep,
-            "requests": requests
+            "requests": requests,
+            "client": self.bot,
+            "datetime": datetime
         }
         sys.stdout = out
         sys.stderr = err
-        await aexec(code, args)
+        await aexec(code, args) # main exec process
         results = out.getvalue()
         errors = err.getvalue()
         if not silence:

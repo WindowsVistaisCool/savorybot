@@ -13,14 +13,7 @@ class Trusted(commands.Cog):
     @commands.command(aliases=['e'])
     @commands.check(checks.owner_trusted)
     async def expose(self, ctx):
-        try:
-            e = store('blacklist.json', str(ctx.author.id), True)
-            print(e)
-            for command in e['blacklistedCommands']:
-                if command == 'expose':
-                    await ctx.send("Sorry! You have been blacklisted from using this command.")
-                    return
-        except Exception as e: pass
+        if await checks.blacklist(ctx, 'expose'): return
         try:
             d = store('expose.json', None, True)
             x = d[str(ctx.channel.id)]

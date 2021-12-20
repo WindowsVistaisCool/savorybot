@@ -7,6 +7,7 @@ from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
 from cogs.applications import store
 from datetime import datetime
+from asyncio import sleep
 
 class Listeners(commands.Cog):
     def __init__(self, bot):
@@ -305,21 +306,30 @@ class Listeners(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
-        if message.author.bot: return
+        if message.author.bot and message.author.id not in [716045085472718859, 159985870458322944, 710143953533403226]: return
         if message.author.id != 713461668667195553:
             if message.author.id == 406629388059410434:
-                if message.content == 'embed':
+                if message.content.startswith('embed'):
+                    args = message.content[6:].split(' ')
                     await message.delete()
-                    e = discord.Embed(title="Verification", color=discord.Color.blurple())
-                    e.add_field(name="Verify", value="To verify, click the button below. If you get a `This interaction failed` message, please talk to <@!406629388059410434>.", inline=False)
-                    e.add_field(name="Read the rules", value="Make sure to read our <#788887107544285244>!", inline=False)
-                    e.add_field(name="Get auto roles", value="Go to <#817763660340133928> and react to the message with your role", inline=False)
-                    e.add_field(name="Subscribe to Jacob Contests", value="Pick up your roles from <#868650553285181462> to be notified about new jacob events in <#893293159512154183>.", inline=False)
-                    e.add_field(name="Join the guild!",value="To join the Guild, you first must verify, then check out the <#822915132153135144> channel.", inline=False)
-                    e.add_field(name='Need support?', value="If you ever need support, you can create a ticket in <#866426260573650966>.", inline=False)
-                    e.set_footer(text="Thank you for joining!")
-                    d = await ctx.send(embed=e, components=[Button(label='Verify', style=1)])
-                    store('config.json', 'verifyV2', val=f'{d.id}')
+                    if args[0] == 'v':
+                        e = discord.Embed(title="Verification", color=discord.Color.blurple(), timestamp=datetime.utcnow())
+                        if not '-tn' in args: e.set_thumbnail(url=ctx.guild.icon_url)
+                        e.add_field(name="Verify", value="To verify, click the button below. **You will be kicked without warning if you have not verified within _3_ days!**", inline=False)
+                        e.add_field(name="Read the rules", value="Make sure to read our <#788887107544285244>!", inline=False)
+                        e.add_field(name="Get roles", value="Go to <#817763660340133928> and react to the message with your role", inline=False)
+                        if not '-j' in args: e.add_field(name="Subscribe to Jacob Contests", value="Pick up your roles from <#868650553285181462> to be notified about new jacob events in <#893293159512154183>.", inline=False)
+                        e.add_field(name="Join the guild!",value="To join the Guild, you first must verify, then check out the <#822915132153135144> channel.", inline=False)
+                        e.add_field(name='Need support?', value="If you ever need support, you can create a ticket in <#866426260573650966>.", inline=False)
+                        e.set_footer(text="Thank you for joining! Last updated")
+                        await ctx.send(embed=e, components=[Button(label='Verify', style=1)])
+                    elif args[0] == 'a':
+                        e = discord.Embed(title="Guild Applications", color=discord.Color.blurple(), timestamp=datetime.utcnow())
+                        e.add_field(name="How to apply", value="Type `/apply` in _any_ chat, then type your minecraft IGN (incasesensitive).", inline=False)
+                        e.add_field(name="API", value="If you do not have your APIs (skills, collections, enderchest, **and** inventory) on, your application will be instantly rejected.", inline=False)
+                        e.add_field(name="Response", value="Your application will be handled by staff members. They have the choice to accept/reject you based on your skill average, networth, slayers, and more. If you get rejected, you cannot apply again. If you feel this is a mistake, you can always DM a staff member.", inline=False)
+                        e.set_footer(text="Last updated")
+                        await ctx.send(embed=e)
         if message.channel.id == 788889735157907487:
             if message.author.id == 392502213341216769 or message.author.id == 159985870458322944:
                 splitted = message.content.split(' ')
@@ -330,6 +340,11 @@ class Listeners(commands.Cog):
                 roleid = {"40!": 865832933028528158, "30!": 865832837948244009, "20!": 864125893660508161, "10!": 841066567151910932}
                 role = message.guild.get_role(roleid[splitted[7]])
                 await user.add_roles(role)
+        elif message.channel.id == 788886124159828012:
+            if message.author.id in [716045085472718859, 710143953533403226]:
+                await message.reply('no bot commands in general you stupid shit')
+                await sleep(8)
+                await message.delete()
         try:
             bl = store('blacklist.json', message.author.id, True)
             for command in bl['blacklistedCommands']:

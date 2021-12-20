@@ -21,10 +21,13 @@ class bTesting(commands.Cog):
             await ctx.send("Invalid sub")
 
     @bt.command(name='enable')
-    async def bt_enable(self, ctx, roleid):
+    async def bt_enable(self, ctx, roleid = None):
         slashrequest.sc.post(store('config.json', 'bt', True))
         e = slashrequest.sc.get('bt')['id']
-        slashrequest.sc.perm(e, [roleid], [True])
+        if roleid:
+            slashrequest.sc.perm(e, [roleid], [True])
+        else:
+            slashrequest.sc.perm(e)
         await ctx.send("Added bot testing commands")
 
     @bt.command(name='disable')
@@ -63,50 +66,6 @@ class bTesting(commands.Cog):
                 break
             await m.edit(content=f"Expired menu - {ctx.author.name} selected {interaction.values[0]}",components=[])
             await interaction.respond(content="You selected an item!")
-
-    @scmd.cog_subcommand(base='bt', name='roll')
-    async def btRoll(self, ctx):
-        c = self.bot.get_channel(889169342997069825)
-        messages = await c.history(limit=4).flatten()
-        x = json.loads(messages[0].content)
-        us = []
-        west = []
-        eu = []
-        for key, val in x.items():
-            if val['timezone'] == 'us-east':
-                us.append(int(key))
-                continue
-            elif val['timezone'] == 'us-west':
-                west.append(int(key))
-                continue
-            elif val['timezone'] == 'eu':
-                eu.append(int(key))
-        n = len(x)
-        g = 3
-        size = n // g
-        rem = n % g
-        separators = list(accumulate([0] + [size+1] * rem + [size] * (g - rem)))
-
-        # Make raw data
-        items = list(range(n))
-        random.shuffle(items)
-
-        # Iterate and print
-        for i, s in enumerate(zip(separators, separators[1:])):
-            group = items[slice(*s)]
-            await ctx.send(f'Group {i+1}: {group} (size {len(group)})')
-    
-    @scmd.cog_subcommand(base='bt', name='queueevent')
-    async def btQueueEvent(self, ctx, networth, timezone):
-        if timezone == "other":
-            await ctx.send("Please talk to daKiem to enter you in this event.", hidden=True)
-            return
-        c = self.bot.get_channel(889169342997069825)
-        messages = await c.history(limit=4).flatten()
-        x = json.loads(messages[0].content)
-        x[str(ctx.author.id)] = {"timezone": timezone, "networth": networth}
-        await messages[0].edit(content=json.dumps(x))
-        await ctx.send("You have been queued!")
 
 def setup(bot):
     bot.add_cog(bTesting(bot))
