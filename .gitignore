@@ -1,2 +1,4 @@
 __pycache__/
 *.mp3
+blacklist.json
+expose.json
