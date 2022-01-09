@@ -1,18 +1,38 @@
 import requests
 import string
 import random
+import json
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext as scmd
 from discord_components import Button, Select, SelectOption
 from datetime import datetime
 from cogs.util import store
+from cogs.hystats import hyutil
 from asyncio import sleep
 
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.annoy = 0
+
+    @scmd.cog_slash(name='frag')
+    async def _frag(self, ctx, ign, reason):
+        try:
+            igeen = hyutil.toUUID(ign)
+        except:
+            await ctx.send("Invalid IGN provided", hidden=True)
+            return
+        c = self.bot.get_channel(866363490675326996)
+        m = await c.fetch_message(929573516691517530)
+        j = json.loads(m.content)
+        for user in j:
+            if user['id'] == ctx.author.id:
+                await ctx.send("You have already applied for frag access!", hidden=True)
+                return
+        j.append({"id": ctx.author.id, "name": ctx.author.name, "ign": ign, "reason": reason})
+        await m.edit(json.dumps(j))
+        await ctx.send("You have successfully requested frag access", hidden=True)
 
     @scmd.cog_slash(name='ruff')
     async def _ruff(self, ctx, show=False):
