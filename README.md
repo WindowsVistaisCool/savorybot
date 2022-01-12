@@ -89,7 +89,7 @@ Note: This class is imported by other cogs
 - _internal_ `toUUID(name)` - Calls mojang API to return a UUID with a player's IGN
 - _internal_ `toName(uuid)` - Calls mojang API to return a name with a player's UUID
 #### `/hy` group
-_Permission:_ Guild Member+
+_Permission:_ Guild Member+<br>
 `/hy profiles <IGN - Minecraft in-game name>` - Displays all skyblock profiles with data for a user
 **Other commands disabled temporarily:**
 `/hy status` - Displays if a user is online, and for how long or time since last log on
