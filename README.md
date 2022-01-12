@@ -173,3 +173,14 @@ Uncategorized:
 - `=rrdel <messageid>` - Deletes a reaction role
 #### How it works
 Simple owner and admin commands with the `checks.owner_staff` check or the `@commands.is_owner` decorator
+
+## `cogs.polls`
+#### Cog init: `self.bot = bot`
+##### Extra imports: `json`
+### Handles all poll-related creation/deletion commands:
+- `/poll` group
+#### `/poll` group
+- `/poll create <msg> [polltype=None] [listoptions=None] [hideanswers=False]` - Creates a poll
+- `/poll conclude <pollid>` - Concludes a poll
+#### How it works
+Uses a data host guild to retrieve and store data. The actual events are listened by `listeners.on_button_click` or `listeners.on_select_option`, which updates the guild as well as the message.
