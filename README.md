@@ -15,7 +15,7 @@ Discord bot made for the red gladiators server
   - #### [`cogs.listeners`](#cogslisteners-1)
   - #### [`cogs.misc`](#cogsmisc-1)
   - #### [`cogs.owner`](#cogsowner-1)
-  - #### `cogs.polls`
+  - #### [`cogs.polls`](#cogspolls-1)
   - #### `cogs.trusted`
   - #### `cogs.checks`
   - #### `cogs.util`
