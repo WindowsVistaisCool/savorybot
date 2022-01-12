@@ -50,7 +50,7 @@ cogs.util
 - `=app` command group
 - _internal_ `store()`
 #### `=app` command group
-_Permission:_ Officer+
+_Permission:_ Officer+<br>
 `=app force <Member ID> <IGN="placeholder">` - Forces an application to be sent to #app-handling
 `=app del <appID (user's discord ID)>` - Deletes an application based on a user's ID
 - _internal_ `store()` - Modified version of `cogs.util.store` to R/W from `jsonbin.io` APIs
