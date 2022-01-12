@@ -79,3 +79,20 @@ Used for `=expose` command
 Used for reporting a NotFound, CheckFailure, or other unknown error
 #### How it works
 Uses the `discord.ext.commands.Cog.listener()` decorator to register listeners in the cog. Called by the bot gateway for each event.
+
+## `cogs.misc`
+### Handles miscellaneous slash commands:
+- `/frag`
+- `/ruff`
+- `/senither`
+- `/giveaway`
+Unused:
+- **No slash command ref in guild** `/version`
+- _async_ `genuser()`
+- _async_ `getitem()`
+`/frag` - Allows a user to request frag access with asmb
+`/ruff` - If Ruffr is being annoying, any user can run this command and it will warn him
+`/senither` - Simple message with the guild senither link
+`/giveaway` - Allows a non-trusted member to request to start a giveaway
+#### How it works
+Simple slash commands, not one complete module
