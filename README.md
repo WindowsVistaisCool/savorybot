@@ -8,7 +8,7 @@ Discord bot made for the red gladiators server
 `python3 main.py`
 
 # Contents
-- ### [Cogs and cog functions](#cogs-and-cog-functions)
+- ### [Cogs and cog functions](#cogs-and-cog-functions-1)
   - ### --Functional Cogs--
   - #### [`cogs.applications`](#cogsapplications-1)
   - #### [`cogs.btesting`](#cogsbtesting-1)
@@ -23,7 +23,7 @@ Discord bot made for the red gladiators server
   - #### `cogs.util`
 
 # Cogs and cog functions
-
+Arguments listed in `<>` are required, while arguments listed in `[]` are not.
 #### Functional cogs (commands)
 ```
 cogs.applications
@@ -42,38 +42,63 @@ cogs.util
 ```
 
 ## `cogs.applications`
+### Cog `__init__(self, bot)`: `self.bot = bot`
+### Extra imports: `json`, `requests`, `cogs.hystats.hyutil`
 ### Handles all application related commands:
 - `/apply`
 - #app-handling Accept/Deny buttons
 - `=app` command group
+- _internal_ `store()`
 #### `=app` command group
-`=app force` - Forces an application to be sent to #app-handling
-`=app del` - Deletes an application based on a user's ID
+_Permission:_ Officer+
+`=app force <Member ID> <IGN="placeholder">` - Forces an application to be sent to #app-handling
+`=app del <appID (user's discord ID)>` - Deletes an application based on a user's ID
+- _internal_ `store()` - Modified version of `cogs.util.store` to R/W from `jsonbin.io` APIs
 #### How it works
 This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests for applications.
 
 ## `cogs.btesting`
+### Cog `__init__(self, bot)`: `self.bot = bot`
+### Extra imports: `random`, `itertools.accumulate`, `slashrequest`, (others based on testing session)
 ### Handles beta testing:
 - `/bt` group
 - `=bt` command group
 #### `/bt` group
-Various mainly on the application of the testing session.
+_Permission:_ Owner and BT role (selected by `=bt enable`)
+- `/info` - Shows brief description of what BT is
+- Other commands will vary based on the application of the testing session.
 #### `=bt` command group
-=bt enable - Enables beta testing
-=bt disable - Disables beta testing
+_Permission:_ Owner only
+`=bt enable <roleID (role with BT permissions)>` - Enables beta testing
+`=bt disable` - Disables beta testing
 #### How it works
 Beta testing for discord members to test 
 
 ## `cogs.hystats`
+### Cog `__init__(self, bot)`: `self.bot = bot`
+### Extra imports: `requests`
 ### Handles:
+- `hyutil` class
 - `/hy` group
+#### `hyutil` class
+Note: This class is imported by other cogs
+- _internal_ `handlerequest(status_code, err=True)` - Returns a string based on HTTP request and switches between err and success (not implemented yet)
+- _internal_ `testAPIKey(key)` - Checks the status code of the JSON payload and return True/False with err cause
+- _internal_ `getOnline(name)` - Returns online status, with current gamemode or last logout
+- _internal_ `sbmode(g)` - Currently unused, returns `g`
+- _internal_ `toUUID(name)` - Calls mojang API to return a UUID with a player's IGN
+- _internal_ `toName(uuid)` - Calls mojang API to return a name with a player's UUID
 #### `/hy` group
-`/hy profiles` - Displays all skyblock profiles with data for a user
-Other commands disabled temporarily
+_Permission:_ Guild Member+
+`/hy profiles <IGN - Minecraft in-game name>` - Displays all skyblock profiles with data for a user
+**Other commands disabled temporarily:**
+`/hy status` - Displays if a user is online, and for how long or time since last log on
 #### How it works
 Grabs data from the hypixel API and formats the data in embeds
 
 ## `cogs.listeners`
+### Cog `__init__(self, bot)`: `self.bot = bot`
+### Extra imports: None
 ### Handles all listeners and event actions:
 - `on_raw_reaction_add`/`on_raw_reaction_remove`
 - `on_button_click`
@@ -96,6 +121,12 @@ Used for reporting a NotFound, CheckFailure, or other unknown error
 Uses the `discord.ext.commands.Cog.listener()` decorator to register listeners in the cog. Called by the bot gateway for each event.
 
 ## `cogs.misc`
+### Cog `__init__(self, bot)`:
+```python
+  self.bot = bot
+  self.annoy = 0
+```
+### Extra imports: `cogs.hystats.hyutil`
 ### Handles miscellaneous slash commands:
 - `/frag`
 - `/ruff`
