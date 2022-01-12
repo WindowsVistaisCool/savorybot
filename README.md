@@ -10,11 +10,11 @@ Discord bot made for the red gladiators server
 # Contents
 - ### [Cogs and cog functions](#cogs-and-cog-functions)
   - ### --Functional Cogs--
-  - #### [`cogs.applications`](#cogsapplications)
-  - #### [`cogs.btesting`](#cogsbtesting)
-  - #### [`cogs.hystats`](#cogshystats)
-  - #### [`cogs.listeners`](#cogslisteners)
-  - #### [`cogs.misc`](#cogsmisc)
+  - #### [`cogs.applications`](#cogsapplications-1)
+  - #### [`cogs.btesting`](#cogsbtesting-1)
+  - #### [`cogs.hystats`](#cogshystats-1)
+  - #### [`cogs.listeners`](#cogslisteners-1)
+  - #### [`cogs.misc`](#cogsmisc-1)
   - #### `cogs.owner`
   - #### `cogs.polls`
   - #### `cogs.trusted`
