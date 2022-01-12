@@ -9,16 +9,14 @@ Discord bot made for the red gladiators server
 
 # Contents
 - ### [Cogs and cog functions](#cogs-and-cog-functions-1)
-  - ### --Functional Cogs--
   - #### [`cogs.applications`](#cogsapplications-1)
   - #### [`cogs.btesting`](#cogsbtesting-1)
   - #### [`cogs.hystats`](#cogshystats-1)
   - #### [`cogs.listeners`](#cogslisteners-1)
   - #### [`cogs.misc`](#cogsmisc-1)
-  - #### `cogs.owner`
+  - #### [`cogs.owner`](#cogsowner-1)
   - #### `cogs.polls`
   - #### `cogs.trusted`
-  - ### --Utility Cogs--
   - #### `cogs.checks`
   - #### `cogs.util`
 
@@ -142,3 +140,36 @@ Unused:
 `/giveaway` - Allows a non-trusted member to request to start a giveaway
 #### How it works
 Simple slash commands, not one complete module
+
+## `cogs.owner`
+#### Cog init: `self.bot = bot`
+##### Extra imports: `sys`, `requests`, `io`, `aioconsole.aexec`
+### Handles owner/admin-only commands:
+- `=eval`
+- `=n`
+- `=d`
+- `=kickuser`
+- `=purge`
+- `=genbutton`/`=clown`
+- `=rrsend`/`=rrdel`
+- `=role` group
+- `=blacklist` group
+#### `=role` group
+- `=role a <roleid> [member: discord.Member=None]` - Gives a role to an optional member (otherwise user who invoked command)
+- `=role d <roleid> [member: discord.Member=None]` - Removes a role from an optional member
+#### `=blacklist` group
+_Aliases:_ `bl`
+- `=blacklist set/['s', 'a', 'add'] <member> <command> [duration=1h]` - Blacklists a user from using a command
+- `=blacklist rem/['d', 'r', 'del'] <member> <command>` - Removes a user from the blacklist for a command
+Uncategorized:
+- `=eval [-s] <code>` - Runs python code async \[-s is for silent]
+- `=n * [nickname=None]` - Rename the bot
+- `=d <meID>` - Deletes a message with the message ID
+- `=kickuser <member: discord.Member> <reason>` - Kicks a member
+- `=purge <message (amount of messages to purge)>` - Purges a certain amount of messages from a channel
+- `=genbutton [label="Click me!"] [id=None] [message="friendly button"]` - Creates a new button with optional args
+- `=clown` - Creates a new button which de-verifies anyone who clicks it
+- `=rrsend <roleid> * [embmsg]` - Sends a new reaction role embed
+- `=rrdel <messageid>` - Deletes a reaction role
+#### How it works
+Simple owner and admin commands with the `checks.owner_staff` check or the `@commands.is_owner` decorator
