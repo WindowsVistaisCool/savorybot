@@ -7,6 +7,21 @@ Discord bot made for the red gladiators server
 ### Run
 `python3 main.py`
 
+# Contents
+- ### [Cogs and cog functions](#cogs-and-cog-functions)
+  - ###--Functional Cogs--
+  - #### [`cogs.applications`](#cogsapplications)
+  - #### [`cogs.btesting`](#cogsbtesting)
+  - #### [`cogs.hystats`](#cogshystats)
+  - #### [`cogs.listeners`](#cogslisteners)
+  - #### [`cogs.misc`](#cogsmisc)
+  - #### `cogs.owner`
+  - #### `cogs.polls`
+  - #### `cogs.trusted`
+  - ###--Utility Cogs--
+  - #### `cogs.checks`
+  - #### `cogs.util`
+
 # Cogs and cog functions
 
 #### Functional cogs (commands)
