@@ -42,8 +42,8 @@ cogs.util
 ```
 
 ## `cogs.applications`
-### Cog `__init__(self, bot)`: `self.bot = bot`
-### Extra imports: `json`, `requests`, `cogs.hystats.hyutil`
+#### Cog init: `self.bot = bot`
+##### Extra imports: `json`, `requests`, `cogs.hystats.hyutil`
 ### Handles all application related commands:
 - `/apply`
 - #app-handling Accept/Deny buttons
@@ -58,8 +58,8 @@ _Permission:_ Officer+<br>
 This system uses [jsonbin.io](https://jsonbin.io) to send and recieve requests for applications.
 
 ## `cogs.btesting`
-### Cog `__init__(self, bot)`: `self.bot = bot`
-### Extra imports: `random`, `itertools.accumulate`, `slashrequest`, (others based on testing session)
+#### Cog init: `self.bot = bot`
+##### Extra imports: `random`, `itertools.accumulate`, `slashrequest`, (others based on testing session)
 ### Handles beta testing:
 - `/bt` group
 - `=bt` command group
@@ -75,8 +75,8 @@ _Permission:_ Owner only
 Beta testing for discord members to test 
 
 ## `cogs.hystats`
-### Cog `__init__(self, bot)`: `self.bot = bot`
-### Extra imports: `requests`
+#### Cog init: `self.bot = bot`
+##### Extra imports: `requests`
 ### Handles:
 - `hyutil` class
 - `/hy` group
@@ -97,8 +97,8 @@ _Permission:_ Guild Member+<br>
 Grabs data from the hypixel API and formats the data in embeds
 
 ## `cogs.listeners`
-### Cog `__init__(self, bot)`: `self.bot = bot`
-### Extra imports: None
+#### Cog init: `self.bot = bot`
+##### Extra imports: None
 ### Handles all listeners and event actions:
 - `on_raw_reaction_add`/`on_raw_reaction_remove`
 - `on_button_click`
@@ -121,12 +121,12 @@ Used for reporting a NotFound, CheckFailure, or other unknown error
 Uses the `discord.ext.commands.Cog.listener()` decorator to register listeners in the cog. Called by the bot gateway for each event.
 
 ## `cogs.misc`
-### Cog `__init__(self, bot)`:
+#### Cog init:
 ```python
   self.bot = bot
   self.annoy = 0
 ```
-### Extra imports: `cogs.hystats.hyutil`
+##### Extra imports: `cogs.hystats.hyutil`
 ### Handles miscellaneous slash commands:
 - `/frag`
 - `/ruff`
