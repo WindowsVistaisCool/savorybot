@@ -9,7 +9,7 @@ Discord bot made for the red gladiators server
 
 # Contents
 - ### [Cogs and cog functions](#cogs-and-cog-functions)
-  - ###--Functional Cogs--
+  - ### --Functional Cogs--
   - #### [`cogs.applications`](#cogsapplications)
   - #### [`cogs.btesting`](#cogsbtesting)
   - #### [`cogs.hystats`](#cogshystats)
@@ -18,7 +18,7 @@ Discord bot made for the red gladiators server
   - #### `cogs.owner`
   - #### `cogs.polls`
   - #### `cogs.trusted`
-  - ###--Utility Cogs--
+  - ### --Utility Cogs--
   - #### `cogs.checks`
   - #### `cogs.util`
 
