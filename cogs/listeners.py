@@ -342,7 +342,7 @@ class Listeners(commands.Cog):
                 await user.add_roles(role)
         elif message.channel.id == 788886124159828012:
             if message.author.id in [716045085472718859, 710143953533403226]:
-                await message.reply('no bot commands in general you stupid shit')
+                await message.reply('Please refrain from using bot commands in general.')
                 await sleep(8)
                 await message.delete()
         try:
