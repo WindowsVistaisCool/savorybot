@@ -210,7 +210,7 @@ class Listeners(commands.Cog):
                     c = channel
                     break
             if c == None:
-                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact trngl.")
+                await interaction.respond(content="Sorry, the poll ID was not found! Try again later or contact rctngl.")
                 return
             messages = await c.history(limit=4).flatten()
             x = json.loads(messages[1].content)
